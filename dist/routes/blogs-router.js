@@ -35,7 +35,6 @@ exports.blogsRouter.delete('/:id', (req, res) => {
     let blogId = blogs_repository_1.blogsRepository.deleteBlogId(req.params.id);
     if (blogId === true) {
         res.sendStatus(204);
-        return;
     }
     else {
         res.sendStatus(404);
