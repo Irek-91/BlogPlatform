@@ -58,7 +58,7 @@ exports.blogsRouter.post('/', nameValidation, descriptionValidation, websiteUrl,
     const nameBlog = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const id = +(new Date());
+    const id = "string";
     const newBlog = blogs_repository_1.blogsRepository.createBlog(id, nameBlog, description, websiteUrl);
     if (newBlog) {
         res.status(201).send(newBlog);
