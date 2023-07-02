@@ -4,7 +4,8 @@ import { postsRouter} from './routes/posts-router';
 import { blogsRouter} from './routes/blogs-router';
 
 const app = express()
-const port = 3000
+const port = 3001
+
 
 app.use(express.json())
 

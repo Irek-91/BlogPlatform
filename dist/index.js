@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const posts_router_1 = require("./routes/posts-router");
 const blogs_router_1 = require("./routes/blogs-router");
 const app = (0, express_1.default)();
-const port = 3000;
+const port = 3001;
 app.use(express_1.default.json());
 app.use('/posts', posts_router_1.postsRouter);
 app.use('/blogs', blogs_router_1.blogsRouter);
