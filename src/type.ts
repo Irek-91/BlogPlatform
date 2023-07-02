@@ -9,7 +9,7 @@ export type postType = {
     blogName: string
 }
 export type newBlogType = {
-    id: number,
+    id: string,
     name: string,
     description: string,
     websiteUrl: string
