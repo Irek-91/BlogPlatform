@@ -25,7 +25,7 @@ export const blogsRepository = {
         return blog;    
     },
 
-    createBlog(name: string, description: string, websiteUrl:string ) {
+    createBlog(id: number, name: string, description: string, websiteUrl:string ) {
         
     /*let apiErrorResult =[];
     if (!name || typeof name !== 'string' || name.length > 15) {
@@ -50,7 +50,7 @@ export const blogsRepository = {
     } else {
   */
     const newBlog : newBlogType = {
-      id: +(new Date()),
+      id: id,
       name: name,
       description: description,
       websiteUrl: websiteUrl
