@@ -3,13 +3,13 @@ import { newBlogType } from "../type";
 
 const blogs = [
     {
-    id: 1,
+    id: "1",
     name: "name1",
     description: "description",
     websiteUrl: "websiteUrl"
     },
     {
-    id: 2,
+    id: "2",
     name: "name2",
     description: "description",
     websiteUrl: "websiteUrl"
@@ -21,7 +21,7 @@ export const blogsRepository = {
     findBlogs() {
         return blogs;
     },
-    getBlogId(id: number) {
+    getBlogId(id: string) {
         let blog = blogs.find(p => p.id === id )
         return blog;    
     },
@@ -60,7 +60,7 @@ export const blogsRepository = {
     return newBlog;
     },
     
-    updateBlog(name: string, description: string, websiteUrl: string, id: number) {
+    updateBlog(name: string, description: string, websiteUrl: string, id: string) {
     let apiErrorResult = [];
     let blog = blogs.find(p => p.id === id);
     
@@ -91,7 +91,7 @@ export const blogsRepository = {
     }
     },
 
-    deleteBlogId(id: number) {
+    deleteBlogId(id: string) {
       for (let i=0; i<blogs.length; i++) {
         if (blogs[i].id === id) {
           blogs.splice(i, 1);

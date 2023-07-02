@@ -18,7 +18,7 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
   let result = blogsRepository.deleteBlogAll();
   let result2 = postRepository.deletePostAll();
 
-  if (result === true && result2 === true) {
+  if (result ) {
     res.sendStatus(204)
   }
 }) 
