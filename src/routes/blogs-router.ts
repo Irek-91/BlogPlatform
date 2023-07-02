@@ -78,8 +78,9 @@ blogsRouter.post('/',
     const nameBlog = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    
-    const newBlog = blogsRepository.createBlog(nameBlog, description, websiteUrl);
+    const id = +(new Date());
+
+    const newBlog = blogsRepository.createBlog(id, nameBlog, description, websiteUrl);
     
     if (newBlog) {
     res.status(201).send(newBlog)

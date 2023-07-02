@@ -23,7 +23,7 @@ exports.blogsRepository = {
         let blog = blogs.find(p => p.id === id);
         return blog;
     },
-    createBlog(name, description, websiteUrl) {
+    createBlog(id, name, description, websiteUrl) {
         /*let apiErrorResult =[];
         if (!name || typeof name !== 'string' || name.length > 15) {
           apiErrorResult.push({message: 'string length >15', field: "name"})
@@ -47,7 +47,7 @@ exports.blogsRepository = {
         } else {
       */
         const newBlog = {
-            id: +(new Date()),
+            id: id,
             name: name,
             description: description,
             websiteUrl: websiteUrl
