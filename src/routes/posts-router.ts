@@ -37,6 +37,12 @@ postsRouter.delete('/:id', (req: Request, res: Response) => {
       }
 })
   
+postsRouter.delete('/testing/all-data', (req: Request, res: Response) => {
+  let result = postRepository.deletePostAll();
+  if (result === true) {
+    res.sendStatus(204)
+  }
+}) 
   
 postsRouter.post('/', 
   titleValidation,

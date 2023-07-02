@@ -2,6 +2,8 @@ import express, {Request, Response} from 'express'
 import { postType } from './type';
 import { postsRouter} from './routes/posts-router';
 import { blogsRouter} from './routes/blogs-router';
+import { blogsRepository } from './repositories/blogs-repository';
+import { postRepository } from './repositories/post-repository';
 
 const app = express()
 const port = 3001
@@ -12,14 +14,14 @@ app.use(express.json())
 app.use('/posts', postsRouter)
 app.use('/blogs', blogsRouter)
 
+app.delete('/testing/all-data', (req: Request, res: Response) => {
+  let result = blogsRepository.deleteBlogAll();
+  let result2 = postRepository.deletePostAll();
 
-
-/*app.delete('/testing/all-data', (req: Request, res: Response) => {
-  blogs.splice(-1, 0);
-  posts.splice(-1, 0);
-  res.sendStatus(204)
-})
-*/
+  if (result === true && result2 === true) {
+    res.sendStatus(204)
+  }
+}) 
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

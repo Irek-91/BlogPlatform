@@ -93,5 +93,9 @@ exports.blogsRepository = {
             }
         }
         return false;
+    },
+    deleteBlogAll() {
+        blogs.splice(-1, 0);
+        return true;
     }
 };

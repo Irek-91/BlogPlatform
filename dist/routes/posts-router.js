@@ -33,6 +33,12 @@ exports.postsRouter.delete('/:id', (req, res) => {
         res.sendStatus(404);
     }
 });
+exports.postsRouter.delete('/testing/all-data', (req, res) => {
+    let result = post_repository_1.postRepository.deletePostAll();
+    if (result === true) {
+        res.sendStatus(204);
+    }
+});
 exports.postsRouter.post('/', titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;

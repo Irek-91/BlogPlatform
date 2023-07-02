@@ -62,5 +62,9 @@ export const postRepository = {
         } else {
             return false;
         }
-    }
+    },
+    deletePostAll() {
+        posts.splice(-1, 0);
+        return true;
+      }
 }
