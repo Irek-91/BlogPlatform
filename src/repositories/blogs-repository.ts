@@ -1,3 +1,4 @@
+import { stringify } from "querystring";
 import { newBlogType } from "../type";
 
 const blogs = [
@@ -25,7 +26,7 @@ export const blogsRepository = {
         return blog;    
     },
 
-    createBlog(id: number, name: string, description: string, websiteUrl:string ) {
+    createBlog(id: string, name: string, description: string, websiteUrl:string ) {
         
     /*let apiErrorResult =[];
     if (!name || typeof name !== 'string' || name.length > 15) {
