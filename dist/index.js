@@ -16,7 +16,7 @@ app.use('/blogs', blogs_router_1.blogsRouter);
 app.delete('/testing/all-data', (req, res) => {
     let result = blogs_repository_1.blogsRepository.deleteBlogAll();
     let result2 = post_repository_1.postRepository.deletePostAll();
-    if (result === true && result2 === true) {
+    if (result) {
         res.sendStatus(204);
     }
 });

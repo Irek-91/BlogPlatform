@@ -27,7 +27,7 @@ blogsRouter.get('/', (req: Request, res: Response) => {
 })
 
 blogsRouter.get('/:id', (req: Request, res: Response) => {
-  let BlogId = blogsRepository.getBlogId(+req.params.id)
+  let BlogId = blogsRepository.getBlogId(req.params.id)
   if (BlogId) {
       res.send(BlogId)
     } else {  
@@ -36,7 +36,7 @@ blogsRouter.get('/:id', (req: Request, res: Response) => {
 })
   
 blogsRouter.delete('/:id', (req: Request, res: Response) => {
-    let blogId = blogsRepository.deleteBlogId(+req.params.id)
+    let blogId = blogsRepository.deleteBlogId(req.params.id)
     if (blogId === true) {
       res.sendStatus(204)
       return;
@@ -59,7 +59,7 @@ blogsRouter.put('/:id',
   const name = req.body.name;
   const description = req.body.description;
   const websiteUrl = req.body.websiteUrl;  
-  let blogId = blogsRepository.updateBlog(name, description, websiteUrl, +id)
+  let blogId = blogsRepository.updateBlog(name, description, websiteUrl, id)
     if (blogId === false) {
       res.sendStatus(404);
     } else {

@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
 const blogs = [
     {
-        id: 1,
+        id: "1",
         name: "name1",
         description: "description",
         websiteUrl: "websiteUrl"
     },
     {
-        id: 2,
+        id: "2",
         name: "name2",
         description: "description",
         websiteUrl: "websiteUrl"

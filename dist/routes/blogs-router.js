@@ -23,7 +23,7 @@ exports.blogsRouter.get('/', (req, res) => {
     res.send(foundBlogs);
 });
 exports.blogsRouter.get('/:id', (req, res) => {
-    let BlogId = blogs_repository_1.blogsRepository.getBlogId(+req.params.id);
+    let BlogId = blogs_repository_1.blogsRepository.getBlogId(req.params.id);
     if (BlogId) {
         res.send(BlogId);
     }
@@ -32,7 +32,7 @@ exports.blogsRouter.get('/:id', (req, res) => {
     }
 });
 exports.blogsRouter.delete('/:id', (req, res) => {
-    let blogId = blogs_repository_1.blogsRepository.deleteBlogId(+req.params.id);
+    let blogId = blogs_repository_1.blogsRepository.deleteBlogId(req.params.id);
     if (blogId === true) {
         res.sendStatus(204);
         return;
@@ -46,7 +46,7 @@ exports.blogsRouter.put('/:id', nameValidation, descriptionValidation, websiteUr
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    let blogId = blogs_repository_1.blogsRepository.updateBlog(name, description, websiteUrl, +id);
+    let blogId = blogs_repository_1.blogsRepository.updateBlog(name, description, websiteUrl, id);
     if (blogId === false) {
         res.sendStatus(404);
     }
