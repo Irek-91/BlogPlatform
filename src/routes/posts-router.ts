@@ -10,7 +10,6 @@ import { authMidleware } from "../midlewares/basicAuth";
 
 export const postsRouter = Router ({});
 
-
 postsRouter.get('/', (req: Request, res: Response) => {
     let posts = postRepository.findPost();
     res.send(posts)
