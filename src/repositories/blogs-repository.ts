@@ -26,7 +26,7 @@ export const blogsRepository = {
         return blog;    
     },
 
-    createBlog(id: string, name: string, description: string, websiteUrl:string ) {
+    createBlog(name: string, description: string, websiteUrl:string ) {
         
     /*let apiErrorResult =[];
     if (!name || typeof name !== 'string' || name.length > 15) {
@@ -51,7 +51,7 @@ export const blogsRepository = {
     } else {
   */
     const newBlog : newBlogType = {
-      id: id,
+      id: String(+new Date()),
       name: name,
       description: description,
       websiteUrl: websiteUrl
@@ -102,7 +102,7 @@ export const blogsRepository = {
     },
     
     deleteBlogAll() {
-      blogs.splice(-1, 0);
+      blogs.length = 0
       return true;
     }
   }

@@ -8,15 +8,7 @@ export const blogsRouter = Router ({})
 
 const nameValidation = body('name').trim().notEmpty().isString().isLength({max: 15}).withMessage('error in name length');
 const descriptionValidation = body('description').trim().notEmpty().isLength({max: 500}).withMessage('error in description length');
-const websiteUrl = body('websiteUrl').trim().notEmpty().
-isURL({
-  protocols: [
-      'http',
-      'https',
-      'ftp'
-  ]
-  //host_whitelist: (('^https://([a-zA-Z0-9_-]'+'\.)'+'[a-zA-Z0-9_-]'+'(\/[a-zA-Z0-9_-]'+')*\/?$'))
-}).withMessage("error in the websiteUrl, not pattern");
+const websiteUrl = body('websiteUrl').trim().notEmpty().matches('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$').withMessage("error in the websiteUrl, not pattern");
 const websiteUrlLength = body('websiteUrl').isString().isLength({max: 100}).withMessage("error in websiteUrl length");
  
 
@@ -37,7 +29,7 @@ blogsRouter.get('/:id', (req: Request, res: Response) => {
   
 blogsRouter.delete('/:id', (req: Request, res: Response) => {
     let blogId = blogsRepository.deleteBlogId(req.params.id)
-    if (blogId === true) {
+    if (blogId) {
       res.sendStatus(204)
     } else {
       res.sendStatus(404)
@@ -59,7 +51,7 @@ blogsRouter.put('/:id',
   const description = req.body.description;
   const websiteUrl = req.body.websiteUrl;  
   let blogId = blogsRepository.updateBlog(name, description, websiteUrl, id)
-    if (blogId === false) {
+    if (!blogId) {
       res.sendStatus(404);
     } else {
       res.sendStatus(204);
@@ -77,14 +69,9 @@ blogsRouter.post('/',
     const nameBlog = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const id = "string";
 
-    const newBlog = blogsRepository.createBlog(id, nameBlog, description, websiteUrl);
-    
-    if (newBlog) {
+    const newBlog = blogsRepository.createBlog(nameBlog, description, websiteUrl);
+  
     res.status(201).send(newBlog)
-    } else {
-      res.status(400).send(newBlog)
-    }
     
   })

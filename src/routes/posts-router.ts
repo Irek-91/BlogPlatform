@@ -3,6 +3,7 @@ import { postType } from "../type";
 import { postRepository } from "../repositories/post-repository";
 import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
+import { blogsRepository } from "../repositories/blogs-repository";
 
 
 export const postsRouter = Router ({});
@@ -10,7 +11,16 @@ export const postsRouter = Router ({});
 const titleValidation = body('title').trim().notEmpty().isString().isLength({max: 30}).withMessage('error in string length');
 const shortDescriptionValidation = body('shortDescription').trim().notEmpty().isLength({max: 100}).withMessage('error in shortDescription length');
 const contentValidation = body('content').trim().notEmpty().isString().isLength({max: 1000}).withMessage("error in content length");
-const blogIdValidation = body('blogId').trim().notEmpty().isString().withMessage("error in the content");
+const blogIdValidation = body('blogId').trim().notEmpty().isString().withMessage("error in the content").custom((blogId) => {
+
+  const blog = blogsRepository.getBlogId(blogId);
+
+  if(!blog){
+    throw new Error("Blog with this BlogId not found")
+  }
+
+  return true
+});
  
 
 postsRouter.get('/', (req: Request, res: Response) => {
@@ -19,7 +29,7 @@ postsRouter.get('/', (req: Request, res: Response) => {
   })
   
 postsRouter.get('/:id', (req: Request, res: Response) => {
-    let post = postRepository.getPostId(+req.params.id)
+    let post = postRepository.getPostId(req.params.id)
     if (post) {
       res.send(post)
     } else {
@@ -28,20 +38,12 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
   })
   
 postsRouter.delete('/:id', (req: Request, res: Response) => {
-    let post = postRepository.deletePostId(+req.params.id);
-    if (post === true) {  
+    let post = postRepository.deletePostId(req.params.id);
+    if (post) {  
         res.sendStatus(204)
-        return;
       } else {
         res.sendStatus(404)
       }
-})
-  
-postsRouter.delete('/testing/all-data', (req: Request, res: Response) => {
-  let result = postRepository.deletePostAll();
-  if (result === true) {
-    res.sendStatus(204)
-  }
 }) 
   
 postsRouter.post('/', 
@@ -92,7 +94,7 @@ postsRouter.put('/:id',
     inputValidationMiddleware,
     
     (req: Request, res: Response) => {
-    const id = +req.params.id;
+    const id = req.params.id;
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
@@ -100,7 +102,7 @@ postsRouter.put('/:id',
 
 
     let postResult = postRepository.updatePostId(id, title, shortDescription, content, blogId)
-    if (postResult === true) {
+    if (postResult) {
       res.sendStatus(204);
       } else {
       res.sendStatus(404);

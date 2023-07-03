@@ -17,7 +17,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
   }
    const errors = validationResult(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
-        res.status(400).json({errorsMessages: errors.array({ onlyFirstError: true})})
+        res.status(400).send({errorsMessages: errors.array({ onlyFirstError: true})})
      } else {
       next()
      }

@@ -15,12 +15,10 @@ app.use('/posts', postsRouter)
 app.use('/blogs', blogsRouter)
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
-  let result = blogsRepository.deleteBlogAll();
-  let result2 = postRepository.deletePostAll();
+  blogsRepository.deleteBlogAll();
+  postRepository.deletePostAll();
 
-  if (result ) {
-    res.sendStatus(204)
-  }
+  res.sendStatus(204)
 }) 
 
 app.listen(port, () => {
