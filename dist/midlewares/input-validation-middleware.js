@@ -6,10 +6,10 @@ const inputValidationMiddleware = (req, res, next) => {
     /*const errorFormatter = (error.msg, error.location) => {
        return {message:  , field:  };
      };*/
-    const errorFormatter = ({ msg, type }) => {
+    const errorFormatter = ({ msg, path }) => {
         return {
             message: msg,
-            field: type
+            field: path
         };
     };
     const errors = (0, express_validator_1.validationResult)(req).formatWith(errorFormatter);

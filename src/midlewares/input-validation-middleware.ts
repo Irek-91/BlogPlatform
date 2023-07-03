@@ -1,4 +1,4 @@
-import { validationResult, ResultFactory, checkSchema, Result, ValidationError} from 'express-validator';
+import { validationResult, ResultFactory, checkSchema, Result, ValidationError, ErrorFormatter} from 'express-validator';
 import { Request, Response, NextFunction} from "express";
 
 
@@ -9,10 +9,10 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
    /*const errorFormatter = (error.msg, error.location) => {
       return {message:  , field:  };
     };*/
-    const errorFormatter = ({msg, type} : ValidationError) => {
+    const errorFormatter= ({msg, path} : ValidationError) => {
       return {
           message: msg,
-          field: type
+          field: path
       }
   }
    const errors = validationResult(req).formatWith(errorFormatter);
