@@ -24,28 +24,6 @@ exports.blogsRepository = {
         return blog;
     },
     createBlog(name, description, websiteUrl) {
-        /*let apiErrorResult =[];
-        if (!name || typeof name !== 'string' || name.length > 15) {
-          apiErrorResult.push({message: 'string length >15', field: "name"})
-        }
-        
-        if (!description || typeof description !== 'string' || description.length > 500) {
-          apiErrorResult.push({message: 'string length >500', field: "description"})
-        }
-    
-        if (!websiteUrl || typeof websiteUrl !== 'string' || websiteUrl.length > 100) {
-          apiErrorResult.push({message: 'string length >100', field: "websiteUrl"})
-        }
-        
-        if (reg.test(websiteUrl) == false) {
-          apiErrorResult.push({message: 'string', field: "pattern"})
-        }
-        
-            
-        if (apiErrorResult.length !== 0) {
-            return({ errorsMessages: apiErrorResult});
-        } else {
-      */
         const newBlog = {
             id: String(+new Date()),
             name: name,
@@ -62,23 +40,6 @@ exports.blogsRepository = {
             return false;
         }
         else {
-            /*
-                if (!name || typeof name !== 'string' || name.length > 15) {
-                  apiErrorResult.push({message: 'string length >15', field: "name"})
-                }
-                
-                if (!description || typeof description !== 'string' || description.length > 500) {
-                  apiErrorResult.push({message: 'string descriptionBlog length >500', field: "descriptionBlog"})
-                }
-              
-                if (!websiteUrl || typeof websiteUrl !== 'string' || websiteUrl.length > 100) {
-                  apiErrorResult.push({message: 'string websiteUrlBlog length >500', field: "websiteUrlBlog"})
-                }
-                
-                if (apiErrorResult.length !== 0) {
-                  return({ errorsMessages: apiErrorResult});
-                } else {
-                    */
             blog.name = name;
             blog.description = description;
             blog.websiteUrl = websiteUrl;

@@ -2,18 +2,16 @@ import { Request, Response, Router } from "express";
 import { blogsRepository } from "../repositories/blogs-repository";
 import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
+import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
+import { authMidleware } from "../midlewares/basicAuth";
 
 
 export const blogsRouter = Router ({})
 
-const nameValidation = body('name').trim().notEmpty().isString().isLength({max: 15}).withMessage('error in name length');
-const descriptionValidation = body('description').trim().notEmpty().isLength({max: 500}).withMessage('error in description length');
-const websiteUrl = body('websiteUrl').trim().notEmpty().matches('^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$').withMessage("error in the websiteUrl, not pattern");
-const websiteUrlLength = body('websiteUrl').isString().isLength({max: 100}).withMessage("error in websiteUrl length");
- 
 
-
-blogsRouter.get('/', (req: Request, res: Response) => {
+blogsRouter.get('/', 
+  
+  (req: Request, res: Response) => {
   let foundBlogs = blogsRepository.findBlogs();
   res.send(foundBlogs)
 })
@@ -27,7 +25,9 @@ blogsRouter.get('/:id', (req: Request, res: Response) => {
     }
 })
   
-blogsRouter.delete('/:id', (req: Request, res: Response) => {
+blogsRouter.delete('/:id', 
+    authMidleware, 
+    (req: Request, res: Response) => {
     let blogId = blogsRepository.deleteBlogId(req.params.id)
     if (blogId) {
       res.sendStatus(204)
@@ -39,6 +39,7 @@ blogsRouter.delete('/:id', (req: Request, res: Response) => {
 
 
 blogsRouter.put('/:id',
+    authMidleware,
     nameValidation,
     descriptionValidation,
     websiteUrl,
@@ -59,6 +60,7 @@ blogsRouter.put('/:id',
   })
 
 blogsRouter.post('/', 
+    authMidleware,
     nameValidation,
     descriptionValidation,
     websiteUrl,
