@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
+const blogs_repository_1 = require("./blogs-repository");
 const posts = [
     {
-        id: 1,
+        id: '1',
         title: "post1",
         shortDescription: "string",
         content: "string",
@@ -11,7 +12,7 @@ const posts = [
         blogName: "string"
     },
     {
-        id: 2,
+        id: '2',
         title: "post1",
         shortDescription: "string",
         content: "string",
@@ -37,13 +38,14 @@ exports.postRepository = {
         return false;
     },
     createdPostId(title, shortDescription, content, blogId) {
+        const blog = blogs_repository_1.blogsRepository.getBlogId(blogId);
         const newPost = {
-            id: +(new Date()),
+            id: String(+(new Date())),
             title: title,
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: "string"
+            blogName: blog.name
         };
         posts.push(newPost);
         return newPost;
@@ -62,7 +64,7 @@ exports.postRepository = {
         }
     },
     deletePostAll() {
-        posts.splice(-1, 0);
+        posts.length = 0;
         return true;
     }
 };

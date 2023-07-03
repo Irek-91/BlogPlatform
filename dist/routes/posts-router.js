@@ -5,17 +5,24 @@ const express_1 = require("express");
 const post_repository_1 = require("../repositories/post-repository");
 const express_validator_1 = require("express-validator");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
+const blogs_repository_1 = require("../repositories/blogs-repository");
 exports.postsRouter = (0, express_1.Router)({});
 const titleValidation = (0, express_validator_1.body)('title').trim().notEmpty().isString().isLength({ max: 30 }).withMessage('error in string length');
 const shortDescriptionValidation = (0, express_validator_1.body)('shortDescription').trim().notEmpty().isLength({ max: 100 }).withMessage('error in shortDescription length');
 const contentValidation = (0, express_validator_1.body)('content').trim().notEmpty().isString().isLength({ max: 1000 }).withMessage("error in content length");
-const blogIdValidation = (0, express_validator_1.body)('blogId').trim().notEmpty().isString().withMessage("error in the content");
+const blogIdValidation = (0, express_validator_1.body)('blogId').trim().notEmpty().isString().withMessage("error in the content").custom((blogId) => {
+    const blog = blogs_repository_1.blogsRepository.getBlogId(blogId);
+    if (!blog) {
+        throw new Error("Blog with this BlogId not found");
+    }
+    return true;
+});
 exports.postsRouter.get('/', (req, res) => {
     let posts = post_repository_1.postRepository.findPost();
     res.send(posts);
 });
 exports.postsRouter.get('/:id', (req, res) => {
-    let post = post_repository_1.postRepository.getPostId(+req.params.id);
+    let post = post_repository_1.postRepository.getPostId(req.params.id);
     if (post) {
         res.send(post);
     }
@@ -24,19 +31,12 @@ exports.postsRouter.get('/:id', (req, res) => {
     }
 });
 exports.postsRouter.delete('/:id', (req, res) => {
-    let post = post_repository_1.postRepository.deletePostId(+req.params.id);
-    if (post === true) {
+    let post = post_repository_1.postRepository.deletePostId(req.params.id);
+    if (post) {
         res.sendStatus(204);
-        return;
     }
     else {
         res.sendStatus(404);
-    }
-});
-exports.postsRouter.delete('/testing/all-data', (req, res) => {
-    let result = post_repository_1.postRepository.deletePostAll();
-    if (result === true) {
-        res.sendStatus(204);
     }
 });
 exports.postsRouter.post('/', titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
@@ -70,13 +70,13 @@ if (apiErrorResult.length !== 0) {
     res.status(201).send(post);
 });
 exports.postsRouter.put('/:id', titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
-    const id = +req.params.id;
+    const id = req.params.id;
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
     const blogId = req.body.blogId;
     let postResult = post_repository_1.postRepository.updatePostId(id, title, shortDescription, content, blogId);
-    if (postResult === true) {
+    if (postResult) {
         res.sendStatus(204);
     }
     else {

@@ -14,11 +14,9 @@ app.use(express_1.default.json());
 app.use('/posts', posts_router_1.postsRouter);
 app.use('/blogs', blogs_router_1.blogsRouter);
 app.delete('/testing/all-data', (req, res) => {
-    let result = blogs_repository_1.blogsRepository.deleteBlogAll();
-    let result2 = post_repository_1.postRepository.deletePostAll();
-    if (result) {
-        res.sendStatus(204);
-    }
+    blogs_repository_1.blogsRepository.deleteBlogAll();
+    post_repository_1.postRepository.deletePostAll();
+    res.sendStatus(204);
 });
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

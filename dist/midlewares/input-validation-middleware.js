@@ -14,7 +14,7 @@ const inputValidationMiddleware = (req, res, next) => {
     };
     const errors = (0, express_validator_1.validationResult)(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
-        res.status(400).json({ errorsMessages: errors.array({ onlyFirstError: true }) });
+        res.status(400).send({ errorsMessages: errors.array({ onlyFirstError: true }) });
     }
     else {
         next();
