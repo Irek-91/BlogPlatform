@@ -10,13 +10,13 @@ import { authMidleware } from "../midlewares/basicAuth";
 
 export const postsRouter = Router ({});
 
-postsRouter.get('/', (req: Request, res: Response) => {
-    let posts = postRepository.findPost();
+postsRouter.get('/', async (req: Request, res: Response) => {
+    let posts = await postRepository.findPost();
     res.send(posts)
   })
   
-postsRouter.get('/:id', (req: Request, res: Response) => {
-    let post = postRepository.getPostId(req.params.id)
+postsRouter.get('/:id',async (req: Request, res: Response) => {
+    let post = await postRepository.getPostId(req.params.id)
     if (post) {
       res.send(post)
     } else {
@@ -26,8 +26,8 @@ postsRouter.get('/:id', (req: Request, res: Response) => {
   
 postsRouter.delete('/:id', 
     authMidleware,
-    (req: Request, res: Response) => {
-    let post = postRepository.deletePostId(req.params.id);
+    async (req: Request, res: Response) => {
+    let post = await postRepository.deletePostId(req.params.id);
     if (post) {  
         res.sendStatus(204)
       } else {
@@ -43,13 +43,13 @@ postsRouter.post('/',
   blogIdValidation,
   inputValidationMiddleware,
   
-  (req: Request, res: Response) => { 
+  async (req: Request, res: Response) => { 
    const title = req.body.title;
    const shortDescription = req.body.shortDescription;
    const content = req.body.content;
    const blogId = req.body.blogId;
 
-  let post = postRepository.createdPostId(title, shortDescription, content, blogId)
+  let post = await postRepository.createdPostId(title, shortDescription, content, blogId)
   res.status(201).send(post)
   })
   
@@ -61,7 +61,7 @@ postsRouter.put('/:id',
     blogIdValidation,
     inputValidationMiddleware,
     
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
     const id = req.params.id;
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
@@ -69,7 +69,7 @@ postsRouter.put('/:id',
     const blogId = req.body.blogId;
 
 
-    let postResult = postRepository.updatePostId(id, title, shortDescription, content, blogId)
+    let postResult = await postRepository.updatePostId(id, title, shortDescription, content, blogId)
     if (postResult) {
       res.sendStatus(204);
       } else {

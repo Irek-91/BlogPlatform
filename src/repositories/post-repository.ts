@@ -21,16 +21,16 @@ const posts = [
 ]
 
 export const postRepository = {
-    findPost() {
+    async findPost() {
         return posts;
     },
 
-    getPostId(id: string) {
+    async getPostId(id: string) {
         let post = posts.find(p => p.id === id)
         return post;
     },
 
-    deletePostId(id: string) {
+    async deletePostId(id: string) {
         for (let i=0; i<posts.length; i++) {
             if (posts[i].id === id) {
               posts.splice(i, 1);
@@ -40,9 +40,9 @@ export const postRepository = {
         return false
     },
 
-    createdPostId(title: string, shortDescription: string, content: string, blogId: string) {
+    async createdPostId(title: string, shortDescription: string, content: string, blogId: string) {
 
-        const blog = blogsRepository.getBlogId(blogId);
+        const blog = await blogsRepository.getBlogId(blogId);
 
         const newPost: postType = {
             id: String(+(new Date())),
@@ -55,7 +55,8 @@ export const postRepository = {
         posts.push(newPost);
         return newPost;
     },
-    updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
+
+    async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
         let post = posts.find(p => p.id === id);
         if (post) {
             post.title = title;
@@ -67,7 +68,7 @@ export const postRepository = {
             return false;
         }
     },
-    deletePostAll() {
+    async deletePostAll() {
         posts.length = 0;
         return true;
       }

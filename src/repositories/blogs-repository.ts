@@ -18,15 +18,16 @@ const blogs = [
 
 export const blogsRepository = {
     
-    findBlogs() {
+    async findBlogs() {
         return blogs;
     },
-    getBlogId(id: string) {
+
+    async getBlogId(id: string) {
         let blog = blogs.find(p => p.id === id )
         return blog;    
     },
 
-    createBlog(name: string, description: string, websiteUrl:string ) {
+    async createBlog(name: string, description: string, websiteUrl:string ) {
         
     const newBlog : newBlogType = {
       id: String(+new Date()),
@@ -38,7 +39,7 @@ export const blogsRepository = {
     return newBlog;
     },
     
-    updateBlog(name: string, description: string, websiteUrl: string, id: string) {
+    async updateBlog(name: string, description: string, websiteUrl: string, id: string) {
     let apiErrorResult = [];
     let blog = blogs.find(p => p.id === id);
     
@@ -52,7 +53,7 @@ export const blogsRepository = {
     }
     },
 
-    deleteBlogId(id: string) {
+    async deleteBlogId(id: string) {
       for (let i=0; i<blogs.length; i++) {
         if (blogs[i].id === id) {
           blogs.splice(i, 1);
@@ -62,7 +63,7 @@ export const blogsRepository = {
       return false
     },
     
-    deleteBlogAll() {
+    async deleteBlogAll() {
       blogs.length = 0
       return true;
     }

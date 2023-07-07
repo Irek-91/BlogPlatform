@@ -15,13 +15,6 @@ export type newBlogType = {
     websiteUrl: string
   }
 
-export type FieldValidationError = {
-    type: 'field';
-    location: Location;
-    path: string;
-    value: any;
-    msg: any;
-  };
 export type errorType = {
     message: string,
     field: string

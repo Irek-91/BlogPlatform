@@ -11,13 +11,13 @@ export const blogsRouter = Router ({})
 
 blogsRouter.get('/', 
   
-  (req: Request, res: Response) => {
-  let foundBlogs = blogsRepository.findBlogs();
+  async (req: Request, res: Response) => {
+  let foundBlogs = await blogsRepository.findBlogs();
   res.send(foundBlogs)
 })
 
-blogsRouter.get('/:id', (req: Request, res: Response) => {
-  let BlogId = blogsRepository.getBlogId(req.params.id)
+blogsRouter.get('/:id', async (req: Request, res: Response) => {
+  let BlogId = await blogsRepository.getBlogId(req.params.id)
   if (BlogId) {
       res.send(BlogId)
     } else {  
@@ -27,16 +27,14 @@ blogsRouter.get('/:id', (req: Request, res: Response) => {
   
 blogsRouter.delete('/:id', 
     authMidleware, 
-    (req: Request, res: Response) => {
-    let blogId = blogsRepository.deleteBlogId(req.params.id)
+    async (req: Request, res: Response) => {
+    let blogId = await blogsRepository.deleteBlogId(req.params.id)
     if (blogId) {
       res.sendStatus(204)
     } else {
       res.sendStatus(404)
     }
 })  
-
-
 
 blogsRouter.put('/:id',
     authMidleware,
@@ -46,12 +44,12 @@ blogsRouter.put('/:id',
     websiteUrlLength,
     inputValidationMiddleware,
 
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
   const id = req.params.id;
   const name = req.body.name;
   const description = req.body.description;
   const websiteUrl = req.body.websiteUrl;  
-  let blogId = blogsRepository.updateBlog(name, description, websiteUrl, id)
+  let blogId = await blogsRepository.updateBlog(name, description, websiteUrl, id)
     if (!blogId) {
       res.sendStatus(404);
     } else {
@@ -67,12 +65,12 @@ blogsRouter.post('/',
     websiteUrlLength,
     inputValidationMiddleware,
 
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
     const nameBlog = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
 
-    const newBlog = blogsRepository.createBlog(nameBlog, description, websiteUrl);
+    const newBlog = await blogsRepository.createBlog(nameBlog, description, websiteUrl);
   
     res.status(201).send(newBlog)
     
