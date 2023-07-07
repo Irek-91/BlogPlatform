@@ -14,9 +14,9 @@ app.use(express.json())
 app.use('/posts', postsRouter)
 app.use('/blogs', blogsRouter)
 
-app.delete('/testing/all-data', (req: Request, res: Response) => {
-  blogsRepository.deleteBlogAll();
-  postRepository.deletePostAll();
+app.delete('/testing/all-data', async (req: Request, res: Response) => {
+  await blogsRepository.deleteBlogAll();
+  await postRepository.deletePostAll();
 
   res.sendStatus(204)
 }) 
