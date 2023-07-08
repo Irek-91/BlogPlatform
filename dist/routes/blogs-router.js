@@ -58,7 +58,7 @@ exports.blogsRouter.post('/', basicAuth_1.authMidleware, blogs_validation_1.name
     const newBlog = yield blogs_db_repository_1.blogsRepository.createBlog(nameBlog, description, websiteUrl);
     res.status(201).send(newBlog);
 }));
-exports.blogsRouter.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
-    res.sendStatus(204);
-}));
+/*blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
+    await blogsRepository.deleteBlogAll();
+    res.sendStatus(204)
+  })*/ 

@@ -77,7 +77,7 @@ blogsRouter.post('/',
     
   })
 
-blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
+/*blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
     await blogsRepository.deleteBlogAll();  
     res.sendStatus(204)
-  })
+  })*/

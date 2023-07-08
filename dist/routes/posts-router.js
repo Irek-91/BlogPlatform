@@ -60,6 +60,7 @@ exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.tit
         res.sendStatus(404);
     }
 }));
-exports.postsRouter.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.sendStatus(204);
-}));
+/*postsRouter.delete('/testing/all-data',
+  async (req: Request, res: Response) => {
+    res.sendStatus(204)
+})*/ 
