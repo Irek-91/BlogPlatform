@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { blogsRepository } from "../repositories/blogs-db-repository";
+import { blogsRepository } from "../repositories/blogs-in-memory-repository";
 import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
