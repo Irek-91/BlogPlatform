@@ -11,17 +11,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRouter = void 0;
 const express_1 = require("express");
-const blogs_in_memory_repository_1 = require("../repositories/blogs-in-memory-repository");
+const blogs_db_repository_1 = require("../repositories/blogs-db-repository");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const blogs_validation_1 = require("../midlewares/blogs-validation");
 const basicAuth_1 = require("../midlewares/basicAuth");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let foundBlogs = yield blogs_in_memory_repository_1.blogsRepository.findBlogs();
+    let foundBlogs = yield blogs_db_repository_1.blogsRepository.findBlogs();
     res.send(foundBlogs);
 }));
 exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let BlogId = yield blogs_in_memory_repository_1.blogsRepository.getBlogId(req.params.id);
+    let BlogId = yield blogs_db_repository_1.blogsRepository.getBlogId(req.params.id);
     if (BlogId) {
         res.send(BlogId);
     }
@@ -30,7 +30,7 @@ exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 exports.blogsRouter.delete('/:id', basicAuth_1.authMidleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let blogId = yield blogs_in_memory_repository_1.blogsRepository.deleteBlogId(req.params.id);
+    let blogId = yield blogs_db_repository_1.blogsRepository.deleteBlogId(req.params.id);
     if (blogId) {
         res.sendStatus(204);
     }
@@ -43,7 +43,7 @@ exports.blogsRouter.put('/:id', basicAuth_1.authMidleware, blogs_validation_1.na
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    let blogId = yield blogs_in_memory_repository_1.blogsRepository.updateBlog(name, description, websiteUrl, id);
+    let blogId = yield blogs_db_repository_1.blogsRepository.updateBlog(name, description, websiteUrl, id);
     if (!blogId) {
         res.sendStatus(404);
     }
@@ -55,10 +55,10 @@ exports.blogsRouter.post('/', basicAuth_1.authMidleware, blogs_validation_1.name
     const nameBlog = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const newBlog = yield blogs_in_memory_repository_1.blogsRepository.createBlog(nameBlog, description, websiteUrl);
+    const newBlog = yield blogs_db_repository_1.blogsRepository.createBlog(nameBlog, description, websiteUrl);
     res.status(201).send(newBlog);
 }));
 exports.blogsRouter.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield blogs_in_memory_repository_1.blogsRepository.deleteBlogAll();
+    yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
     res.sendStatus(204);
 }));
