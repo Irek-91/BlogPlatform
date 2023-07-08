@@ -14,7 +14,7 @@ const db_mongo_1 = require("../db/db-mongo");
 exports.blogsRepository = {
     findBlogs() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_mongo_1.blogsCollections.find({}).toArray();
+            return db_mongo_1.blogsCollections.find({}, { projection: { _id: 0 } }).toArray();
         });
     },
     getBlogId(id) {
@@ -33,17 +33,15 @@ exports.blogsRepository = {
                 createdAt: new Date().toISOString(),
                 isMembership: false
             };
-            yield db_mongo_1.blogsCollections.insertOne(newBlog);
+            yield db_mongo_1.blogsCollections.insertOne(Object.assign({}, newBlog));
             return newBlog;
         });
     },
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield db_mongo_1.blogsCollections.findOne({ id: id });
-            if (blog) {
-                blog.name = name,
-                    blog.description = description,
-                    blog.websiteUrl = websiteUrl;
+            const blog = yield db_mongo_1.blogsCollections.updateOne({ id: id }, { $set: { name, description, websiteUrl } });
+            console.log(blog);
+            if (blog.matchedCount) {
                 return true;
             }
             else {

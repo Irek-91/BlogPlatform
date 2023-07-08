@@ -21,7 +21,7 @@ exports.postRepository = {
     },
     getPostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = db_mongo_1.postsCollections.findOne({ id: id });
+            let post = yield db_mongo_1.postsCollections.findOne({ id: id });
             return post;
         });
     },

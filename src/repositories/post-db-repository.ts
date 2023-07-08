@@ -11,7 +11,7 @@ export const postRepository = {
 
     async getPostId(id: string) {
         
-        let post = postsCollections.findOne({id:id})
+        let post = await postsCollections.findOne({id:id})
         return post;
     },
 

@@ -6,7 +6,7 @@ import { blogsCollections } from "../db/db-mongo";
 export const blogsRepository = {
     
     async findBlogs() {
-      return blogsCollections.find({}).toArray()
+      return blogsCollections.find({}, {projection:{_id: 0}}).toArray()
     },
 
     async getBlogId(id: string) {
@@ -24,19 +24,17 @@ export const blogsRepository = {
       createdAt: new Date ().toISOString(),
       isMembership: false
     }
-    await blogsCollections.insertOne(newBlog)
+    await blogsCollections.insertOne({...newBlog})
     return newBlog;
     },
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) {
-    const blog = await blogsCollections.findOne({id: id}) 
-    if (blog) {
-        blog.name = name, 
-        blog.description = description, 
-        blog.websiteUrl = websiteUrl
-        return true}
-       else {
-      return false}
+    const blog = await blogsCollections.updateOne({id: id}, {$set: {name , description, websiteUrl}})
+    
+    console.log(blog);
+    if (blog.matchedCount) {
+      return true}
+      else {return false}
     },
 
     async deleteBlogId(id: string) {
