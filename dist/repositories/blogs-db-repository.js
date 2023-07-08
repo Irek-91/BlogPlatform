@@ -19,7 +19,7 @@ exports.blogsRepository = {
     },
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let blog = yield db_mongo_1.blogsCollections.findOne({ id: id });
+            let blog = yield db_mongo_1.blogsCollections.findOne({ id: id }, { projection: { _id: 0 } });
             return blog;
         });
     },

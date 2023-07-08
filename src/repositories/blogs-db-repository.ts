@@ -10,7 +10,7 @@ export const blogsRepository = {
     },
 
     async getBlogId(id: string) {
-        let blog = await blogsCollections.findOne({id: id})
+        let blog = await blogsCollections.findOne({id: id}, {projection:{_id: 0}})
         return blog;    
     },
 

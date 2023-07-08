@@ -16,12 +16,12 @@ const db_mongo_1 = require("../db/db-mongo");
 exports.postRepository = {
     findPost() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_mongo_1.postsCollections.find({}).toArray();
+            return db_mongo_1.postsCollections.find({}, { projection: { _id: 0 } }).toArray();
         });
     },
     getPostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = yield db_mongo_1.postsCollections.findOne({ id: id });
+            let post = yield db_mongo_1.postsCollections.findOne({ id: id }, { projection: { _id: 0 } });
             return post;
         });
     },
@@ -50,7 +50,7 @@ exports.postRepository = {
     },
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield db_mongo_1.postsCollections.findOne({ id: id });
+            const post = yield db_mongo_1.postsCollections.findOne({ id: id }, { projection: { _id: 0 } });
             if (post) {
                 post.title = title;
                 post.shortDescription = shortDescription;

@@ -6,12 +6,12 @@ import { postsCollections } from "../db/db-mongo";
 
 export const postRepository = {
     async findPost() {
-        return postsCollections.find({}).toArray();
+        return postsCollections.find({}, {projection:{_id: 0}}).toArray();
     },
 
     async getPostId(id: string) {
         
-        let post = await postsCollections.findOne({id:id})
+        let post = await postsCollections.findOne({id:id}, {projection:{_id: 0}})
         return post;
     },
 
@@ -40,7 +40,7 @@ export const postRepository = {
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const post = await postsCollections.findOne({id:id})
+        const post = await postsCollections.findOne({id:id}, {projection:{_id: 0}})
             
         if (post) {
             post.title = title;
