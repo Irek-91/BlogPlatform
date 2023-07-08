@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.client = void 0;
+exports.runDb = exports.postsCollections = exports.blogsCollections = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -20,15 +20,18 @@ const mongoUri = process.env.MONGO_URL;
 if (!mongoUri) {
     throw new Error('URL doesn\'t found');
 }
-exports.client = new mongodb_1.MongoClient(mongoUri);
+const client = new mongodb_1.MongoClient(mongoUri);
+const db = client.db('BlogPlatform');
+exports.blogsCollections = db.collection('blogs');
+exports.postsCollections = db.collection('posts');
 const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield exports.client.connect();
+        yield client.connect();
         console.log('Connected to db');
     }
     catch (e) {
         console.log('Don\'t connected');
-        yield exports.client.close();
+        yield client.close();
     }
 });
 exports.runDb = runDb;

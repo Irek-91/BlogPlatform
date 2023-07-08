@@ -1,24 +1,22 @@
 import { postType } from "../type";
 import { blogsRepository } from "./blogs-db-repository";
 //import { posts } from "../db/db";
-import { client } from "../db/db-mongo";
-
-const dbCollections = client.db('BlogPlatform').collection('posts');
+import { postsCollections } from "../db/db-mongo";
 
 
 export const postRepository = {
     async findPost() {
-        return dbCollections.find({}).toArray();
+        return postsCollections.find({}).toArray();
     },
 
     async getPostId(id: string) {
         
-        let post = dbCollections.findOne({id:id})
+        let post = postsCollections.findOne({id:id})
         return post;
     },
 
     async deletePostId(id: string) {
-        let postId = await dbCollections.deleteOne({id:id})
+        let postId = await postsCollections.deleteOne({id:id})
         return postId.deletedCount === 1
         
     },
@@ -37,12 +35,12 @@ export const postRepository = {
             blogName: blog!.name,
             createdAt: createdAt
             };
-        await dbCollections.insertOne(newPost)
+        await postsCollections.insertOne(newPost)
         return newPost;
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const post = await dbCollections.updateOne({id:id}, {$set:
+        const post = await postsCollections.updateOne({id:id}, {$set:
             {title:title,
             shortDescription:shortDescription,
             content:content,
@@ -56,7 +54,7 @@ export const postRepository = {
     },
 
     async deletePostAll() {
-        const deletResult = await dbCollections.deleteMany({})
+        const deletResult = await postsCollections.deleteMany({})
         return true;
     }
 }

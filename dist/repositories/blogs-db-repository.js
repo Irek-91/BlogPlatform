@@ -11,16 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRepository = void 0;
 const db_mongo_1 = require("../db/db-mongo");
-const dbCollections = db_mongo_1.client.db('BlogPlatform').collection('blogs');
 exports.blogsRepository = {
     findBlogs() {
         return __awaiter(this, void 0, void 0, function* () {
-            return dbCollections.find({}).toArray();
+            return db_mongo_1.blogsCollections.find({}).toArray();
         });
     },
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let blog = yield dbCollections.findOne({ id: id });
+            let blog = yield db_mongo_1.blogsCollections.findOne({ id: id });
             return blog;
         });
     },
@@ -34,13 +33,13 @@ exports.blogsRepository = {
                 createdAt: new Date().toISOString(),
                 isMembership: false
             };
-            yield dbCollections.insertOne(newBlog);
+            yield db_mongo_1.blogsCollections.insertOne(newBlog);
             return newBlog;
         });
     },
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogResult = yield dbCollections.updateOne({ id: id }, {
+            const blogResult = yield db_mongo_1.blogsCollections.updateOne({ id: id }, {
                 $set: { name: name, description: description, websiteUrl: websiteUrl }
             });
             if (!blogResult) {
@@ -53,13 +52,13 @@ exports.blogsRepository = {
     },
     deleteBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield dbCollections.deleteOne({ id: id });
+            const deletResult = yield db_mongo_1.blogsCollections.deleteOne({ id: id });
             return deletResult.deletedCount === 1;
         });
     },
     deleteBlogAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield dbCollections.deleteMany({});
+            const deletResult = yield db_mongo_1.blogsCollections.deleteMany({});
             return true;
         });
     }

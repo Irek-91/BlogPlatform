@@ -1,16 +1,16 @@
 import { newBlogType } from "../type";
-import { client } from "../db/db-mongo";
+import { blogsCollections } from "../db/db-mongo";
 
-const dbCollections = client.db('BlogPlatform').collection('blogs');
+
 
 export const blogsRepository = {
     
     async findBlogs() {
-      return dbCollections.find({}).toArray()
+      return blogsCollections.find({}).toArray()
     },
 
     async getBlogId(id: string) {
-        let blog = await dbCollections.findOne({id: id})
+        let blog = await blogsCollections.findOne({id: id})
         return blog;    
     },
 
@@ -24,12 +24,12 @@ export const blogsRepository = {
       createdAt: new Date ().toISOString(),
       isMembership: false
     }
-    await dbCollections.insertOne(newBlog)
+    await blogsCollections.insertOne(newBlog)
     return newBlog;
     },
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) {
-    const blogResult = await dbCollections.updateOne({id: id}, {
+    const blogResult = await blogsCollections.updateOne({id: id}, {
       $set : {name: name, description: description, websiteUrl: websiteUrl}
       });
       if (!blogResult) 
@@ -39,13 +39,13 @@ export const blogsRepository = {
     },
 
     async deleteBlogId(id: string) {
-      const deletResult = await dbCollections.deleteOne({id: id})
+      const deletResult = await blogsCollections.deleteOne({id: id})
       return deletResult.deletedCount === 1
       
     },
     
     async deleteBlogAll() {
-      const deletResult = await dbCollections.deleteMany({})
+      const deletResult = await blogsCollections.deleteMany({})
       return true
     }
   }

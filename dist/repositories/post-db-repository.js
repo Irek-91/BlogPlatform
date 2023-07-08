@@ -13,22 +13,21 @@ exports.postRepository = void 0;
 const blogs_db_repository_1 = require("./blogs-db-repository");
 //import { posts } from "../db/db";
 const db_mongo_1 = require("../db/db-mongo");
-const dbCollections = db_mongo_1.client.db('BlogPlatform').collection('posts');
 exports.postRepository = {
     findPost() {
         return __awaiter(this, void 0, void 0, function* () {
-            return dbCollections.find({}).toArray();
+            return db_mongo_1.postsCollections.find({}).toArray();
         });
     },
     getPostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = dbCollections.findOne({ id: id });
+            let post = db_mongo_1.postsCollections.findOne({ id: id });
             return post;
         });
     },
     deletePostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let postId = yield dbCollections.deleteOne({ id: id });
+            let postId = yield db_mongo_1.postsCollections.deleteOne({ id: id });
             return postId.deletedCount === 1;
         });
     },
@@ -45,13 +44,13 @@ exports.postRepository = {
                 blogName: blog.name,
                 createdAt: createdAt
             };
-            yield dbCollections.insertOne(newPost);
+            yield db_mongo_1.postsCollections.insertOne(newPost);
             return newPost;
         });
     },
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield dbCollections.updateOne({ id: id }, { $set: { title: title,
+            const post = yield db_mongo_1.postsCollections.updateOne({ id: id }, { $set: { title: title,
                     shortDescription: shortDescription,
                     content: content,
                     blogId: blogId }
@@ -66,7 +65,7 @@ exports.postRepository = {
     },
     deletePostAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield dbCollections.deleteMany({});
+            const deletResult = yield db_mongo_1.postsCollections.deleteMany({});
             return true;
         });
     }
