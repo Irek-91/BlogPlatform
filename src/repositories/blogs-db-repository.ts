@@ -29,13 +29,14 @@ export const blogsRepository = {
     },
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) {
-    const blogResult = await blogsCollections.updateOne({id: id}, {
-      $set : {name: name, description: description, websiteUrl: websiteUrl}
-      });
-      if (!blogResult) 
-      {return false}
+    const blog = await blogsCollections.findOne({id: id}) 
+    if (blog) {
+        blog.name = name, 
+        blog.description = description, 
+        blog.websiteUrl = websiteUrl
+        return true}
        else {
-      return true}
+      return false}
     },
 
     async deleteBlogId(id: string) {

@@ -39,14 +39,15 @@ exports.blogsRepository = {
     },
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogResult = yield db_mongo_1.blogsCollections.updateOne({ id: id }, {
-                $set: { name: name, description: description, websiteUrl: websiteUrl }
-            });
-            if (!blogResult) {
-                return false;
+            const blog = yield db_mongo_1.blogsCollections.findOne({ id: id });
+            if (blog) {
+                blog.name = name,
+                    blog.description = description,
+                    blog.websiteUrl = websiteUrl;
+                return true;
             }
             else {
-                return true;
+                return false;
             }
         });
     },

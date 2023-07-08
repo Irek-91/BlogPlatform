@@ -68,7 +68,7 @@ postsRouter.put('/:id',
 
 
     let postResult = await postRepository.updatePostId(id, title, shortDescription, content, blogId)
-    if (postResult) {
+    if (postResult === true) {
       res.sendStatus(204);
       } else {
       res.sendStatus(404);

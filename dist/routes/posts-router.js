@@ -53,7 +53,7 @@ exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.tit
     const content = req.body.content;
     const blogId = req.body.blogId;
     let postResult = yield post_db_repository_1.postRepository.updatePostId(id, title, shortDescription, content, blogId);
-    if (postResult) {
+    if (postResult === true) {
         res.sendStatus(204);
     }
     else {

@@ -40,13 +40,13 @@ export const postRepository = {
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const post = await postsCollections.updateOne({id:id}, {$set:
-            {title:title,
-            shortDescription:shortDescription,
-            content:content,
-            blogId:blogId}
-        });
+        const post = await postsCollections.findOne({id:id})
+            
         if (post) {
+            post.title = title;
+            post.shortDescription = shortDescription;
+            post.content = content;
+            post.blogId = blogId;
             return true;
         } else {
             return false;
