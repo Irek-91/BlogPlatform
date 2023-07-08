@@ -1,9 +1,7 @@
 import { Request, Response, Router } from "express";
-import { postType } from "../type";
-import { postRepository } from "../repositories/post-repository";
-import { body, validationResult } from "express-validator";
+import { postRepository } from "../repositories/post-db-repository";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
-import { blogsRepository } from "../repositories/blogs-repository";
+import { blogsRepository } from "../repositories/blogs-in-memory-repository";
 import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { authMidleware } from "../midlewares/basicAuth";
 
@@ -76,3 +74,8 @@ postsRouter.put('/:id',
       res.sendStatus(404);
     }
   })
+
+  postsRouter.delete('/testing/all-data', 
+    async (req: Request, res: Response) => {
+      res.sendStatus(204)
+  }) 

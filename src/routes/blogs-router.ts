@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express";
-import { blogsRepository } from "../repositories/blogs-repository";
+import { blogsRepository } from "../repositories/blogs-db-repository";
 import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
 import { authMidleware } from "../midlewares/basicAuth";
+import { create } from "domain";
 
 
 export const blogsRouter = Router ({})
@@ -74,4 +75,9 @@ blogsRouter.post('/',
   
     res.status(201).send(newBlog)
     
+  })
+
+blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
+    await blogsRepository.deleteBlogAll();  
+    res.sendStatus(204)
   })
