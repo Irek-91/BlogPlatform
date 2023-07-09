@@ -4,7 +4,6 @@ import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
 import { authMidleware } from "../midlewares/basicAuth";
-import { create } from "domain";
 
 
 export const blogsRouter = Router ({})

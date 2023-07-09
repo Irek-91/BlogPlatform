@@ -30,9 +30,7 @@ export const blogsRepository = {
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) {
     const blog = await blogsCollections.updateOne({id: id}, {$set: {name , description, websiteUrl}})
-    
-    console.log(blog);
-    if (blog.matchedCount) {
+      if (blog.matchedCount) {
       return true}
       else {return false}
     },
