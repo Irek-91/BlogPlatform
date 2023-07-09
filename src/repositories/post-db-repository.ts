@@ -35,7 +35,7 @@ export const postRepository = {
             blogName: blog!.name,
             createdAt: createdAt
             };
-        await postsCollections.insertOne(newPost)
+        await postsCollections.insertOne({...newPost})
         return newPost;
     },
 

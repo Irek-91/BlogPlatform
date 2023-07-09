@@ -44,7 +44,7 @@ exports.postRepository = {
                 blogName: blog.name,
                 createdAt: createdAt
             };
-            yield db_mongo_1.postsCollections.insertOne(newPost);
+            yield db_mongo_1.postsCollections.insertOne(Object.assign({}, newPost));
             return newPost;
         });
     },
