@@ -40,17 +40,11 @@ export const postRepository = {
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const post = await postsCollections.findOne({id:id}, {projection:{_id: 0}})
-            
-        if (post) {
-            post.title = title;
-            post.shortDescription = shortDescription;
-            post.content = content;
-            post.blogId = blogId;
-            return true;
-        } else {
-            return false;
-        }
+        const post = await postsCollections.updateOne({id: id}, {$set: {title , shortDescription, content, blogId}})    
+        if (post.matchedCount) {
+            return true}
+            else {
+            return false} 
     },
 
     async deletePostAll() {

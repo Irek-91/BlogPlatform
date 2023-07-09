@@ -40,7 +40,6 @@ exports.blogsRepository = {
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield db_mongo_1.blogsCollections.updateOne({ id: id }, { $set: { name, description, websiteUrl } });
-            console.log(blog);
             if (blog.matchedCount) {
                 return true;
             }

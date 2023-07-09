@@ -50,12 +50,8 @@ exports.postRepository = {
     },
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield db_mongo_1.postsCollections.findOne({ id: id }, { projection: { _id: 0 } });
-            if (post) {
-                post.title = title;
-                post.shortDescription = shortDescription;
-                post.content = content;
-                post.blogId = blogId;
+            const post = yield db_mongo_1.postsCollections.updateOne({ id: id }, { $set: { title, shortDescription, content, blogId } });
+            if (post.matchedCount) {
                 return true;
             }
             else {
