@@ -9,7 +9,7 @@ export const blogsRepository = {
     
     async findBlogs() {
       const blogs =await blogsCollections.find({}).toArray()
-      const blogsOutput = blogs.map((b) => {
+      return blogs.map((b) => {
         return {
           id: b._id,
           name: b.name,
@@ -24,7 +24,7 @@ export const blogsRepository = {
     async getBlogId(id: string) {
         let blog = await blogsCollections.findOne({_id: new ObjectId(id)})
         if (!blog) {
-          return false
+          return null
         } else {
           return {
             id: blog._id,
@@ -63,7 +63,7 @@ export const blogsRepository = {
     },
 
     async deleteBlogId(id: string) {
-      const deletResult = await blogsCollections.deleteOne({id: id})
+      const deletResult = await blogsCollections.deleteOne({_id: new ObjectId(id)})
       return deletResult.deletedCount === 1
       
     },

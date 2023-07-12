@@ -16,7 +16,7 @@ exports.blogsRepository = {
     findBlogs() {
         return __awaiter(this, void 0, void 0, function* () {
             const blogs = yield db_mongo_1.blogsCollections.find({}).toArray();
-            const blogsOutput = blogs.map((b) => {
+            return blogs.map((b) => {
                 return {
                     id: b._id,
                     name: b.name,
@@ -32,7 +32,7 @@ exports.blogsRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             let blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (!blog) {
-                return false;
+                return null;
             }
             else {
                 return {
@@ -72,7 +72,7 @@ exports.blogsRepository = {
     },
     deleteBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.blogsCollections.deleteOne({ id: id });
+            const deletResult = yield db_mongo_1.blogsCollections.deleteOne({ _id: new mongodb_1.ObjectId(id) });
             return deletResult.deletedCount === 1;
         });
     },

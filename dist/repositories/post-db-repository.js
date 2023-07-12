@@ -17,7 +17,7 @@ exports.postRepository = {
     findPost() {
         return __awaiter(this, void 0, void 0, function* () {
             const posts = yield db_mongo_1.postsCollections.find({}).toArray();
-            const postOuput = posts.map((b) => {
+            return posts.map((b) => {
                 return {
                     id: b._id,
                     title: b.title,
@@ -51,10 +51,10 @@ exports.postRepository = {
     },
     deletePostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let postId = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (postId) {
+            let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (post) {
                 try {
-                    yield db_mongo_1.postsCollections.deleteOne(postId);
+                    yield db_mongo_1.postsCollections.deleteOne({ _id: post._id });
                     return true;
                 }
                 catch (e) {

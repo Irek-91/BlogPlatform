@@ -9,7 +9,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
    /*const errorFormatter = (error.msg, error.location) => {
       return {message:  , field:  };
     };*/
-    const errorFormatter= ({msg, path} : ValidationError) => {
+    const errorFormatter= ({msg, path} : any) => {
       return {
           message: msg,
           field: path

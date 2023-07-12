@@ -9,7 +9,7 @@ export const postRepository = {
     async findPost() {
         
         const posts = await postsCollections.find({}).toArray();
-        const postOuput = posts.map((b) => {
+        return posts.map((b) => {
             return {
                 id: b._id,
                 title: b.title,
@@ -41,11 +41,11 @@ export const postRepository = {
         },
 
     async deletePostId(id: string):Promise<boolean> {
-        let postId = await postsCollections.findOne({_id: new ObjectId(id)})
+        let post = await postsCollections.findOne({_id: new ObjectId(id)})
         
-        if (postId) {
+        if (post) {
             try {
-            await postsCollections.deleteOne(postId)
+            await postsCollections.deleteOne({_id: post._id})
             return true}
             catch (e) {return false}
         } else {return false}       
