@@ -22,7 +22,7 @@ exports.blogsRepository = {
                     name: b.name,
                     description: b.description,
                     websiteUrl: b.websiteUrl,
-                    createdAt: new Date().toISOString(),
+                    createdAt: b.createdAt,
                     isMembership: false,
                 };
             });
@@ -40,7 +40,7 @@ exports.blogsRepository = {
                     name: blog.name,
                     description: blog.description,
                     websiteUrl: blog.websiteUrl,
-                    createdAt: new Date().toISOString(),
+                    createdAt: blog.createdAt,
                     isMembership: false,
                 };
             }
