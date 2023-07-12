@@ -1,5 +1,5 @@
 import { stringify } from "querystring";
-import { newBlogType } from "../type";
+import { newBlogType } from "../types/type";
 import { blogs } from "../db/db";
 
 export const blogsRepository = {

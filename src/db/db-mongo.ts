@@ -1,5 +1,6 @@
 import {MongoClient, ServerApiVersion, ObjectId} from 'mongodb'
 import dotenv from 'dotenv'
+import { postsCollectionsType } from '../types/types-db';
 dotenv.config()
 
 

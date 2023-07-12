@@ -11,24 +11,59 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
 const blogs_db_repository_1 = require("./blogs-db-repository");
-//import { posts } from "../db/db";
 const db_mongo_1 = require("../db/db-mongo");
+const mongodb_1 = require("mongodb");
 exports.postRepository = {
     findPost() {
         return __awaiter(this, void 0, void 0, function* () {
-            return db_mongo_1.postsCollections.find({}, { projection: { _id: 0 } }).toArray();
+            const posts = yield db_mongo_1.postsCollections.find({}).toArray();
+            const postOuput = posts.map((b) => {
+                return {
+                    id: b._id,
+                    title: b.title,
+                    shortDescription: b.shortDescription,
+                    content: b.content,
+                    blogId: b.blogId,
+                    blogName: b.blogName,
+                    createdAt: b.createdAt,
+                };
+            });
         });
     },
     getPostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = yield db_mongo_1.postsCollections.findOne({ id: id }, { projection: { _id: 0 } });
-            return post;
+            let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (!post) {
+                return false;
+            }
+            else {
+                return {
+                    id: post._id.toString(),
+                    title: post.title,
+                    shortDescription: post.shortDescription,
+                    content: post.content,
+                    blogId: post.blogId,
+                    blogName: post.blogName,
+                    createdAt: post.createdAt,
+                };
+            }
         });
     },
     deletePostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let postId = yield db_mongo_1.postsCollections.deleteOne({ id: id });
-            return postId.deletedCount === 1;
+            let postId = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (postId) {
+                try {
+                    yield db_mongo_1.postsCollections.deleteOne(postId);
+                    return true;
+                }
+                catch (e) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
         });
     },
     createdPostId(title, shortDescription, content, blogId) {
@@ -36,7 +71,6 @@ exports.postRepository = {
             const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
             const createdAt = new Date().toISOString();
             const newPost = {
-                id: String(+(new Date())),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
@@ -44,13 +78,13 @@ exports.postRepository = {
                 blogName: blog.name,
                 createdAt: createdAt
             };
-            yield db_mongo_1.postsCollections.insertOne(Object.assign({}, newPost));
-            return newPost;
+            const res = yield db_mongo_1.postsCollections.insertOne(Object.assign({}, newPost));
+            return Object.assign({ id: res.insertedId.toString() }, newPost);
         });
     },
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield db_mongo_1.postsCollections.updateOne({ id: id }, { $set: { title, shortDescription, content, blogId } });
+            const post = yield db_mongo_1.postsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title, shortDescription, content, blogId } });
             if (post.matchedCount) {
                 return true;
             }
@@ -61,8 +95,19 @@ exports.postRepository = {
     },
     deletePostAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.postsCollections.deleteMany({});
-            return true;
+            const deletResult = yield db_mongo_1.postsCollections.find({}).toArray();
+            if (deletResult) {
+                try {
+                    yield db_mongo_1.postsCollections.deleteMany({});
+                    return true;
+                }
+                catch (e) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
         });
     }
 };

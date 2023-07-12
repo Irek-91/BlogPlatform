@@ -1,33 +1,62 @@
-import { postType } from "../type";
 import { blogsRepository } from "./blogs-db-repository";
-//import { posts } from "../db/db";
 import { postsCollections } from "../db/db-mongo";
+import { post, postMongoDb, postOutput, postsCollectionsType } from "../types/types-db";
+import { ObjectId } from "mongodb";
 
 
 export const postRepository = {
+    
     async findPost() {
-        return postsCollections.find({}, {projection:{_id: 0}}).toArray();
-    },
-
-    async getPostId(id: string) {
         
-        let post = await postsCollections.findOne({id:id}, {projection:{_id: 0}})
-        return post;
+        const posts = await postsCollections.find({}).toArray();
+        const postOuput = posts.map((b) => {
+            return {
+                id: b._id,
+                title: b.title,
+                shortDescription: b.shortDescription,
+                content: b.content,
+                blogId: b.blogId,
+                blogName: b.blogName,
+                createdAt: b.createdAt,
+            }
+        })
     },
 
-    async deletePostId(id: string) {
-        let postId = await postsCollections.deleteOne({id:id})
-        return postId.deletedCount === 1
+    async getPostId(id: string):Promise<postOutput | null | boolean> {
         
-    },
+        let post =  await postsCollections.findOne({_id: new ObjectId(id)});
+        if (!post) {
+            return false
+        } else {
+        return {
+                id: post._id.toString(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: post.blogId,
+                blogName: post.blogName,
+                createdAt: post.createdAt,
+            }
+        }
+        },
 
-    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postType> {
+    async deletePostId(id: string):Promise<boolean> {
+        let postId = await postsCollections.findOne({_id: new ObjectId(id)})
+        
+        if (postId) {
+            try {
+            await postsCollections.deleteOne(postId)
+            return true}
+            catch (e) {return false}
+        } else {return false}       
+        },
+
+    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput> {
 
         const blog = await blogsRepository.getBlogId(blogId);
         const createdAt = new Date().toISOString();
 
-        const newPost: postType = {
-            id: String(+(new Date())),
+        const newPost: post = {
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -35,20 +64,28 @@ export const postRepository = {
             blogName: blog!.name,
             createdAt: createdAt
             };
-        await postsCollections.insertOne({...newPost})
-        return newPost;
+        const res = await postsCollections.insertOne({...newPost});
+        return {
+            id: res.insertedId.toString(),
+            ...newPost
+        }
     },
 
-    async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string) {
-        const post = await postsCollections.updateOne({id: id}, {$set: {title , shortDescription, content, blogId}})    
+    async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
+        const post = await postsCollections.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
         if (post.matchedCount) {
             return true}
             else {
             return false} 
     },
 
-    async deletePostAll() {
-        const deletResult = await postsCollections.deleteMany({})
-        return true;
+    async deletePostAll(): Promise<boolean> {
+        const deletResult = await postsCollections.find({}).toArray();
+        if (deletResult) {
+            try {await postsCollections.deleteMany({})
+            return true}
+            catch (e) {return false}}
+            else 
+            {return false}
     }
 }
