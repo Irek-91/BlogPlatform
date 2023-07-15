@@ -34,16 +34,16 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
-  const sortBy: string = req.body.sortBy;
-  const sortDirection: any = req.body.sortDirection;
+  const sortBy: string = req.body.sortBy || "createdAt";;
+  let sortDirection: 1 | -1 = 1;
   const pageNumber: number = +req.body.pageNumber;
   const pageSize: number = +req.body.pageSize;
-  if (sortDirection === "asc") {const sortDirection = 1} else {const sortDirection = -1}
+  if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
   const blogId : string = req.params.blogId;
   
   const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
 
-  if (foundBlogs) {
+  if (!foundBlogs === false) {
     res.send(foundBlogs)
   } else {  
   res.sendStatus(404)

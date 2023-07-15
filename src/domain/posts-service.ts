@@ -10,7 +10,7 @@ export const postsService = {
         return postRepository.findPost(pageNumber, pageSize,sortBy, sortDirections )
     },
     
-    async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost> {
+    async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost | boolean> {
         return postRepository.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirections, blogId)
     },
 

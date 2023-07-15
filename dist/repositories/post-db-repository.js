@@ -44,23 +44,28 @@ exports.postRepository = {
             const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
             const totalCount = yield db_mongo_1.postsCollections.count();
             const pagesCount = Math.ceil(totalCount / pageSize);
-            const postsOutput = posts.map((b) => {
-                return {
-                    id: b._id.toString(),
-                    title: b.title,
-                    shortDescription: b.shortDescription,
-                    content: b.content,
-                    blogId: b.blogId,
-                    blogName: b.blogName,
-                    createdAt: b.createdAt,
+            if (posts) {
+                const postsOutput = posts.map((b) => {
+                    return {
+                        id: b._id.toString(),
+                        title: b.title,
+                        shortDescription: b.shortDescription,
+                        content: b.content,
+                        blogId: b.blogId,
+                        blogName: b.blogName,
+                        createdAt: b.createdAt,
+                    };
+                });
+                return { pagesCount: pagesCount,
+                    page: pageNumber,
+                    pageSize: pageSize,
+                    totalCount: totalCount,
+                    items: postsOutput
                 };
-            });
-            return { pagesCount: pagesCount,
-                page: pageNumber,
-                pageSize: pageSize,
-                totalCount: totalCount,
-                items: postsOutput
-            };
+            }
+            else {
+                return false;
+            }
         });
     },
     getPostId(id) {

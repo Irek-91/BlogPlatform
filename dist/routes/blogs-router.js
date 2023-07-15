@@ -43,19 +43,20 @@ exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sortBy = req.body.sortBy;
-    const sortDirection = req.body.sortDirection;
+    const sortBy = req.body.sortBy || "createdAt";
+    ;
+    let sortDirection = 1;
     const pageNumber = +req.body.pageNumber;
     const pageSize = +req.body.pageSize;
-    if (sortDirection === "asc") {
-        const sortDirection = 1;
+    if (req.body.sortDirection === "asc") {
+        sortDirection = 1;
     }
     else {
-        const sortDirection = -1;
+        sortDirection = -1;
     }
     const blogId = req.params.blogId;
     const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
-    if (foundBlogs) {
+    if (!foundBlogs === false) {
         res.send(foundBlogs);
     }
     else {
