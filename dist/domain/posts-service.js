@@ -49,23 +49,25 @@ exports.postsService = {
             return creatPost;
         });
     },
-    /*async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput> {
-
-        const blog = await blogsRepository.getBlogId(blogId);
-        const createdAt = new Date().toISOString();
-
-        const newPost:  postInput= {
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blog!.name,
-            createdAt: createdAt
+    createdPostBlogId(title, shortDescription, content, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
+            if (!blog) {
+                return false;
+            }
+            const createdAt = new Date().toISOString();
+            const newPost = {
+                title: title,
+                shortDescription: shortDescription,
+                content: content,
+                blogId: blogId,
+                blogName: blog.name,
+                createdAt: createdAt
             };
-        const creatPost = await postRepository.createdPostId(newPost)
-        return creatPost
+            const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
+            return creatPost;
+        });
     },
-*/
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield post_db_repository_1.postRepository.updatePostId(id, title, shortDescription, content, blogId);
