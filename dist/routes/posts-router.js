@@ -17,17 +17,17 @@ const basicAuth_1 = require("../midlewares/basicAuth");
 const posts_service_1 = require("../domain/posts-service");
 exports.postsRouter = (0, express_1.Router)({});
 exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = +req.body.pageNumber;
-    const pageSize = +req.body.pageSize;
+    const pageNumber = +req.body.pageNumber || 1;
+    const pageSize = +req.body.pageSize || 10;
     const sortBy = req.body.sortBy;
-    const sortDirections = req.body.sortDirections;
-    if (sortDirections === "asc") {
-        const sortDirections = 1;
+    let sortDirection = 1;
+    if (req.body.sortDirection === "asc") {
+        sortDirection = 1;
     }
     else {
-        const sortDirections = -1;
+        sortDirection = -1;
     }
-    const posts = yield posts_service_1.postsService.findPost(pageNumber, pageSize, sortBy, sortDirections);
+    const posts = yield posts_service_1.postsService.findPost(pageNumber, pageSize, sortBy, sortDirection);
     res.send(posts);
 }));
 exports.postsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

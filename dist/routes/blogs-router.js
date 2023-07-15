@@ -46,8 +46,8 @@ exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0
     const sortBy = req.body.sortBy || "createdAt";
     ;
     let sortDirection = 1;
-    const pageNumber = +req.body.pageNumber;
-    const pageSize = +req.body.pageSize;
+    const pageNumber = +req.body.pageNumber || 1;
+    const pageSize = +req.body.pageSize || 10;
     if (req.body.sortDirection === "asc") {
         sortDirection = 1;
     }

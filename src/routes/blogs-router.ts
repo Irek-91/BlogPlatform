@@ -36,8 +36,8 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
 blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
   const sortBy: string = req.body.sortBy || "createdAt";;
   let sortDirection: 1 | -1 = 1;
-  const pageNumber: number = +req.body.pageNumber;
-  const pageSize: number = +req.body.pageSize;
+  const pageNumber: number = +req.body.pageNumber || 1;
+  const pageSize: number = +req.body.pageSize || 10;
   if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
   const blogId : string = req.params.blogId;
   
