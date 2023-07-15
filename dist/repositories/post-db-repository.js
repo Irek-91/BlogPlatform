@@ -18,6 +18,7 @@ exports.postRepository = {
             const skipPosts = (pageNumber - 1) * pageSize;
             const posts = yield db_mongo_1.postsCollections.find({}).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
             const totalCount = yield db_mongo_1.postsCollections.count();
+            const pagesCount = Math.ceil(totalCount / pageSize);
             const postsOutput = posts.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -29,7 +30,7 @@ exports.postRepository = {
                     createdAt: b.createdAt,
                 };
             });
-            return { pagesCount: postsOutput.length,
+            return { pagesCount: pagesCount,
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalCount,
@@ -42,6 +43,7 @@ exports.postRepository = {
             const skipPosts = (pageNumber - 1) * pageSize;
             const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
             const totalCount = yield db_mongo_1.postsCollections.count();
+            const pagesCount = Math.ceil(totalCount / pageSize);
             const postsOutput = posts.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -53,7 +55,7 @@ exports.postRepository = {
                     createdAt: b.createdAt,
                 };
             });
-            return { pagesCount: postsOutput.length,
+            return { pagesCount: pagesCount,
                 page: pageNumber,
                 pageSize: pageSize,
                 totalCount: totalCount,

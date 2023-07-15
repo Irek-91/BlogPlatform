@@ -11,6 +11,7 @@ export const postRepository = {
         const skipPosts = (pageNumber -1)*pageSize;
         const posts = await postsCollections.find({}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
         const totalCount = await postsCollections.count()
+        const pagesCount = Math.ceil(totalCount/pageSize)
         const postsOutput = posts.map((b) => {
             return {
                 id: b._id.toString(),
@@ -22,7 +23,7 @@ export const postRepository = {
                 createdAt: b.createdAt,
             }
         })
-        return {pagesCount: postsOutput.length,
+        return {pagesCount: pagesCount,
         page: pageNumber,
         pageSize: pageSize,
         totalCount: totalCount,
@@ -32,7 +33,8 @@ export const postRepository = {
     async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost> {
         const skipPosts = (pageNumber -1)*pageSize;
         const posts = await postsCollections.find({blogId:blogId}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
-        const totalCount = await postsCollections.count()
+        const totalCount = await postsCollections.count();
+        const pagesCount = Math.ceil(totalCount/pageSize)
         const postsOutput = posts.map((b) => {
             return {
                 id: b._id.toString(),
@@ -44,7 +46,7 @@ export const postRepository = {
                 createdAt: b.createdAt,
             }
         })
-        return {pagesCount: postsOutput.length,
+        return {pagesCount: pagesCount,
         page: pageNumber,
         pageSize: pageSize,
         totalCount: totalCount,
