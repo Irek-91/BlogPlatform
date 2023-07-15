@@ -13,11 +13,11 @@ blogsRouter.get('/',
   
   async (req: Request, res: Response) => {
   const searchNameTerm: string = req.body.searchNameTerm;
-  const sortBy: string = req.body.sortBy;
-  const sortDirection: any = req.body.sortDirection;
-  const pageNumber: number = +req.body.pageNumber;
-  const pageSize: number = +req.body.pageSize;
-  if (sortDirection === "asc") {const sortDirection = 1} else {const sortDirection = -1}
+  const sortBy: string = req.body.sortBy || "createdAt";
+  let sortDirection: 1 | -1 = 1;
+  const pageNumber: number = +req.body.pageNumber || 1;
+  const pageSize: number = +req.body.pageSize || 10;
+  if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
 
   const foundBlogs = await blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
   res.send(foundBlogs)
