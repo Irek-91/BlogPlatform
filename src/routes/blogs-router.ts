@@ -17,7 +17,7 @@ blogsRouter.get('/',
   let sortDirection: 1 | -1 = 1;
   const pageNumber: number = +req.body.pageNumber || 1;
   const pageSize: number = +req.body.pageSize || 10;
-  if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
+  if (req.body.sortDirection === "asc") {sortDirection = -1} else {sortDirection = 1}
 
   const foundBlogs = await blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
   res.send(foundBlogs)
@@ -40,16 +40,19 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
   const pageSize: number = +req.body.pageSize || 10;
   if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
   const blogId : string = req.params.blogId;
-  
-  const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
+  let BlogId = await blogsService.getBlogId(req.params.id)
+  if (BlogId) {
+    const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
 
-  if (!foundBlogs === false) {
-    res.send(foundBlogs)
+    if (!foundBlogs === false) {
+      res.send(foundBlogs)
+    } else {  
+    res.sendStatus(404)
+    }
+
   } else {  
-  res.sendStatus(404)
+    res.sendStatus(404)
   }
-
-
 })
 
 blogsRouter.delete('/:id', 

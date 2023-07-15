@@ -40,11 +40,11 @@ exports.postRepository = {
     },
     findPostsBlogId(pageNumber, pageSize, sortBy, sortDirections, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const skipPosts = (pageNumber - 1) * pageSize;
-            const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
-            const totalCount = yield db_mongo_1.postsCollections.countDocuments({ blogId: blogId });
-            const pagesCount = Math.ceil(totalCount / pageSize);
-            if (posts) {
+            try {
+                const skipPosts = (pageNumber - 1) * pageSize;
+                const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
+                const totalCount = yield db_mongo_1.postsCollections.countDocuments({ blogId: blogId });
+                const pagesCount = Math.ceil(totalCount / pageSize);
                 const postsOutput = posts.map((b) => {
                     return {
                         id: b._id.toString(),
@@ -63,7 +63,7 @@ exports.postRepository = {
                     items: postsOutput
                 };
             }
-            else {
+            catch (e) {
                 return false;
             }
         });

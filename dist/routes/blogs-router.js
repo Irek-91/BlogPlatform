@@ -25,10 +25,10 @@ exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
     const pageNumber = +req.body.pageNumber || 1;
     const pageSize = +req.body.pageSize || 10;
     if (req.body.sortDirection === "asc") {
-        sortDirection = 1;
+        sortDirection = -1;
     }
     else {
-        sortDirection = -1;
+        sortDirection = 1;
     }
     const foundBlogs = yield blogs_service_1.blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
     res.send(foundBlogs);
@@ -55,9 +55,15 @@ exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0
         sortDirection = -1;
     }
     const blogId = req.params.blogId;
-    const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
-    if (!foundBlogs === false) {
-        res.send(foundBlogs);
+    let BlogId = yield blogs_service_1.blogsService.getBlogId(req.params.id);
+    if (BlogId) {
+        const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
+        if (!foundBlogs === false) {
+            res.send(foundBlogs);
+        }
+        else {
+            res.sendStatus(404);
+        }
     }
     else {
         res.sendStatus(404);
