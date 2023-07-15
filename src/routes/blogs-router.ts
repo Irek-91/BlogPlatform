@@ -112,10 +112,10 @@ blogsRouter.post('/',
 
     async (req: Request, res: Response) => {
     const title:string = req.body.title;
-    const description:string = req.body.description;
-    const websiteUrl:string = req.body.websiteUrl;
+    const shortDescription:string = req.body.shortDescription;
+    const content: string = req.body.content;
     const blogId:string = req.params.blogId
-    const newBlog = await postsService.createdPostId(title, description, websiteUrl, blogId);
+    const newBlog = await postsService.createdPostId(title, shortDescription, content, blogId);
 
   res.status(201).send(newBlog)
   
