@@ -20,13 +20,7 @@ exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
     const pageNumber = +req.body.pageNumber || 1;
     const pageSize = +req.body.pageSize || 10;
     const sortBy = req.body.sortBy || "createdAt";
-    let sortDirection = 1;
-    if (req.body.sortDirection === "asc") {
-        sortDirection = -1;
-    }
-    else {
-        sortDirection = 1;
-    }
+    let sortDirection = -1;
     const posts = yield posts_service_1.postsService.findPost(pageNumber, pageSize, sortBy, sortDirection);
     res.send(posts);
 }));

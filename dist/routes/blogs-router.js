@@ -21,15 +21,9 @@ exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const searchNameTerm = req.body.searchNameTerm;
     const sortBy = req.body.sortBy || "createdAt";
-    let sortDirection = 1;
+    let sortDirection = -1;
     const pageNumber = +req.body.pageNumber || 1;
     const pageSize = +req.body.pageSize || 10;
-    if (req.body.sortDirection === "asc") {
-        sortDirection = -1;
-    }
-    else {
-        sortDirection = 1;
-    }
     const foundBlogs = yield blogs_service_1.blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
     res.send(foundBlogs);
 }));
