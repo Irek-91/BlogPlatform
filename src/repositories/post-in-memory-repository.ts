@@ -1,4 +1,4 @@
-import { postType } from "../types/type";
+import { postType } from "../types/types";
 import { blogsRepository } from "./blogs-in-memory-repository";
 import { posts } from "../db/db";
 

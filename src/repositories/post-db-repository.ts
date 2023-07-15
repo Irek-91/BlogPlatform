@@ -1,17 +1,19 @@
 import { blogsRepository } from "./blogs-db-repository";
 import { postsCollections } from "../db/db-mongo";
-import { post, postMongoDb, postOutput, postsCollectionsType } from "../types/types-db";
+import { postInput, postMongoDb, postOutput, postsCollectionsType } from "../types/types-db";
 import { ObjectId } from "mongodb";
+import { paginatorPost } from "../types/types_paginator";
 
 
 export const postRepository = {
     
-    async findPost() {
-        
-        const posts = await postsCollections.find({}).toArray();
-        return posts.map((b) => {
+    async findPost(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any) : Promise<paginatorPost> {
+        const skipPosts = (pageNumber -1)*pageSize;
+        const posts = await postsCollections.find({}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
+        const totalCount = await postsCollections.count()
+        const postsOutput = posts.map((b) => {
             return {
-                id: b._id,
+                id: b._id.toString(),
                 title: b.title,
                 shortDescription: b.shortDescription,
                 content: b.content,
@@ -20,6 +22,34 @@ export const postRepository = {
                 createdAt: b.createdAt,
             }
         })
+        return {pagesCount: postsOutput.length,
+        page: pageNumber,
+        pageSize: pageSize,
+        totalCount: totalCount,
+        items : postsOutput
+        }
+    },
+    async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost> {
+        const skipPosts = (pageNumber -1)*pageSize;
+        const posts = await postsCollections.find({blogId:blogId}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
+        const totalCount = await postsCollections.count()
+        const postsOutput = posts.map((b) => {
+            return {
+                id: b._id.toString(),
+                title: b.title,
+                shortDescription: b.shortDescription,
+                content: b.content,
+                blogId: b.blogId,
+                blogName: b.blogName,
+                createdAt: b.createdAt,
+            }
+        })
+        return {pagesCount: postsOutput.length,
+        page: pageNumber,
+        pageSize: pageSize,
+        totalCount: totalCount,
+        items : postsOutput
+        }
     },
 
     async getPostId(id: string):Promise<postOutput | null | boolean> {
@@ -51,20 +81,10 @@ export const postRepository = {
         } else {return false}       
         },
 
-    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput> {
-
-        const blog = await blogsRepository.getBlogId(blogId);
-        const createdAt = new Date().toISOString();
-
-        const newPost: post = {
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blog!.name,
-            createdAt: createdAt
-            };
+        
+    async createdPostId(newPost:postInput): Promise<postOutput> {     
         const res = await postsCollections.insertOne({...newPost});
+              
         return {
             id: res.insertedId.toString(),
             ...newPost

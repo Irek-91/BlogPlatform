@@ -1,34 +1,61 @@
 import { Request, Response, Router } from "express";
-import { blogsRepository } from "../repositories/blogs-db-repository";
-import { body, validationResult } from "express-validator";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
 import { authMidleware } from "../midlewares/basicAuth";
+import { blogsService } from "../domain/blogs-service";
+import { postsService } from "../domain/posts-service";
+import { titleValidation } from "../midlewares/post-validation";
 
 
 export const blogsRouter = Router ({})
 
-
 blogsRouter.get('/', 
   
   async (req: Request, res: Response) => {
-  let foundBlogs = await blogsRepository.findBlogs();
+  const searchNameTerm: string = req.body.searchNameTerm;
+  const sortBy: string = req.body.sortBy;
+  const sortDirection: any = req.body.sortDirection;
+  const pageNumber: number = +req.body.pageNumber;
+  const pageSize: number = +req.body.pageSize;
+  if (sortDirection === "asc") {const sortDirection = 1} else {const sortDirection = -1}
+
+  const foundBlogs = await blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
   res.send(foundBlogs)
 })
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
-  let BlogId = await blogsRepository.getBlogId(req.params.id)
+  let BlogId = await blogsService.getBlogId(req.params.id)
   if (BlogId) {
       res.send(BlogId)
     } else {  
     res.sendStatus(404)
     }
 })
+
+
+blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
+  const sortBy: string = req.body.sortBy;
+  const sortDirection: any = req.body.sortDirection;
+  const pageNumber: number = +req.body.pageNumber;
+  const pageSize: number = +req.body.pageSize;
+  if (sortDirection === "asc") {const sortDirection = 1} else {const sortDirection = -1}
+  const blogId : string = req.params.blogId;
   
+  const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
+
+  if (foundBlogs) {
+    res.send(foundBlogs)
+  } else {  
+  res.sendStatus(404)
+  }
+
+
+})
+
 blogsRouter.delete('/:id', 
     authMidleware, 
     async (req: Request, res: Response) => {
-    let blogId = await blogsRepository.deleteBlogId(req.params.id)
+    let blogId = await blogsService.deleteBlogId(req.params.id)
     if (blogId) {
       res.sendStatus(204)
     } else {
@@ -49,7 +76,7 @@ blogsRouter.put('/:id',
   const name = req.body.name;
   const description = req.body.description;
   const websiteUrl = req.body.websiteUrl;  
-  let blogId = await blogsRepository.updateBlog(name, description, websiteUrl, id)
+  let blogId = await blogsService.updateBlog(name, description, websiteUrl, id)
     if (!blogId) {
       res.sendStatus(404);
     } else {
@@ -70,11 +97,30 @@ blogsRouter.post('/',
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
 
-    const newBlog = await blogsRepository.createBlog(nameBlog, description, websiteUrl);
+    const newBlog = await blogsService.createBlog(nameBlog, description, websiteUrl);
   
     res.status(201).send(newBlog)
     
   })
+  
+  blogsRouter.post('/:blogId/posts', 
+    authMidleware,
+    titleValidation,
+    descriptionValidation,
+    websiteUrl,
+    websiteUrlLength,
+    inputValidationMiddleware,
+
+    async (req: Request, res: Response) => {
+    const title:string = req.body.title;
+    const description:string = req.body.description;
+    const websiteUrl:string = req.body.websiteUrl;
+    const blogId:string = req.params.blogId
+    const newBlog = await postsService.createdPostId(title, description, websiteUrl, blogId);
+
+  res.status(201).send(newBlog)
+  
+})
 
 /*blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
     await blogsRepository.deleteBlogAll();  

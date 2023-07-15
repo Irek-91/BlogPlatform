@@ -18,15 +18,7 @@ export type postType = {
     createdAt: string,
 }
 
-export type newBlogType = {
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-  }
-
+ 
 export type errorType = {
     message: string,
     field: string

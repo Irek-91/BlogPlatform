@@ -1,5 +1,5 @@
 import { stringify } from "querystring";
-import { newBlogType } from "../types/type";
+import { blogType } from "../types/types";
 import { blogs } from "../db/db";
 
 export const blogsRepository = {
@@ -15,7 +15,7 @@ export const blogsRepository = {
 
     async createBlog(name: string, description: string, websiteUrl:string ) {
         
-    const newBlog : newBlogType = {
+    const newBlog : blogType= {
       id: String(+new Date()),
       name: name,
       description: description,

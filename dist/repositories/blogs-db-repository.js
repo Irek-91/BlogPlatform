@@ -13,12 +13,14 @@ exports.blogsRepository = void 0;
 const db_mongo_1 = require("../db/db-mongo");
 const mongodb_1 = require("mongodb");
 exports.blogsRepository = {
-    findBlogs() {
+    findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogs = yield db_mongo_1.blogsCollections.find({}).toArray();
-            return blogs.map((b) => {
+            const skipPosts = (pageNumber - 1) * pageSize;
+            const blogs = yield db_mongo_1.blogsCollections.find({ $text: { $search: searchNameTerm } }).sort(sortBy, sortDirection).skip(skipPosts).limit(pageSize).toArray();
+            const totalCount = yield db_mongo_1.blogsCollections.count();
+            const blogsOutput = blogs.map((b) => {
                 return {
-                    id: b._id,
+                    id: b._id.toString(),
                     name: b.name,
                     description: b.description,
                     websiteUrl: b.websiteUrl,
@@ -26,17 +28,21 @@ exports.blogsRepository = {
                     isMembership: false,
                 };
             });
+            return {
+                pagesCount: blogsOutput.length,
+                page: pageNumber,
+                pageSize: pageSize,
+                totalCount: totalCount,
+                items: blogsOutput
+            };
         });
     },
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (!blog) {
-                return null;
-            }
-            else {
+            const blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+            if (blog) {
                 return {
-                    id: blog._id,
+                    id: blog._id.toString(),
                     name: blog.name,
                     description: blog.description,
                     websiteUrl: blog.websiteUrl,
@@ -44,17 +50,13 @@ exports.blogsRepository = {
                     isMembership: false,
                 };
             }
+            else {
+                return null;
+            }
         });
     },
-    createBlog(name, description, websiteUrl) {
+    createBlog(newBlog) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newBlog = {
-                name: name,
-                description: description,
-                websiteUrl: websiteUrl,
-                createdAt: new Date().toISOString(),
-                isMembership: false
-            };
             const res = yield db_mongo_1.blogsCollections.insertOne(Object.assign({}, newBlog));
             return Object.assign({ id: res.insertedId.toString() }, newBlog);
         });
@@ -62,12 +64,7 @@ exports.blogsRepository = {
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield db_mongo_1.blogsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name, description, websiteUrl } });
-            if (blog.matchedCount) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return blog.matchedCount === 1;
         });
     },
     deleteBlogId(id) {

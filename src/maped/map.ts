@@ -1,7 +1,7 @@
 import {postsCollectionsType } from "../types/types-db"
 
 export const postsOutput = (posts :postsCollectionsType) => {
-    posts.map((b) => {
+    return posts.map((b) => {
         return {
             title: b.title,
             shortDescription: b.shortDescription,

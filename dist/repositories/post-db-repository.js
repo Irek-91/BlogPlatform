@@ -10,16 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
-const blogs_db_repository_1 = require("./blogs-db-repository");
 const db_mongo_1 = require("../db/db-mongo");
 const mongodb_1 = require("mongodb");
 exports.postRepository = {
-    findPost() {
+    findPost(pageNumber, pageSize, sortBy, sortDirections) {
         return __awaiter(this, void 0, void 0, function* () {
-            const posts = yield db_mongo_1.postsCollections.find({}).toArray();
-            return posts.map((b) => {
+            const skipPosts = (pageNumber - 1) * pageSize;
+            const posts = yield db_mongo_1.postsCollections.find({}).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
+            const totalCount = yield db_mongo_1.postsCollections.count();
+            const postsOutput = posts.map((b) => {
                 return {
-                    id: b._id,
+                    id: b._id.toString(),
                     title: b.title,
                     shortDescription: b.shortDescription,
                     content: b.content,
@@ -28,6 +29,36 @@ exports.postRepository = {
                     createdAt: b.createdAt,
                 };
             });
+            return { pagesCount: postsOutput.length,
+                page: pageNumber,
+                pageSize: pageSize,
+                totalCount: totalCount,
+                items: postsOutput
+            };
+        });
+    },
+    findPostsBlogId(pageNumber, pageSize, sortBy, sortDirections, blogId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const skipPosts = (pageNumber - 1) * pageSize;
+            const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
+            const totalCount = yield db_mongo_1.postsCollections.count();
+            const postsOutput = posts.map((b) => {
+                return {
+                    id: b._id.toString(),
+                    title: b.title,
+                    shortDescription: b.shortDescription,
+                    content: b.content,
+                    blogId: b.blogId,
+                    blogName: b.blogName,
+                    createdAt: b.createdAt,
+                };
+            });
+            return { pagesCount: postsOutput.length,
+                page: pageNumber,
+                pageSize: pageSize,
+                totalCount: totalCount,
+                items: postsOutput
+            };
         });
     },
     getPostId(id) {
@@ -66,18 +97,8 @@ exports.postRepository = {
             }
         });
     },
-    createdPostId(title, shortDescription, content, blogId) {
+    createdPostId(newPost) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
-            const createdAt = new Date().toISOString();
-            const newPost = {
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: blog.name,
-                createdAt: createdAt
-            };
             const res = yield db_mongo_1.postsCollections.insertOne(Object.assign({}, newPost));
             return Object.assign({ id: res.insertedId.toString() }, newPost);
         });

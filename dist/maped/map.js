@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsOutput = void 0;
 const postsOutput = (posts) => {
-    posts.map((b) => {
+    return posts.map((b) => {
         return {
             title: b.title,
             shortDescription: b.shortDescription,

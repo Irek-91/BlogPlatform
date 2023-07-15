@@ -1,7 +1,4 @@
-import { ObjectId } from 'mongodb';
-import { postsCollections } from './../db/db-mongo';
-
-export type post = {
+export type postInput = {
     title: string,
     shortDescription: string,
     content: string,
@@ -9,7 +6,8 @@ export type post = {
     blogName: string,
     createdAt: string,
 }
-export type postsCollectionsType = post[];
+export type postsCollectionsType = postOutput[];
+export type blogsCollectionsType = blogOutput[];
 
 export type postMongoDb = {
   _id: string,
@@ -30,8 +28,8 @@ export type postOutput = {
   createdAt: string,
 }
 
-export type newBlogType = {
-    _id: string,
+export type blogMongoDB = {
+    _id: object,
     name: string,
     description: string,
     websiteUrl: string,
@@ -39,14 +37,6 @@ export type newBlogType = {
     isMembership: boolean
   }
   export type blogOutput = {
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-  }
-
-export type blog = {
     id: string,
     name: string,
     description: string,
@@ -54,9 +44,13 @@ export type blog = {
     createdAt: string,
     isMembership: boolean
   }
-  
-export type errorType = {
-    message: string,
-    field: string
-    }
+
+export type blogInput = {
+    name: string,
+    description: string,
+    websiteUrl: string,
+    createdAt: string,
+    isMembership: boolean
+  }
+
 

@@ -1,20 +1,25 @@
 import { Request, Response, Router } from "express";
-import { postRepository } from "../repositories/post-db-repository";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
-import { blogsRepository } from "../repositories/blogs-in-memory-repository";
 import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { authMidleware } from "../midlewares/basicAuth";
+import { postsService } from "../domain/posts-service";
 
 
 export const postsRouter = Router ({});
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    let posts = await postRepository.findPost();
+    const pageNumber : number = +req.body.pageNumber;
+    const pageSize: number = +req.body.pageSize;
+    const sortBy: string = req.body.sortBy;
+    const sortDirections: string = req.body.sortDirections;
+    if (sortDirections === "asc") {const sortDirections = 1} else {const sortDirections = -1}
+
+    const posts = await postsService.findPost(pageNumber, pageSize, sortBy, sortDirections);
     res.send(posts)
   })
   
 postsRouter.get('/:id',async (req: Request, res: Response) => {
-    let post = await postRepository.getPostId(req.params.id)
+    let post = await postsService.getPostId(req.params.id)
     if (post) {
       res.send(post)
     } else {
@@ -25,7 +30,7 @@ postsRouter.get('/:id',async (req: Request, res: Response) => {
 postsRouter.delete('/:id', 
     authMidleware,
     async (req: Request, res: Response) => {
-    let post = await postRepository.deletePostId(req.params.id);
+    let post = await postsService.deletePostId(req.params.id);
     if (post) {  
         res.sendStatus(204)
       } else {
@@ -47,7 +52,7 @@ postsRouter.post('/',
    const content = req.body.content;
    const blogId = req.body.blogId;
 
-  let post = await postRepository.createdPostId(title, shortDescription, content, blogId)
+  let post = await postsService.createdPostId(title, shortDescription, content, blogId)
   res.status(201).send(post)
   })
   
@@ -67,7 +72,7 @@ postsRouter.put('/:id',
     const blogId = req.body.blogId;
 
 
-    let postResult = await postRepository.updatePostId(id, title, shortDescription, content, blogId)
+    let postResult = await postsService.updatePostId(id, title, shortDescription, content, blogId)
     if (postResult === true) {
       res.sendStatus(204);
       } else {
