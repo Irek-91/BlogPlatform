@@ -4,7 +4,7 @@ import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } f
 import { authMidleware } from "../midlewares/basicAuth";
 import { blogsService } from "../domain/blogs-service";
 import { postsService } from "../domain/posts-service";
-import { titleValidation } from "../midlewares/post-validation";
+import { contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 
 
 export const blogsRouter = Router ({})
@@ -106,9 +106,8 @@ blogsRouter.post('/',
   blogsRouter.post('/:blogId/posts', 
     authMidleware,
     titleValidation,
-    descriptionValidation,
-    websiteUrl,
-    websiteUrlLength,
+    shortDescriptionValidation,
+    contentValidation,
     inputValidationMiddleware,
 
     async (req: Request, res: Response) => {

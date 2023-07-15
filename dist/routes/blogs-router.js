@@ -91,7 +91,7 @@ exports.blogsRouter.post('/', basicAuth_1.authMidleware, blogs_validation_1.name
     const newBlog = yield blogs_service_1.blogsService.createBlog(nameBlog, description, websiteUrl);
     res.status(201).send(newBlog);
 }));
-exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_validation_1.titleValidation, blogs_validation_1.descriptionValidation, blogs_validation_1.websiteUrl, blogs_validation_1.websiteUrlLength, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const title = req.body.title;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
