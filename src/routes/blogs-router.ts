@@ -116,13 +116,13 @@ blogsRouter.post('/',
     const content: string = req.body.content;
     const blogId:string = req.params.blogId
     const newBlog = await postsService.createdPostBlogId(title, shortDescription, content, blogId);
-    if (newBlog) {
+    if (newBlog != null) {
       res.status(201).send(newBlog)
-    } else {
-      res.status(404)
+      } else {  
+    res.sendStatus(404)
     }
+  })
   
-})
 
 /*blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {
     await blogsRepository.deleteBlogAll();  

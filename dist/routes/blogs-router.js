@@ -98,11 +98,11 @@ exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_valid
     const content = req.body.content;
     const blogId = req.params.blogId;
     const newBlog = yield posts_service_1.postsService.createdPostBlogId(title, shortDescription, content, blogId);
-    if (newBlog) {
+    if (newBlog != null) {
         res.status(201).send(newBlog);
     }
     else {
-        res.status(404);
+        res.sendStatus(404);
     }
 }));
 /*blogsRouter.delete('/testing/all-data', async (req: Request, res: Response) => {

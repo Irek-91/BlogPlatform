@@ -39,18 +39,23 @@ exports.blogsRepository = {
     },
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (blog) {
-                return {
-                    id: blog._id.toString(),
-                    name: blog.name,
-                    description: blog.description,
-                    websiteUrl: blog.websiteUrl,
-                    createdAt: blog.createdAt,
-                    isMembership: false,
-                };
+            try {
+                const blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (blog) {
+                    return {
+                        id: blog._id.toString(),
+                        name: blog.name,
+                        description: blog.description,
+                        websiteUrl: blog.websiteUrl,
+                        createdAt: blog.createdAt,
+                        isMembership: false,
+                    };
+                }
+                else {
+                    return null;
+                }
             }
-            else {
+            catch (e) {
                 return null;
             }
         });

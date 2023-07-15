@@ -32,7 +32,7 @@ export const blogsRepository = {
     },
 
     async getBlogId(id: string): Promise<blogType | null> {
-        const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
+        try {const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
         if (blog) {
             return {
               id: blog._id.toString(),
@@ -42,7 +42,8 @@ export const blogsRepository = {
               createdAt: blog.createdAt,
               isMembership: false,
             }
-        } else {return null}
+        } else {return null}}
+        catch (e) {return null}
     },
 
     async createBlog(newBlog: blogInput): Promise<blogOutput> {

@@ -2,6 +2,7 @@ import { postInput, postsCollectionsType, postOutput } from './../types/types-db
 import { blogsRepository } from './../repositories/blogs-db-repository';
 import { postRepository } from "../repositories/post-db-repository";
 import { paginatorPost } from '../types/types_paginator';
+import { blogType } from '../types/types';
 
 
 export const postsService = {
@@ -39,10 +40,10 @@ export const postsService = {
         return creatPost
     },
 
-    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
+    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | null> {
 
-        const blog = await blogsRepository.getBlogId(blogId);
-        if (!blog) {return false}
+        const blog: blogType | null = await blogsRepository.getBlogId(blogId);
+        if (blog != null) {
         const createdAt = new Date().toISOString();
 
         const newPost:  postInput= {
@@ -54,7 +55,8 @@ export const postsService = {
             createdAt: createdAt
             };
         const creatPost = await postRepository.createdPostId(newPost)
-        return creatPost
+        return creatPost}
+        else {return null}
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {

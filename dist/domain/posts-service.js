@@ -52,20 +52,22 @@ exports.postsService = {
     createdPostBlogId(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
-            if (!blog) {
-                return false;
+            if (blog != null) {
+                const createdAt = new Date().toISOString();
+                const newPost = {
+                    title: title,
+                    shortDescription: shortDescription,
+                    content: content,
+                    blogId: blogId,
+                    blogName: blog.name,
+                    createdAt: createdAt
+                };
+                const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
+                return creatPost;
             }
-            const createdAt = new Date().toISOString();
-            const newPost = {
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: blog.name,
-                createdAt: createdAt
-            };
-            const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
-            return creatPost;
+            else {
+                return null;
+            }
         });
     },
     updatePostId(id, title, shortDescription, content, blogId) {
