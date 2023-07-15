@@ -10,7 +10,7 @@ export const blogsService = {
       return await blogsRepository.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     },
 
-    async getBlogId(id: string): Promise<blogOutput | null>  {
+    async getBlogId(id: string): Promise<blogOutput | boolean>  {
         return await blogsRepository.getBlogId(id)
     },
 

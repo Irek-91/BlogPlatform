@@ -52,11 +52,11 @@ exports.blogsRepository = {
                     };
                 }
                 else {
-                    return null;
+                    return false;
                 }
             }
             catch (e) {
-                return null;
+                return false;
             }
         });
     },

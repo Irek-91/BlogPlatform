@@ -51,8 +51,8 @@ exports.postsService = {
     },
     createdPostBlogId(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
-            if (blog != null) {
+            try {
+                const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
                 const createdAt = new Date().toISOString();
                 const newPost = {
                     title: title,
@@ -65,8 +65,8 @@ exports.postsService = {
                 const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
                 return creatPost;
             }
-            else {
-                return null;
+            catch (e) {
+                return false;
             }
         });
     },

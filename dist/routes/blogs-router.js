@@ -19,7 +19,7 @@ const posts_service_1 = require("../domain/posts-service");
 const post_validation_1 = require("../midlewares/post-validation");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const searchNameTerm = req.body.searchNameTerm;
+    const searchNameTerm = req.body.searchNameTerm || null;
     const sortBy = req.body.sortBy || "createdAt";
     let sortDirection = -1;
     const pageNumber = +req.body.pageNumber || 1;
@@ -52,11 +52,11 @@ exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0
     let BlogId = yield blogs_service_1.blogsService.getBlogId(req.params.id);
     if (BlogId) {
         const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
-        if (!foundBlogs === false) {
-            res.send(foundBlogs);
+        if (foundBlogs === false) {
+            res.sendStatus(404);
         }
         else {
-            res.sendStatus(404);
+            res.send(foundBlogs);
         }
     }
     else {

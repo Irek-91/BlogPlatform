@@ -12,7 +12,7 @@ export const blogsRouter = Router ({})
 blogsRouter.get('/', 
   
   async (req: Request, res: Response) => {
-  const searchNameTerm: string = req.body.searchNameTerm;
+  const searchNameTerm: string = req.body.searchNameTerm || null;
   const sortBy: string = req.body.sortBy || "createdAt";
   let sortDirection: 1 | -1 = -1;
   const pageNumber: number = +req.body.pageNumber || 1;
@@ -39,14 +39,15 @@ blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
   const pageSize: number = +req.body.pageSize || 10;
   if (req.body.sortDirection === "asc") {sortDirection = 1} else {sortDirection = -1}
   const blogId : string = req.params.blogId;
+
   let BlogId = await blogsService.getBlogId(req.params.id)
   if (BlogId) {
     const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
 
-    if (!foundBlogs === false) {
+    if (foundBlogs === false) {
+      res.sendStatus(404)
+    } else {
       res.send(foundBlogs)
-    } else {  
-    res.sendStatus(404)
     }
 
   } else {  
