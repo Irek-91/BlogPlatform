@@ -17,7 +17,7 @@ exports.postRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             const skipPosts = (pageNumber - 1) * pageSize;
             const posts = yield db_mongo_1.postsCollections.find({}).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
-            const totalCount = yield db_mongo_1.postsCollections.count();
+            const totalCount = yield db_mongo_1.postsCollections.countDocuments();
             const pagesCount = Math.ceil(totalCount / pageSize);
             const postsOutput = posts.map((b) => {
                 return {
@@ -42,7 +42,7 @@ exports.postRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             const skipPosts = (pageNumber - 1) * pageSize;
             const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
-            const totalCount = yield db_mongo_1.postsCollections.count();
+            const totalCount = yield db_mongo_1.postsCollections.countDocuments({ blogId: blogId });
             const pagesCount = Math.ceil(totalCount / pageSize);
             if (posts) {
                 const postsOutput = posts.map((b) => {
@@ -70,36 +70,46 @@ exports.postRepository = {
     },
     getPostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (!post) {
-                return false;
+            try {
+                let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (!post) {
+                    return false;
+                }
+                else {
+                    return {
+                        id: post._id.toString(),
+                        title: post.title,
+                        shortDescription: post.shortDescription,
+                        content: post.content,
+                        blogId: post.blogId,
+                        blogName: post.blogName,
+                        createdAt: post.createdAt,
+                    };
+                }
             }
-            else {
-                return {
-                    id: post._id.toString(),
-                    title: post.title,
-                    shortDescription: post.shortDescription,
-                    content: post.content,
-                    blogId: post.blogId,
-                    blogName: post.blogName,
-                    createdAt: post.createdAt,
-                };
+            catch (e) {
+                return false;
             }
         });
     },
     deletePostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (post) {
-                try {
-                    yield db_mongo_1.postsCollections.deleteOne({ _id: post._id });
-                    return true;
+            try {
+                let post = yield db_mongo_1.postsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (post) {
+                    try {
+                        yield db_mongo_1.postsCollections.deleteOne({ _id: post._id });
+                        return true;
+                    }
+                    catch (e) {
+                        return false;
+                    }
                 }
-                catch (e) {
+                else {
                     return false;
                 }
             }
-            else {
+            catch (e) {
                 return false;
             }
         });
@@ -112,11 +122,16 @@ exports.postRepository = {
     },
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = yield db_mongo_1.postsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title, shortDescription, content, blogId } });
-            if (post.matchedCount) {
-                return true;
+            try {
+                const post = yield db_mongo_1.postsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title, shortDescription, content, blogId } });
+                if (post.matchedCount) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
+            catch (e) {
                 return false;
             }
         });

@@ -55,13 +55,15 @@ export const blogsRepository = {
     },
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) : Promise<boolean> {
-      const blog = await blogsCollections.updateOne({_id: new ObjectId(id)}, {$set: {name , description, websiteUrl}})
-      return blog.matchedCount ===1
+      try {const blog = await blogsCollections.updateOne({_id: new ObjectId(id)}, {$set: {name , description, websiteUrl}})
+      return blog.matchedCount === 1}
+      catch (e) {return false}
     },
 
     async deleteBlogId(id: string) : Promise<boolean> {
-      const deletResult = await blogsCollections.deleteOne({_id: new ObjectId(id)})
-      return deletResult.deletedCount === 1
+      try {const deletResult = await blogsCollections.deleteOne({_id: new ObjectId(id)})
+      return deletResult.deletedCount === 1}
+      catch (e) {return false}
       
     },
     

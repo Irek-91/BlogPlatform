@@ -10,7 +10,7 @@ export const postRepository = {
     async findPost(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any) : Promise<paginatorPost> {
         const skipPosts = (pageNumber -1)*pageSize;
         const posts = await postsCollections.find({}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
-        const totalCount = await postsCollections.count()
+        const totalCount = await postsCollections.countDocuments()
         const pagesCount = Math.ceil(totalCount/pageSize)
         const postsOutput = posts.map((b) => {
             return {
@@ -33,7 +33,7 @@ export const postRepository = {
     async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost | boolean> {
         const skipPosts = (pageNumber -1)*pageSize;
         const posts = await postsCollections.find({blogId:blogId}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
-        const totalCount = await postsCollections.count();
+        const totalCount = await postsCollections.countDocuments({blogId:blogId});
         const pagesCount = Math.ceil(totalCount/pageSize)
         if (posts) {
         const postsOutput = posts.map((b) => {
@@ -58,7 +58,7 @@ export const postRepository = {
 
     async getPostId(id: string):Promise<postOutput | null | boolean> {
         
-        let post =  await postsCollections.findOne({_id: new ObjectId(id)});
+        try {let post =  await postsCollections.findOne({_id: new ObjectId(id)});
         if (!post) {
             return false
         } else {
@@ -71,18 +71,19 @@ export const postRepository = {
                 blogName: post.blogName,
                 createdAt: post.createdAt,
             }
-        }
+        }} catch (e) {return false}
         },
 
     async deletePostId(id: string):Promise<boolean> {
-        let post = await postsCollections.findOne({_id: new ObjectId(id)})
+        try {let post = await postsCollections.findOne({_id: new ObjectId(id)})
         
         if (post) {
             try {
             await postsCollections.deleteOne({_id: post._id})
             return true}
             catch (e) {return false}
-        } else {return false}       
+        } else {return false}}
+        catch (e) {return false}       
         },
 
         
@@ -96,11 +97,12 @@ export const postRepository = {
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        const post = await postsCollections.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
+        try {const post = await postsCollections.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
         if (post.matchedCount) {
             return true}
             else {
-            return false} 
+            return false}}
+        catch (e) {return false} 
     },
 
     async deletePostAll(): Promise<boolean> {

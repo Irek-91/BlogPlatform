@@ -68,14 +68,24 @@ exports.blogsRepository = {
     },
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield db_mongo_1.blogsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name, description, websiteUrl } });
-            return blog.matchedCount === 1;
+            try {
+                const blog = yield db_mongo_1.blogsCollections.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name, description, websiteUrl } });
+                return blog.matchedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     },
     deleteBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.blogsCollections.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-            return deletResult.deletedCount === 1;
+            try {
+                const deletResult = yield db_mongo_1.blogsCollections.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+                return deletResult.deletedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     },
     deleteBlogAll() {
