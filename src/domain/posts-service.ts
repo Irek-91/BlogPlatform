@@ -40,10 +40,10 @@ export const postsService = {
         return creatPost
     },
 
-    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | null> {
+    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
 
-        const blog: blogType | null = await blogsRepository.getBlogId(blogId);
-        if (blog != null) {
+        try {const blog = await blogsRepository.getBlogId(blogId);
+       
         const createdAt = new Date().toISOString();
 
         const newPost:  postInput= {
@@ -56,7 +56,8 @@ export const postsService = {
             };
         const creatPost = await postRepository.createdPostId(newPost)
         return creatPost}
-        else {return null}
+        catch (e) {return false}
+
     },
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
