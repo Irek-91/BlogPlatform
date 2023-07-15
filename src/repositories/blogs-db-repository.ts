@@ -10,8 +10,8 @@ export const blogsRepository = {
     
     async findBlogs(searchNameTerm: string, sortBy:string, sortDirection:any, pageNumber:number, pageSize:number): Promise<paginatorBlog> {
       const skipPosts = (pageNumber -1)*pageSize;
-      const blogs = await blogsCollections.find({$text:{$search: searchNameTerm}}).sort(sortBy,sortDirection).skip(skipPosts).limit(pageSize).toArray();
-      const totalCount = await blogsCollections.count()
+      const blogs = await blogsCollections.find({ name: { $regex: searchNameTerm, $options: 'i' }}).sort(sortBy,sortDirection).skip(skipPosts).limit(pageSize).toArray();
+      const totalCount = await blogsCollections.countDocuments({ name: { $regex: searchNameTerm, $options: 'i' }})
       const blogsOutput =  blogs.map((b) => {
         return {
           id: b._id.toString(),

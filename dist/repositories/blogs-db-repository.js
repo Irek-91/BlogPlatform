@@ -16,8 +16,8 @@ exports.blogsRepository = {
     findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipPosts = (pageNumber - 1) * pageSize;
-            const blogs = yield db_mongo_1.blogsCollections.find({ $text: { $search: searchNameTerm } }).sort(sortBy, sortDirection).skip(skipPosts).limit(pageSize).toArray();
-            const totalCount = yield db_mongo_1.blogsCollections.count();
+            const blogs = yield db_mongo_1.blogsCollections.find({ name: { $regex: searchNameTerm, $options: 'i' } }).sort(sortBy, sortDirection).skip(skipPosts).limit(pageSize).toArray();
+            const totalCount = yield db_mongo_1.blogsCollections.countDocuments({ name: { $regex: searchNameTerm, $options: 'i' } });
             const blogsOutput = blogs.map((b) => {
                 return {
                     id: b._id.toString(),
