@@ -4,14 +4,20 @@ import { blogsCollections } from "../db/db-mongo";
 import { ObjectId } from "mongodb";
 import { blogOutput } from "../types/types-db";
 import { paginatorBlog } from '../types/types_paginator';
+import { QueryPaginationType } from '../midlewares/pagination';
+
 
 
 export const blogsRepository = {
     
-    async findBlogs(searchNameTerm: string, sortBy:string, sortDirection:any, pageNumber:number, pageSize:number): Promise<paginatorBlog> {
-      const skipPosts = (pageNumber -1)*pageSize;
-      const blogs = await blogsCollections.find({ name: { $regex: searchNameTerm, $options: 'i' }}).sort(sortBy,sortDirection).skip(skipPosts).limit(pageSize).toArray();
-      const totalCount = await blogsCollections.countDocuments({ name: { $regex: searchNameTerm, $options: 'i' }})
+    async findBlogs(pagination : QueryPaginationType): Promise<paginatorBlog> {
+      const blogs = await blogsCollections.
+                                          find({ name: { $regex: pagination.searchNameTerm, $options: 'i' }}).
+                                          sort(pagination.sortBy,pagination.sortDirection).
+                                          skip(pagination.skip).
+                                          limit(pagination.pageSize).
+                                          toArray();
+      const totalCount = await blogsCollections.countDocuments({ name: { $regex: pagination.searchNameTerm, $options: 'i' }})
       const blogsOutput =  blogs.map((b) => {
         return {
           id: b._id.toString(),
@@ -25,16 +31,18 @@ export const blogsRepository = {
 
       return {
         pagesCount: blogsOutput.length,
-        page: pageNumber,
-        pageSize: pageSize,
+        page: pagination.pageNumber,
+        pageSize: pagination.pageSize,
         totalCount: totalCount,
         items: blogsOutput
       }
     },
 
+  
     async getBlogId(id: string): Promise<blogType | boolean> {
-        try {const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
-        if (blog != null) {
+        try {
+          const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
+        if (blog) {
             return {
               id: blog._id.toString(),
               name: blog.name,
@@ -43,8 +51,12 @@ export const blogsRepository = {
               createdAt: blog.createdAt,
               isMembership: false,
             }
-        } else {return false}}
-        catch (e) {return false}
+        } else {
+          return false
+        }}
+        catch (e) {
+          return false
+        }
     },
 
     async createBlog(newBlog: blogInput): Promise<blogOutput> {

@@ -15,13 +15,11 @@ const input_validation_middleware_1 = require("../midlewares/input-validation-mi
 const post_validation_1 = require("../midlewares/post-validation");
 const basicAuth_1 = require("../midlewares/basicAuth");
 const posts_service_1 = require("../domain/posts-service");
+const pagination_1 = require("../midlewares/pagination");
 exports.postsRouter = (0, express_1.Router)({});
 exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pageNumber = +req.body.pageNumber;
-    const pageSize = +req.body.pageSize;
-    const sortBy = req.body.sortBy || "createdAt";
-    let sortDirection = -1;
-    const posts = yield posts_service_1.postsService.findPost(pageNumber, pageSize, sortBy, sortDirection);
+    const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
+    const posts = yield posts_service_1.postsService.findPost(pagination);
     res.send(posts);
 }));
 exports.postsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

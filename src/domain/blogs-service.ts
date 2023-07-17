@@ -1,13 +1,14 @@
+import { paginatorBlog } from './../types/types_paginator';
 import { blogType } from "../types/types";
 import { blogInput, blogOutput, blogsCollectionsType } from "../types/types-db";
 import { blogsRepository } from "../repositories/blogs-db-repository";
+import { QueryPaginationType } from '../midlewares/pagination';
 
 
 
-export const blogsService = {
-    
-    async findBlogs(searchNameTerm: string, sortBy:string, sortDirection:any, pageNumber:number, pageSize:number) {
-      return await blogsRepository.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
+export const blogsService = {  
+    async findBlogs(paginationQuery : QueryPaginationType) {
+      return await blogsRepository.findBlogs(paginationQuery)
     },
 
     async getBlogId(id: string): Promise<blogOutput | boolean>  {

@@ -13,14 +13,14 @@ exports.postsService = void 0;
 const blogs_db_repository_1 = require("./../repositories/blogs-db-repository");
 const post_db_repository_1 = require("../repositories/post-db-repository");
 exports.postsService = {
-    findPost(pageNumber, pageSize, sortBy, sortDirections) {
+    findPost(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return post_db_repository_1.postRepository.findPost(pageNumber, pageSize, sortBy, sortDirections);
+            return post_db_repository_1.postRepository.findPost(paginationQuery);
         });
     },
-    findPostsBlogId(pageNumber, pageSize, sortBy, sortDirections, blogId) {
+    findPostsBlogId(paginationQuery, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return post_db_repository_1.postRepository.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirections, blogId);
+            return post_db_repository_1.postRepository.findPostsBlogId(paginationQuery, blogId);
         });
     },
     getPostId(id) {

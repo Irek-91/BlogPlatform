@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsService = void 0;
 const blogs_db_repository_1 = require("../repositories/blogs-db-repository");
 exports.blogsService = {
-    findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize) {
+    findBlogs(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield blogs_db_repository_1.blogsRepository.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
+            return yield blogs_db_repository_1.blogsRepository.findBlogs(paginationQuery);
         });
     },
     getBlogId(id) {

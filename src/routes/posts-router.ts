@@ -3,17 +3,16 @@ import { inputValidationMiddleware } from "../midlewares/input-validation-middle
 import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { authMidleware } from "../midlewares/basicAuth";
 import { postsService } from "../domain/posts-service";
+import { getPaginationFromQuery } from "../midlewares/pagination";
 
 
 export const postsRouter = Router ({});
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const pageNumber : number = +req.body.pageNumber;
-    const pageSize: number = +req.body.pageSize;
-    const sortBy: string = req.body.sortBy || "createdAt";
-    let sortDirection: 1 | -1 = -1;
+    
+    const pagination = getPaginationFromQuery(req.query)
 
-    const posts = await postsService.findPost(pageNumber, pageSize, sortBy, sortDirection);
+    const posts = await postsService.findPost(pagination);
     res.send(posts)
   })
   

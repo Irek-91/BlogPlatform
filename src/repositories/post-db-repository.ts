@@ -1,3 +1,4 @@
+import { QueryPaginationType } from './../midlewares/pagination';
 import { blogsRepository } from "./blogs-db-repository";
 import { postsCollections } from "../db/db-mongo";
 import { postInput, postMongoDb, postOutput, postsCollectionsType } from "../types/types-db";
@@ -7,11 +8,14 @@ import { paginatorPost } from "../types/types_paginator";
 
 export const postRepository = {
     
-    async findPost(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any) : Promise<paginatorPost> {
-        const skipPosts = (pageNumber -1)*pageSize;
-        const posts = await postsCollections.find({}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
+    async findPost(paginationQuery: QueryPaginationType,) : Promise<paginatorPost> {
+        const posts = await postsCollections.find({}).
+                                            sort(paginationQuery.sortBy,paginationQuery.sortDirection).
+                                            skip(paginationQuery.skip).
+                                            limit(paginationQuery.pageSize).
+                                            toArray();
         const totalCount = await postsCollections.countDocuments()
-        const pagesCount = Math.ceil(totalCount/pageSize)
+        const pagesCount = Math.ceil(totalCount/paginationQuery.pageSize)
         const postsOutput = posts.map((b) => {
             return {
                 id: b._id.toString(),
@@ -24,17 +28,25 @@ export const postRepository = {
             }
         })
         return {pagesCount: pagesCount,
-        page: pageNumber,
-        pageSize: pageSize,
+        page: paginationQuery.pageNumber,
+        pageSize: paginationQuery.pageSize,
         totalCount: totalCount,
         items : postsOutput
         }
     },
-    async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost | boolean> {
-        try {const skipPosts = (pageNumber -1)*pageSize;
-        const posts = await postsCollections.find({blogId:blogId}).sort(sortBy,sortDirections).skip(skipPosts).limit(pageSize).toArray();
-        const totalCount = await postsCollections.countDocuments({blogId:blogId});
-        const pagesCount = Math.ceil(totalCount/pageSize)
+    async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string) : Promise<paginatorPost | boolean> {
+        try {
+            
+            const filter = {blogId:blogId}
+            const posts = await postsCollections
+                                            .find(filter)
+                                            .sort(paginationQuery.sortBy, paginationQuery.sortDirection)
+                                            .skip(paginationQuery.skip)
+                                            .limit(paginationQuery.pageSize)
+                                            .toArray();
+       
+        const totalCount = await postsCollections.countDocuments(filter);
+        const pagesCount = Math.ceil(totalCount/(paginationQuery.pageSize))
         const postsOutput = posts.map((b) => {
             return {
                 id: b._id.toString(),
@@ -47,8 +59,8 @@ export const postRepository = {
             }
         })
         return {pagesCount: pagesCount,
-        page: pageNumber,
-        pageSize: pageSize,
+        page: paginationQuery.pageNumber,
+        pageSize: paginationQuery.pageSize,
         totalCount: totalCount,
         items : postsOutput
         }} catch (e) {return false}

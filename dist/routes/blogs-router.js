@@ -17,14 +17,11 @@ const basicAuth_1 = require("../midlewares/basicAuth");
 const blogs_service_1 = require("../domain/blogs-service");
 const posts_service_1 = require("../domain/posts-service");
 const post_validation_1 = require("../midlewares/post-validation");
+const pagination_1 = require("../midlewares/pagination");
 exports.blogsRouter = (0, express_1.Router)({});
 exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const searchNameTerm = req.body.searchNameTerm || null;
-    const sortBy = req.body.sortBy || "createdAt";
-    let sortDirection = -1;
-    const pageNumber = +req.body.pageNumber;
-    const pageSize = +req.body.pageSize;
-    const foundBlogs = yield blogs_service_1.blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
+    const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
+    const foundBlogs = yield blogs_service_1.blogsService.findBlogs(pagination);
     res.send(foundBlogs);
 }));
 exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,21 +34,14 @@ exports.blogsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sortBy = req.body.sortBy || "createdAt";
-    ;
-    let sortDirection = 1;
-    const pageNumber = +req.body.pageNumber || 1;
-    const pageSize = +req.body.pageSize || 10;
     const blogId = req.params.blogId;
-    let BlogId = yield blogs_service_1.blogsService.getBlogId(req.params.id);
-    if (BlogId != false) {
-        const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
-        if (foundBlogs) {
-            res.send(foundBlogs);
-        }
-        else {
-            res.sendStatus(404);
-        }
+    const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
+    const blog = yield blogs_service_1.blogsService.getBlogId(blogId);
+    if (!blog)
+        return res.sendStatus(404);
+    const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pagination, blogId);
+    if (foundBlogs) {
+        res.send(foundBlogs);
     }
     else {
         res.sendStatus(404);

@@ -5,6 +5,7 @@ import { authMidleware } from "../midlewares/basicAuth";
 import { blogsService } from "../domain/blogs-service";
 import { postsService } from "../domain/posts-service";
 import { contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
+import { getPaginationFromQuery } from "../midlewares/pagination";
 
 
 export const blogsRouter = Router ({})
@@ -12,15 +13,13 @@ export const blogsRouter = Router ({})
 blogsRouter.get('/', 
   
   async (req: Request, res: Response) => {
-  const searchNameTerm: string = req.body.searchNameTerm || null;
-  const sortBy: string = req.body.sortBy || "createdAt";
-  let sortDirection: 1 | -1 = -1;
-  const pageNumber: number = +req.body.pageNumber;
-  const pageSize: number = +req.body.pageSize;
+  const pagination = getPaginationFromQuery(req.query)
 
-  const foundBlogs = await blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
+
+  const foundBlogs = await blogsService.findBlogs(pagination);
   res.send(foundBlogs)
 })
+
 
 blogsRouter.get('/:id', async (req: Request, res: Response) => {
   let BlogId = await blogsService.getBlogId(req.params.id)
@@ -31,29 +30,20 @@ blogsRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-
 blogsRouter.get('/:blogId/posts', async (req: Request, res: Response) => {
-  const sortBy: string = req.body.sortBy || "createdAt";;
-  let sortDirection: 1 | -1 = 1;
-  const pageNumber: number = +req.body.pageNumber || 1;
-  const pageSize: number = +req.body.pageSize || 10;
-  const blogId : string = req.params.blogId;
+  const blogId = req.params.blogId
+  const pagination = getPaginationFromQuery(req.query)
 
-  let BlogId = await blogsService.getBlogId(req.params.id)
-
-  if (BlogId != false) {
-    const foundBlogs = await postsService.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirection, blogId);
+  const blog = await blogsService.getBlogId(blogId)
+  if(!blog) return res.sendStatus(404)
+  
+  const foundBlogs = await postsService.findPostsBlogId(pagination, blogId);
     
-
-    if (foundBlogs) {
+  if (foundBlogs) {
       res.send(foundBlogs)
-    } else {
+  } else {
       res.sendStatus(404)
     }
-
-  } else {  
-    res.sendStatus(404)
-  }
 })
 
 blogsRouter.delete('/:id', 

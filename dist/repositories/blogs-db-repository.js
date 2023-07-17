@@ -13,11 +13,15 @@ exports.blogsRepository = void 0;
 const db_mongo_1 = require("../db/db-mongo");
 const mongodb_1 = require("mongodb");
 exports.blogsRepository = {
-    findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize) {
+    findBlogs(pagination) {
         return __awaiter(this, void 0, void 0, function* () {
-            const skipPosts = (pageNumber - 1) * pageSize;
-            const blogs = yield db_mongo_1.blogsCollections.find({ name: { $regex: searchNameTerm, $options: 'i' } }).sort(sortBy, sortDirection).skip(skipPosts).limit(pageSize).toArray();
-            const totalCount = yield db_mongo_1.blogsCollections.countDocuments({ name: { $regex: searchNameTerm, $options: 'i' } });
+            const blogs = yield db_mongo_1.blogsCollections.
+                find({ name: { $regex: pagination.searchNameTerm, $options: 'i' } }).
+                sort(pagination.sortBy, pagination.sortDirection).
+                skip(pagination.skip).
+                limit(pagination.pageSize).
+                toArray();
+            const totalCount = yield db_mongo_1.blogsCollections.countDocuments({ name: { $regex: pagination.searchNameTerm, $options: 'i' } });
             const blogsOutput = blogs.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -30,8 +34,8 @@ exports.blogsRepository = {
             });
             return {
                 pagesCount: blogsOutput.length,
-                page: pageNumber,
-                pageSize: pageSize,
+                page: pagination.pageNumber,
+                pageSize: pagination.pageSize,
                 totalCount: totalCount,
                 items: blogsOutput
             };
@@ -41,7 +45,7 @@ exports.blogsRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const blog = yield db_mongo_1.blogsCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
-                if (blog != null) {
+                if (blog) {
                     return {
                         id: blog._id.toString(),
                         name: blog.name,

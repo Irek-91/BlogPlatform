@@ -13,12 +13,15 @@ exports.postRepository = void 0;
 const db_mongo_1 = require("../db/db-mongo");
 const mongodb_1 = require("mongodb");
 exports.postRepository = {
-    findPost(pageNumber, pageSize, sortBy, sortDirections) {
+    findPost(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            const skipPosts = (pageNumber - 1) * pageSize;
-            const posts = yield db_mongo_1.postsCollections.find({}).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
+            const posts = yield db_mongo_1.postsCollections.find({}).
+                sort(paginationQuery.sortBy, paginationQuery.sortDirection).
+                skip(paginationQuery.skip).
+                limit(paginationQuery.pageSize).
+                toArray();
             const totalCount = yield db_mongo_1.postsCollections.countDocuments();
-            const pagesCount = Math.ceil(totalCount / pageSize);
+            const pagesCount = Math.ceil(totalCount / paginationQuery.pageSize);
             const postsOutput = posts.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -31,20 +34,25 @@ exports.postRepository = {
                 };
             });
             return { pagesCount: pagesCount,
-                page: pageNumber,
-                pageSize: pageSize,
+                page: paginationQuery.pageNumber,
+                pageSize: paginationQuery.pageSize,
                 totalCount: totalCount,
                 items: postsOutput
             };
         });
     },
-    findPostsBlogId(pageNumber, pageSize, sortBy, sortDirections, blogId) {
+    findPostsBlogId(paginationQuery, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const skipPosts = (pageNumber - 1) * pageSize;
-                const posts = yield db_mongo_1.postsCollections.find({ blogId: blogId }).sort(sortBy, sortDirections).skip(skipPosts).limit(pageSize).toArray();
-                const totalCount = yield db_mongo_1.postsCollections.countDocuments({ blogId: blogId });
-                const pagesCount = Math.ceil(totalCount / pageSize);
+                const filter = { blogId: blogId };
+                const posts = yield db_mongo_1.postsCollections
+                    .find(filter)
+                    .sort(paginationQuery.sortBy, paginationQuery.sortDirection)
+                    .skip(paginationQuery.skip)
+                    .limit(paginationQuery.pageSize)
+                    .toArray();
+                const totalCount = yield db_mongo_1.postsCollections.countDocuments(filter);
+                const pagesCount = Math.ceil(totalCount / (paginationQuery.pageSize));
                 const postsOutput = posts.map((b) => {
                     return {
                         id: b._id.toString(),
@@ -57,8 +65,8 @@ exports.postRepository = {
                     };
                 });
                 return { pagesCount: pagesCount,
-                    page: pageNumber,
-                    pageSize: pageSize,
+                    page: paginationQuery.pageNumber,
+                    pageSize: paginationQuery.pageSize,
                     totalCount: totalCount,
                     items: postsOutput
                 };

@@ -1,3 +1,4 @@
+import { QueryPaginationType } from './../midlewares/pagination';
 import { postInput, postsCollectionsType, postOutput } from './../types/types-db';
 import { blogsRepository } from './../repositories/blogs-db-repository';
 import { postRepository } from "../repositories/post-db-repository";
@@ -7,12 +8,12 @@ import { blogType } from '../types/types';
 
 export const postsService = {
     
-    async findPost(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any) : Promise<paginatorPost> {
-        return postRepository.findPost(pageNumber, pageSize,sortBy, sortDirections )
+    async findPost(paginationQuery: QueryPaginationType) : Promise<paginatorPost> {
+        return postRepository.findPost(paginationQuery)
     },
     
-    async findPostsBlogId(pageNumber: number, pageSize:number,sortBy: string, sortDirections: any, blogId: string) : Promise<paginatorPost | boolean> {
-        return postRepository.findPostsBlogId(pageNumber, pageSize,sortBy, sortDirections, blogId)
+    async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string) : Promise<paginatorPost | boolean> {
+        return postRepository.findPostsBlogId(paginationQuery, blogId)
     },
 
     async getPostId(id: string):Promise<postOutput | null | boolean> {
