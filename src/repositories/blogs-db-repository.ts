@@ -22,6 +22,7 @@ export const blogsRepository = {
           isMembership: false,
         }
       })
+
       return {
         pagesCount: blogsOutput.length,
         page: pageNumber,
@@ -33,7 +34,7 @@ export const blogsRepository = {
 
     async getBlogId(id: string): Promise<blogType | boolean> {
         try {const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
-        if (blog) {
+        if (blog != null) {
             return {
               id: blog._id.toString(),
               name: blog.name,

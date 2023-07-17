@@ -8,8 +8,8 @@ import { postsService } from "../domain/posts-service";
 export const postsRouter = Router ({});
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const pageNumber : number = +req.body.pageNumber || 1;
-    const pageSize: number = +req.body.pageSize || 10;
+    const pageNumber : number = +req.body.pageNumber;
+    const pageSize: number = +req.body.pageSize;
     const sortBy: string = req.body.sortBy || "createdAt";
     let sortDirection: 1 | -1 = -1;
 

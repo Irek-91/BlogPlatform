@@ -22,8 +22,8 @@ exports.blogsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
     const searchNameTerm = req.body.searchNameTerm || null;
     const sortBy = req.body.sortBy || "createdAt";
     let sortDirection = -1;
-    const pageNumber = +req.body.pageNumber || 1;
-    const pageSize = +req.body.pageSize || 10;
+    const pageNumber = +req.body.pageNumber;
+    const pageSize = +req.body.pageSize;
     const foundBlogs = yield blogs_service_1.blogsService.findBlogs(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
     res.send(foundBlogs);
 }));
@@ -42,21 +42,15 @@ exports.blogsRouter.get('/:blogId/posts', (req, res) => __awaiter(void 0, void 0
     let sortDirection = 1;
     const pageNumber = +req.body.pageNumber || 1;
     const pageSize = +req.body.pageSize || 10;
-    if (req.body.sortDirection === "asc") {
-        sortDirection = 1;
-    }
-    else {
-        sortDirection = -1;
-    }
     const blogId = req.params.blogId;
     let BlogId = yield blogs_service_1.blogsService.getBlogId(req.params.id);
-    if (BlogId) {
+    if (BlogId != false) {
         const foundBlogs = yield posts_service_1.postsService.findPostsBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
-        if (foundBlogs === false) {
-            res.sendStatus(404);
+        if (foundBlogs) {
+            res.send(foundBlogs);
         }
         else {
-            res.send(foundBlogs);
+            res.sendStatus(404);
         }
     }
     else {
