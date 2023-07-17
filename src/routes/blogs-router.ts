@@ -120,7 +120,7 @@ blogsRouter.post('/',
     const content: string = req.body.content;
     const blogId:string = req.params.blogId
     const newBlog = await postsService.createdPostBlogId(title, shortDescription, content, blogId);
-    if (newBlog != null) {
+    if (newBlog != false) {
       res.status(201).send(newBlog)
       } else {  
     res.sendStatus(404)

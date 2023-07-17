@@ -92,7 +92,7 @@ exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_valid
     const content = req.body.content;
     const blogId = req.params.blogId;
     const newBlog = yield posts_service_1.postsService.createdPostBlogId(title, shortDescription, content, blogId);
-    if (newBlog != null) {
+    if (newBlog != false) {
         res.status(201).send(newBlog);
     }
     else {

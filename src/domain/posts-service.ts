@@ -23,9 +23,9 @@ export const postsService = {
         return await postRepository.deletePostId(id)       
     },
 
-    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput> {
+    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
 
-        const blog = await blogsRepository.getBlogId(blogId);
+        try {const blog = await blogsRepository.getBlogId(blogId);
         const createdAt = new Date().toISOString();
 
         const newPost:  postInput= {
@@ -37,13 +37,15 @@ export const postsService = {
             createdAt: createdAt
             };
         const creatPost = await postRepository.createdPostId(newPost)
-        return creatPost
+        return creatPost}
+        catch (e) {return false}
     },
 
     async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
 
         try {const blog = await blogsRepository.getBlogId(blogId);
-       
+            if (blog === false) {return false}
+
         const createdAt = new Date().toISOString();
 
         const newPost:  postInput= {
