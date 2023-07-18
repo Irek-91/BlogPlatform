@@ -10,15 +10,15 @@ const getPaginationFromQuery = (query) => {
         pageSize: 10,
         skip: 0
     };
-    if (isNaN(query.searchNameTerm))
+    if (query.searchNameTerm)
         defaultValues.searchNameTerm = query.searchNameTerm;
     if (query.sortBy)
         defaultValues.sortBy = query.sortBy;
     if (query.sortDirection)
         defaultValues.sortDirection = query.sortDirection;
-    if (Number.isInteger(+query.pageNumber) && +query.pageNumber > 0 && isNaN(query.pageNumber))
+    if (query.pageNumber)
         defaultValues.pageNumber = +query.pageNumber;
-    if (Number.isInteger(query.pageSize) && +query.pageSize > 0 && isNaN(query.pageSize))
+    if (query.pageSize)
         defaultValues.pageSize = +query.pageSize;
     if (query.skip)
         defaultValues.skip = (defaultValues.pageNumber - 1) * defaultValues.pageSize;
