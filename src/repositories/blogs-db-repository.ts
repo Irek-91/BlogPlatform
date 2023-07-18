@@ -39,7 +39,7 @@ export const blogsRepository = {
     },
 
   
-    async getBlogId(id: string): Promise<blogType | boolean> {
+    async getBlogId(id: string): Promise<blogType | false> {
         try {
           const blog = await blogsCollections.findOne({_id: new ObjectId(id)})
         if (blog) {
