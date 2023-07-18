@@ -22,6 +22,6 @@ export type QueryPaginationType = {
     if (query.sortDirection) {defaultValues.sortDirection = query.sortDirection}
     if (query.pageNumber) {defaultValues.pageNumber = +query.pageNumber}
     if (query.pageSize) {defaultValues.pageSize = +query.pageSize}
-    if (query.skip) {defaultValues.skip = (defaultValues.pageNumber -1)*defaultValues.pageSize}
+    defaultValues.skip = (defaultValues.pageNumber - 1)*defaultValues.pageSize
     return defaultValues
   }

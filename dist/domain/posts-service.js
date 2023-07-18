@@ -37,6 +37,9 @@ exports.postsService = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
+                if (blog === false) {
+                    return false;
+                }
                 const createdAt = new Date().toISOString();
                 const newPost = {
                     title: title,

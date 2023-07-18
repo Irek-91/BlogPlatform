@@ -27,9 +27,7 @@ const getPaginationFromQuery = (query) => {
     if (query.pageSize) {
         defaultValues.pageSize = +query.pageSize;
     }
-    if (query.skip) {
-        defaultValues.skip = (defaultValues.pageNumber - 1) * defaultValues.pageSize;
-    }
+    defaultValues.skip = (defaultValues.pageNumber - 1) * defaultValues.pageSize;
     return defaultValues;
 };
 exports.getPaginationFromQuery = getPaginationFromQuery;
