@@ -1,4 +1,5 @@
 import { blogOutput, postOutput } from "./types-db"
+import { userViewModel } from "./user"
 
 export type paginatorBlog = {
     pagesCount: number,
@@ -14,4 +15,12 @@ export type paginatorPost = {
     pageSize: number,
     totalCount: number,
     items: postOutput[]
+}
+
+export type paginatorUser = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: userViewModel[]
 }

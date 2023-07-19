@@ -14,6 +14,7 @@ const client = new MongoClient(mongoUri)
 const db = client.db('BlogPlatform');
 export const blogsCollections = db.collection('blogs')
 export const postsCollections = db.collection('posts')
+export const usersCollections = db.collection('users')
 
 
 
