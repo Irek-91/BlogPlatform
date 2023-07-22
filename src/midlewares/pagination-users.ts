@@ -1,6 +1,6 @@
 export type QueryPaginationTypeUser = {
     sortBy: string
-    sortDirection: 'asc' | 'desc'
+    sortDirection: 1 | -1
     pageNumber: number
     pageSize: number
     searchLoginTerm: string
@@ -11,14 +11,13 @@ export type QueryPaginationTypeUser = {
  export const getPaginationFromQueryUser = (query: any): QueryPaginationTypeUser => {
    const defaultValuesUsers: QueryPaginationTypeUser = {
      sortBy: 'createdAt',
-     sortDirection: 'desc',
+     sortDirection: -1,
      pageNumber: 1,
      pageSize: 10,
      searchLoginTerm: '',
      searchEmailTerm: '',
      skip: 0
    }
-
    if (query.sortBy) {defaultValuesUsers.sortBy = query.sortBy};
    if (query.sortDirection) {defaultValuesUsers.sortDirection = query.sortDirection}
    if (query.pageNumber) {defaultValuesUsers.pageNumber = +query.pageNumber}

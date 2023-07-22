@@ -20,6 +20,7 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         res.status(400).send({errorsMessages: errors.array({ onlyFirstError: true})})
      } else {
       next()
+      
      }
 }
 

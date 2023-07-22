@@ -15,13 +15,22 @@ const mongodb_1 = require("mongodb");
 exports.userRepository = {
     findUsers(paginatorUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            const users = yield db_mongo_1.usersCollections.
-                find({ login: { $regex: paginatorUser.searchEmailTerm, $options: 'i' } }).
+            const filter = {};
+            if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
+                filter.$or = [];
+                if (paginatorUser.searchLoginTerm) {
+                    filter.$or.push({ login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' } });
+                }
+                if (paginatorUser.searchEmailTerm) {
+                    filter.$or.push({ email: { $regex: paginatorUser.searchEmailTerm, $options: 'i' } });
+                }
+            }
+            const users = yield db_mongo_1.usersCollections.find(filter).
                 sort(paginatorUser.sortBy, paginatorUser.sortDirection).
                 skip(paginatorUser.skip).
                 limit(paginatorUser.pageSize).
                 toArray();
-            const totalCount = yield db_mongo_1.usersCollections.countDocuments({ name: { $regex: paginatorUser.searchEmailTerm, $options: 'i' } });
+            const totalCount = yield db_mongo_1.usersCollections.countDocuments({});
             const usersOutput = users.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -42,7 +51,13 @@ exports.userRepository = {
     createUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield db_mongo_1.usersCollections.insertOne(Object.assign({}, newUser));
-            return Object.assign({ id: res.insertedId.toString() }, newUser);
+            const userViewVodel = {
+                id: res.insertedId.toString(),
+                login: newUser.login,
+                email: newUser.email,
+                createdAt: newUser.createdAt
+            };
+            return userViewVodel;
         });
     },
     deleteUserId(id) {
@@ -59,6 +74,17 @@ exports.userRepository = {
             }
             else {
                 return false;
+            }
+        });
+    },
+    findByLoginOrEmailL(loginOrEmail) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield db_mongo_1.usersCollections.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
+            if (user === null) {
+                return false;
+            }
+            else {
+                return user;
             }
         });
     }

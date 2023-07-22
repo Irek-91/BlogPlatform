@@ -23,6 +23,13 @@ export type userCreatModel = {
     email: string,
     createdAt: string
 }
+export type userCreatModelPassword = {
+    login: string,
+    email: string,
+    salt: string,
+    hash:string,
+    createdAt: string
+}
 
 export type loginInputModel = {
     loginOrEmail: string,

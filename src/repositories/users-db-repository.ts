@@ -1,22 +1,31 @@
 import { usersCollections } from '../db/db-mongo';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { userCreatModel, userInputModel, userViewModel } from '../types/user';
-import { paginatorUser } from './../types/types_paginator';
+import { userCreatModel, userCreatModelPassword, userInputModel, userMongoModel, userViewModel } from '../types/user';
 import { ObjectId } from "mongodb";
-
 
 
 
 export const userRepository = {
     async findUsers(paginatorUser: QueryPaginationTypeUser) {
-        const users = await usersCollections.
-                                            find({ login: { $regex: paginatorUser.searchEmailTerm, $options: 'i' }}).
-                                            sort(paginatorUser.sortBy,paginatorUser.sortDirection).
-                                            skip(paginatorUser.skip).
-                                            limit(paginatorUser.pageSize).
-                                            toArray();
-        const totalCount = await usersCollections.countDocuments({ name: { $regex: paginatorUser.searchEmailTerm, $options: 'i' }})
-        const usersOutput =  users.map((b) => {
+      const filter: any = {};
+
+      if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
+        filter.$or = []
+          if (paginatorUser.searchLoginTerm) {
+            filter.$or.push( {login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' }})
+          }
+          if (paginatorUser.searchEmailTerm) {
+            filter.$or.push( {email: { $regex: paginatorUser.searchEmailTerm, $options: 'i' }})
+          }
+
+      }
+      const users = await usersCollections.find(filter).
+                                sort(paginatorUser.sortBy,paginatorUser.sortDirection).
+                                skip(paginatorUser.skip).
+                                limit(paginatorUser.pageSize).
+                                toArray();
+      const totalCount = await usersCollections.countDocuments({})                       
+      const usersOutput =  users.map((b) => {
             return {
               id: b._id.toString(),
               login: b.login,
@@ -36,10 +45,13 @@ export const userRepository = {
         
     async createUser(newUser: userCreatModel): Promise<userViewModel> {
             const res = await usersCollections.insertOne({...newUser})
-              return {
+            const userViewVodel = {
               id: res.insertedId.toString(),
-              ...newUser,
+              login: newUser.login,
+              email: newUser.email,
+              createdAt: newUser.createdAt
             }
+            return userViewVodel        
           },
 
     async deleteUserId(id: string):Promise<boolean> {
@@ -55,5 +67,15 @@ export const userRepository = {
             } else {
                 return false
                  }
+    },
+
+    async findByLoginOrEmailL(loginOrEmail: string): Promise<userCreatModelPassword | null> {
+      const user = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
+      if (user === null) {
+        return false
+      }
+      else {
+        return user
+      }
     }
 }

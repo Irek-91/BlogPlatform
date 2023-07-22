@@ -22,7 +22,7 @@ exports.usersRouter.get('/', basicAuth_1.authMidleware, (req, res) => __awaiter(
     const founUsers = yield users_service_1.usersService.findUsers(pagination);
     res.send(founUsers);
 }));
-exports.usersRouter.post('/', basicAuth_1.authMidleware, users_validation_1.loginValidation, users_validation_1.passwordValidation, users_validation_1.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.usersRouter.post('/', basicAuth_1.authMidleware, users_validation_1.loginValidation, users_validation_1.loginValidationLength, users_validation_1.passwordValidation, users_validation_1.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginUser = req.body.login;
     const passwordUser = req.body.password;
     const emailUser = req.body.email;

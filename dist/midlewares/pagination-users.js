@@ -4,7 +4,7 @@ exports.getPaginationFromQueryUser = void 0;
 const getPaginationFromQueryUser = (query) => {
     const defaultValuesUsers = {
         sortBy: 'createdAt',
-        sortDirection: 'desc',
+        sortDirection: -1,
         pageNumber: 1,
         pageSize: 10,
         searchLoginTerm: '',
