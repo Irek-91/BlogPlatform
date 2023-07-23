@@ -61,5 +61,10 @@ exports.usersService = {
                 return true;
             }
         });
+    },
+    deleteUserAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield users_db_repository_1.userRepository.deleteUserAll();
+        });
     }
 };

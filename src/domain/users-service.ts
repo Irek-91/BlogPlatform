@@ -49,5 +49,8 @@ export const usersService = {
           {
             return true
           }
+    },
+    async deleteUserAll() : Promise<boolean> {
+      return await userRepository.deleteUserAll()
     }
 }

@@ -87,5 +87,11 @@ exports.userRepository = {
                 return user;
             }
         });
+    },
+    deleteUserAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const deletResult = yield db_mongo_1.usersCollections.deleteMany({});
+            return true;
+        });
     }
 };

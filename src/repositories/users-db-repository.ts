@@ -77,5 +77,9 @@ export const userRepository = {
       else {
         return user
       }
+    },
+    async deleteUserAll() : Promise<boolean> {
+      const deletResult = await usersCollections.deleteMany({})
+      return true
     }
 }

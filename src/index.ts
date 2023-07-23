@@ -6,6 +6,7 @@ import { postRepository } from './repositories/post-db-repository';
 import { runDb } from './db/db-mongo';
 import { usersRouter } from './routes/users-router';
 import { authRouter } from './routes/auth';
+import { userRepository } from './repositories/users-db-repository';
 
 const app = express()
 const port = 3001
@@ -21,6 +22,7 @@ app.use('/auth/login', authRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await blogsRepository.deleteBlogAll();
   await postRepository.deletePostAll();
+  await userRepository.deleteUserAll()
 
   res.sendStatus(204)
 })
