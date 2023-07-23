@@ -24,7 +24,7 @@ export const userRepository = {
                                 skip(paginatorUser.skip).
                                 limit(paginatorUser.pageSize).
                                 toArray();
-      const totalCount = await usersCollections.countDocuments({})                       
+      const totalCount = await usersCollections.countDocuments({filter})                       
       const usersOutput =  users.map((b) => {
             return {
               id: b._id.toString(),

@@ -9,7 +9,7 @@ export const loginValidationLength = body('login').isString().
                                                 withMessage('error in login length');
                                             
 export const passwordValidation = body('password').trim().notEmpty().isString().
-                                                  isLength({max: 20, min: 5}).
+                                                  isLength({max: 20, min: 6}).
                                                   withMessage('error in password');
 
 export const emailValidation = body('email').trim().notEmpty().
