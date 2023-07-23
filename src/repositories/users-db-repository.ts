@@ -1,6 +1,6 @@
 import { usersCollections } from '../db/db-mongo';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { userCreatModel, userCreatModelPassword, userInputModel, userMongoModel, userViewModel } from '../types/user';
+import { userCreatModel, userCreatModelPassword, userInputModel, userMongoModel, userPasswordSaltMongo, userViewModel } from '../types/user';
 import { ObjectId } from "mongodb";
 
 
@@ -69,8 +69,8 @@ export const userRepository = {
                  }
     },
 
-    async findByLoginOrEmailL(loginOrEmail: string): Promise<userCreatModelPassword | null> {
-      const user = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
+    async findByLoginOrEmailL(loginOrEmail: string) {
+      const user  = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
       if (user === null) {
         return false
       }
