@@ -1,6 +1,6 @@
 import { QueryPaginationTypeUser } from "../midlewares/pagination-users"
 import { userRepository } from "../repositories/users-db-repository"
-import { userCreatModel, userCreatModelPassword } from "../types/user"
+import { userCreatModel, userCreatModelPassword, userPasswordSaltMongo } from "../types/user"
 import bcrypt from 'bcrypt'
 
 
@@ -34,24 +34,20 @@ export const usersService = {
         return hash;
       },
     
-    async checkCredentials(loginOrEmail:string, passwordUser:string): Promise<boolean> {
+    async checkCredentials(loginOrEmail:string, passwordUser:string): Promise<userPasswordSaltMongo |boolean> {
         const user = await userRepository.findByLoginOrEmailL(loginOrEmail)
         if (!user) 
           {
           return false
           }
-        else {
-          const passwordHash = await this._generateHash(passwordUser, user.salt)
-            if (user.hash !== passwordHash) 
-            {
-              return false
-            }
-            else 
-            {
-              return true
-            }
+        const passwordHash = await this._generateHash(passwordUser, user.salt)
+          if (user.hash !== passwordHash) 
+          {
+            return false
           }
-      }   
-    
-
+          else 
+          {
+            return true
+          }
+    }
 }

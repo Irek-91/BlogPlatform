@@ -30,6 +30,14 @@ export type userCreatModelPassword = {
     hash:string,
     createdAt: string
 }
+export type userPasswordSaltMongo = {
+    _id: string,
+    login: string,
+    email: string,
+    salt: string,
+    hash:string,
+    createdAt: string
+}
 
 export type loginInputModel = {
     loginOrEmail: string,

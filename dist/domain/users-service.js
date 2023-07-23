@@ -53,14 +53,12 @@ exports.usersService = {
             if (!user) {
                 return false;
             }
+            const passwordHash = yield this._generateHash(passwordUser, user.salt);
+            if (user.hash !== passwordHash) {
+                return false;
+            }
             else {
-                const passwordHash = yield this._generateHash(passwordUser, user.salt);
-                if (user.hash !== passwordHash) {
-                    return false;
-                }
-                else {
-                    return true;
-                }
+                return true;
             }
         });
     }
