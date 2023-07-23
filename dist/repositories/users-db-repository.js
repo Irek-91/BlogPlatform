@@ -30,7 +30,7 @@ exports.userRepository = {
                 skip(paginatorUser.skip).
                 limit(paginatorUser.pageSize).
                 toArray();
-            const totalCount = yield db_mongo_1.usersCollections.countDocuments({});
+            const totalCount = yield db_mongo_1.usersCollections.countDocuments(filter);
             const usersOutput = users.map((b) => {
                 return {
                     id: b._id.toString(),
