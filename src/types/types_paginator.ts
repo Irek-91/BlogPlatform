@@ -1,3 +1,4 @@
+import { commentViewModel } from "./comments"
 import { blogOutput, postOutput } from "./types-db"
 import { userViewModel } from "./user"
 
@@ -23,4 +24,12 @@ export type paginatorUser = {
     pageSize: number,
     totalCount: number,
     items: userViewModel[]
+}
+
+export type paginatorComments = {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: commentViewModel[]
 }

@@ -72,5 +72,35 @@ exports.commentsRepository = {
                 return null;
             }
         });
+    },
+    findCommentsByPostId(postId, pagination) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const comments = yield db_mongo_1.commentsCollections.find({}).
+                    sort(pagination.sortBy, pagination.sortDirection).
+                    skip(pagination.skip).
+                    limit(pagination.pageSize).
+                    toArray();
+                const totalCOunt = yield db_mongo_1.commentsCollections.countDocuments();
+                const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
+                const commentsOutput = comments.map((c) => {
+                    return {
+                        id: c._id.toString(),
+                        content: c.content,
+                        commentatorInfo: c.commentatorInfo,
+                        createdAt: c.createdAt
+                    };
+                });
+                return { pagesCount: pagesCount,
+                    page: pagination.pageNumber,
+                    pageSize: pagination.pageSize,
+                    totalCount: totalCOunt,
+                    items: commentsOutput
+                };
+            }
+            catch (e) {
+                return null;
+            }
+        });
     }
 };

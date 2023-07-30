@@ -79,5 +79,10 @@ exports.commentsService = {
                 return null;
             }
         });
+    },
+    findCommentsByPostId(postId, pagination) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return comments_db_repository_1.commentsRepository.findCommentsByPostId(postId, pagination);
+        });
     }
 };

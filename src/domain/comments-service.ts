@@ -1,7 +1,9 @@
+import { QueryPaginationType } from "../midlewares/pagination";
 import { commentsRepository } from "../repositories/comments-db-repository";
 import { userRepository } from "../repositories/users-db-repository";
 import { commentInputModel, commentViewModel } from "../types/comments";
 import { postOutput } from "../types/types-db";
+import { paginatorComments } from "../types/types_paginator";
 
 export const commentsService = {
     async createdCommentPostId(post: postOutput, userId: string, content: string): Promise<commentViewModel | null> {
@@ -61,6 +63,10 @@ export const commentsService = {
                 return false
             }
         } catch (e) { return null }
+    },
+
+    async findCommentsByPostId(postId: string, pagination: QueryPaginationType): Promise<paginatorComments | null> {
+        return commentsRepository.findCommentsByPostId(postId, pagination)
     }
 
 

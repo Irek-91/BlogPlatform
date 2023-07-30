@@ -2,6 +2,8 @@ import { commentViewModel } from './../types/comments';
 import { ObjectId } from "mongodb"
 import { commentsCollections } from "../db/db-mongo"
 import { commentInputModel } from "../types/comments"
+import { QueryPaginationType } from '../midlewares/pagination';
+import { paginatorComments } from '../types/types_paginator';
 
 export const commentsRepository = {
   async createdCommentPostId(comment: commentInputModel): Promise<commentViewModel> {
@@ -54,6 +56,32 @@ export const commentsRepository = {
         return null
       }
     } catch (e) { return null }
+  },
+
+  async findCommentsByPostId(postId: string, pagination: QueryPaginationType): Promise<paginatorComments | null> {
+    try{
+    const comments = await commentsCollections.find({}).
+                                              sort(pagination.sortBy, pagination.sortDirection).
+                                              skip(pagination.skip).
+                                              limit(pagination.pageSize).
+                                              toArray();
+    const totalCOunt = await commentsCollections.countDocuments()
+    const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
+    const commentsOutput = comments.map((c) => {
+      return {
+        id: c._id.toString(),
+        content: c.content,
+        commentatorInfo: c.commentatorInfo,
+        createdAt: c.createdAt
+      }
+    }
+    )
+    return {pagesCount: pagesCount,
+      page: pagination.pageNumber,
+      pageSize: pagination.pageSize,
+      totalCount: totalCOunt,
+      items : commentsOutput
+    }                                        
+  } catch (e) {return null}
   }
 }
-

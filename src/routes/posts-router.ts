@@ -8,63 +8,63 @@ import { authMiddleware } from "../midlewares/auth-middleware";
 import { commentsService } from "../domain/comments-service";
 
 
-export const postsRouter = Router ({});
+export const postsRouter = Router({});
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    
-    const pagination = getPaginationFromQuery(req.query)
 
-    const posts = await postsService.findPost(pagination);
-    res.send(posts)
-  })
-  
-postsRouter.get('/:id',async (req: Request, res: Response) => {
-    let post = await postsService.getPostId(req.params.id)
+  const pagination = getPaginationFromQuery(req.query)
+
+  const posts = await postsService.findPost(pagination);
+  res.send(posts)
+})
+
+postsRouter.get('/:id', async (req: Request, res: Response) => {
+  let post = await postsService.getPostId(req.params.id)
+  if (post) {
+    res.send(post)
+  } else {
+    res.sendStatus(404)
+  }
+})
+
+postsRouter.delete('/:id',
+  authMidleware,
+  async (req: Request, res: Response) => {
+    let post = await postsService.deletePostId(req.params.id);
     if (post) {
-      res.send(post)
+      res.sendStatus(204)
     } else {
       res.sendStatus(404)
     }
   })
-  
-postsRouter.delete('/:id', 
-    authMidleware,
-    async (req: Request, res: Response) => {
-    let post = await postsService.deletePostId(req.params.id);
-    if (post) {  
-        res.sendStatus(204)
-      } else {
-        res.sendStatus(404)
-      }
-}) 
-  
-postsRouter.post('/', 
+
+postsRouter.post('/',
   authMidleware,
   titleValidation,
   shortDescriptionValidation,
   contentValidation,
   blogIdValidation,
   inputValidationMiddleware,
-  
-  async (req: Request, res: Response) => { 
-   const title = req.body.title;
-   const shortDescription = req.body.shortDescription;
-   const content = req.body.content;
-   const blogId = req.body.blogId;
 
-  let post = await postsService.createdPostId(title, shortDescription, content, blogId)
-  res.status(201).send(post)
+  async (req: Request, res: Response) => {
+    const title = req.body.title;
+    const shortDescription = req.body.shortDescription;
+    const content = req.body.content;
+    const blogId = req.body.blogId;
+
+    let post = await postsService.createdPostId(title, shortDescription, content, blogId)
+    res.status(201).send(post)
   })
-  
+
 postsRouter.put('/:id',
-    authMidleware,
-    titleValidation,
-    shortDescriptionValidation,
-    contentValidation,
-    blogIdValidation,
-    inputValidationMiddleware,
-    
-    async (req: Request, res: Response) => {
+  authMidleware,
+  titleValidation,
+  shortDescriptionValidation,
+  contentValidation,
+  blogIdValidation,
+  inputValidationMiddleware,
+
+  async (req: Request, res: Response) => {
     const id = req.params.id;
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
@@ -75,7 +75,7 @@ postsRouter.put('/:id',
     let postResult = await postsService.updatePostId(id, title, shortDescription, content, blogId)
     if (postResult === true) {
       res.sendStatus(204);
-      } else {
+    } else {
       res.sendStatus(404);
     }
   })
@@ -83,37 +83,42 @@ postsRouter.put('/:id',
 
 postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
 
-    const pagination = getPaginationFromQuery(req.query)
-    const postId = req.params.getPostId
+  const pagination = getPaginationFromQuery(req.query)
+  const postId = req.params.getPostId
 
-    //const commentksPostId = await pos
+  const commentsPostId = await commentsService.findCommentsByPostId(postId, pagination)
 
+  if (commentsPostId !== null) {
+    res.send(commentsPostId)
+  }
+  else {
+    res.sendStatus(404)
+  }
 
 })
 
-  
+
 
 postsRouter.post('/:postId/comments',
   authMiddleware,
   contentCommentValidation,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    if(!req.user) {return res.sendStatus(404)}
+    if (!req.user) { return res.sendStatus(404) }
 
     const postId = req.params.postId
     const userId = req.user._id.toString()
     const content = req.body.content
     const post = await postsService.getPostId(postId)
-    
-    if(!post) return res.sendStatus(404)
+
+    if (!post) return res.sendStatus(404)
 
     let comment = await commentsService.createdCommentPostId(post, userId, content)
-    if (comment === null) 
-        {
-          res.sendStatus(404)
-        }
+    if (comment === null) {
+      res.sendStatus(404)
+    }
     else {
-          res.status(201).send(comment)
-        }
-    
-})
+      res.status(201).send(comment)
+    }
+
+  })
