@@ -124,7 +124,7 @@ exports.postRepository = {
     },
     createdPostId(newPost) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_mongo_1.postsCollections.insertOne(Object.assign({}, newPost));
+            const res = yield db_mongo_1.postsCollections.insertOne(Object.assign(Object.assign({}, newPost), { _id: new mongodb_1.ObjectId() }));
             return Object.assign({ id: res.insertedId.toString() }, newPost);
         });
     },

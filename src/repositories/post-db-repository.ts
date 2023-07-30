@@ -68,7 +68,7 @@ export const postRepository = {
     },
 
     
-    async getPostId(id: string):Promise<postOutput | null | boolean> {
+    async getPostId(id: string):Promise<postOutput | false> {
         
         try {let post =  await postsCollections.findOne({_id: new ObjectId(id)});
         if (!post) {
@@ -100,7 +100,7 @@ export const postRepository = {
 
         
     async createdPostId(newPost:postInput): Promise<postOutput> {     
-        const res = await postsCollections.insertOne({...newPost});
+        const res = await postsCollections.insertOne({...newPost, _id: new ObjectId()});
               
         return {
             id: res.insertedId.toString(),

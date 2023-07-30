@@ -1,6 +1,8 @@
 import {MongoClient, ServerApiVersion, ObjectId} from 'mongodb'
 import dotenv from 'dotenv'
-import { postsCollectionsType } from '../types/types-db';
+import { userMongoModel } from '../types/user';
+import { postMongoDb } from '../types/types-db';
+import { commentMongoModel, commentViewModel } from '../types/comments';
 dotenv.config()
 
 
@@ -13,8 +15,10 @@ const client = new MongoClient(mongoUri)
 
 const db = client.db('BlogPlatform');
 export const blogsCollections = db.collection('blogs')
-export const postsCollections = db.collection('posts')
-export const usersCollections = db.collection('users')
+export const postsCollections = db.collection<postMongoDb>('posts')
+export const usersCollections = db.collection<userMongoModel>('users')
+export const commentsCollections = db.collection<commentMongoModel>('comments')
+
 
 
 

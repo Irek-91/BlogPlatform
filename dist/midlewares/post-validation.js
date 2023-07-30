@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = void 0;
+exports.contentCommentValidation = exports.blogIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = void 0;
 const express_validator_1 = require("express-validator");
 const blogs_db_repository_1 = require("../repositories/blogs-db-repository");
 exports.titleValidation = (0, express_validator_1.body)('title').trim().notEmpty().isString().isLength({ max: 30 }).withMessage('error in string length');
@@ -22,3 +22,4 @@ exports.blogIdValidation = (0, express_validator_1.body)('blogId').trim().notEmp
     }
     return true;
 }));
+exports.contentCommentValidation = (0, express_validator_1.body)('content').trim().notEmpty().isString().isLength({ min: 20, max: 300 }).withMessage('error in string length');

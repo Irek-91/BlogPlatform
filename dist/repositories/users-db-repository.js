@@ -50,7 +50,7 @@ exports.userRepository = {
     },
     createUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_mongo_1.usersCollections.insertOne(Object.assign({}, newUser));
+            const res = yield db_mongo_1.usersCollections.insertOne(Object.assign(Object.assign({}, newUser), { _id: new mongodb_1.ObjectId() }));
             const userViewVodel = {
                 id: res.insertedId.toString(),
                 login: newUser.login,
@@ -93,5 +93,21 @@ exports.userRepository = {
             const deletResult = yield db_mongo_1.usersCollections.deleteMany({});
             return true;
         });
-    }
+    },
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let user = yield db_mongo_1.usersCollections.findOne({ _id: new mongodb_1.ObjectId(userId) });
+                if (user === null) {
+                    return false;
+                }
+                else {
+                    return user;
+                }
+            }
+            catch (e) {
+                return false;
+            }
+        });
+    },
 };

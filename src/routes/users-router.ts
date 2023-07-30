@@ -36,7 +36,6 @@ usersRouter.post('/',
 
 )
 
-
 usersRouter.delete('/:id',
     authMidleware,
     async (req: Request, res: Response) => {

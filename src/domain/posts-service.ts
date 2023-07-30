@@ -16,7 +16,7 @@ export const postsService = {
         return postRepository.findPostsBlogId(paginationQuery, blogId)
     },
 
-    async getPostId(id: string):Promise<postOutput | null | boolean> {
+    async getPostId(id: string):Promise<postOutput  | false> {
         return postRepository.getPostId(id)
     },
 

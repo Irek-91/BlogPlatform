@@ -1,13 +1,14 @@
 import { usersCollections } from '../db/db-mongo';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { userCreatModel, userCreatModelPassword, userInputModel, userMongoModel, userPasswordSaltMongo, userViewModel } from '../types/user';
-import { ObjectId } from "mongodb";
+import { User, userCreatModel, userMeViewModel, userMongoModel, userViewModel, } from '../types/user';
+import { Filter, ObjectId } from "mongodb";
 
 
 
 export const userRepository = {
+
     async findUsers(paginatorUser: QueryPaginationTypeUser) {
-      const filter: any = {};
+      const filter: Filter<userMongoModel> = {};
 
       if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
         filter.$or = []
@@ -43,8 +44,8 @@ export const userRepository = {
           }
         },
         
-    async createUser(newUser: userCreatModel): Promise<userViewModel> {
-            const res = await usersCollections.insertOne({...newUser})
+    async createUser(newUser:User): Promise<userViewModel> {
+            const res = await usersCollections.insertOne({...newUser, _id: new ObjectId()})
             const userViewVodel = {
               id: res.insertedId.toString(),
               login: newUser.login,
@@ -69,17 +70,33 @@ export const userRepository = {
                  }
     },
 
+
+
     async findByLoginOrEmailL(loginOrEmail: string) {
-      const user  = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
-      if (user === null) {
-        return false
-      }
-      else {
-        return user
-      }
+        const user  = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
+        if (user === null) {
+          return false
+        }
+        else {
+          return user
+        }
     },
     async deleteUserAll() : Promise<boolean> {
       const deletResult = await usersCollections.deleteMany({})
       return true
-    }
+    },
+    
+    async findUserById(userId: string) : Promise<userMongoModel | false> {
+      try {let user =  await usersCollections.findOne({_id: new ObjectId(userId)});
+      if (user === null)
+      {
+          return false
+      }
+       else
+      {
+        return user
+      }
+      } catch (e) {return false}
+    },
+      
 }

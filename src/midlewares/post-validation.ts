@@ -15,4 +15,5 @@ export const blogIdValidation = body('blogId').trim().notEmpty().isString().with
   }
 
   return true
-});
+})
+export const contentCommentValidation = body('content').trim().notEmpty().isString().isLength({min:20, max: 300}).withMessage('error in string length')

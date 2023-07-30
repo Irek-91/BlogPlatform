@@ -1,9 +1,11 @@
 import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
-import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
+import { blogIdValidation, contentCommentValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { authMidleware } from "../midlewares/basicAuth";
 import { postsService } from "../domain/posts-service";
 import { getPaginationFromQuery } from "../midlewares/pagination";
+import { authMiddleware } from "../midlewares/auth-middleware";
+import { commentsService } from "../domain/comments-service";
 
 
 export const postsRouter = Router ({});
@@ -78,7 +80,40 @@ postsRouter.put('/:id',
     }
   })
 
-  /*postsRouter.delete('/testing/all-data', 
-    async (req: Request, res: Response) => {
-      res.sendStatus(204)
-  })*/
+
+postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
+
+    const pagination = getPaginationFromQuery(req.query)
+    const postId = req.params.getPostId
+
+    //const commentksPostId = await pos
+
+
+})
+
+  
+
+postsRouter.post('/:postId/comments',
+  authMiddleware,
+  contentCommentValidation,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    if(!req.user) {return res.sendStatus(404)}
+
+    const postId = req.params.postId
+    const userId = req.user._id.toString()
+    const content = req.body.content
+    const post = await postsService.getPostId(postId)
+    
+    if(!post) return res.sendStatus(404)
+
+    let comment = await commentsService.createdCommentPostId(post, userId, content)
+    if (comment === null) 
+        {
+          res.sendStatus(404)
+        }
+    else {
+          res.status(201).send(comment)
+        }
+    
+})

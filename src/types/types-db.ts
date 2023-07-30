@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export type postInput = {
     title: string,
     shortDescription: string,
@@ -10,7 +12,7 @@ export type postsCollectionsType = postOutput[];
 export type blogsCollectionsType = blogOutput[];
 
 export type postMongoDb = {
-  _id: string,
+  _id: ObjectId,
   title: string,
   shortDescription: string,
   content: string,

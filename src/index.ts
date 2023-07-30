@@ -7,18 +7,18 @@ import { runDb } from './db/db-mongo';
 import { usersRouter } from './routes/users-router';
 import { authRouter } from './routes/auth';
 import { userRepository } from './repositories/users-db-repository';
+import { commentsRouter } from './routes/comments-router';
 
 const app = express()
 const port = 3001
 
 
 app.use(express.json())
-
 app.use('/posts', postsRouter)
 app.use('/blogs', blogsRouter)
 app.use('/users', usersRouter)
-app.use('/auth/login', authRouter)
-
+app.use('/auth', authRouter)
+app.use('/comments', commentsRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await blogsRepository.deleteBlogAll();
   await postRepository.deletePostAll();

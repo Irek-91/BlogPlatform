@@ -58,13 +58,29 @@ exports.usersService = {
                 return false;
             }
             else {
-                return true;
+                return user;
             }
         });
     },
     deleteUserAll() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield users_db_repository_1.userRepository.deleteUserAll();
+        });
+    },
+    findByUserId(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            /*const userId = await jwtService.getUserIdByToken()
+            if (userId) {*/
+            const result = yield users_db_repository_1.userRepository.findUserById(userId);
+            if (result) {
+                const resultUserViewModel = {
+                    email: result.email,
+                    login: result.login,
+                    userId: result._id
+                };
+                return resultUserViewModel;
+            }
+            return false;
         });
     }
 };

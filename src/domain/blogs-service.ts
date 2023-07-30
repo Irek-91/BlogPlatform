@@ -38,4 +38,3 @@ export const blogsService = {
       return await blogsRepository.deleteBlogAll()
     }
   }
-

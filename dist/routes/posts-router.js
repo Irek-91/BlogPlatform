@@ -16,6 +16,8 @@ const post_validation_1 = require("../midlewares/post-validation");
 const basicAuth_1 = require("../midlewares/basicAuth");
 const posts_service_1 = require("../domain/posts-service");
 const pagination_1 = require("../midlewares/pagination");
+const auth_middleware_1 = require("../midlewares/auth-middleware");
+const comments_service_1 = require("../domain/comments-service");
 exports.postsRouter = (0, express_1.Router)({});
 exports.postsRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
@@ -62,7 +64,26 @@ exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.tit
         res.sendStatus(404);
     }
 }));
-/*postsRouter.delete('/testing/all-data',
-  async (req: Request, res: Response) => {
-    res.sendStatus(204)
-})*/ 
+exports.postsRouter.get('/:postId/comments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
+    const postId = req.params.getPostId;
+    //const commentksPostId = await pos
+}));
+exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        return res.sendStatus(404);
+    }
+    const postId = req.params.postId;
+    const userId = req.user._id.toString();
+    const content = req.body.content;
+    const post = yield posts_service_1.postsService.getPostId(postId);
+    if (!post)
+        return res.sendStatus(404);
+    let comment = yield comments_service_1.commentsService.createdCommentPostId(post, userId, content);
+    if (comment === null) {
+        res.sendStatus(404);
+    }
+    else {
+        res.status(201).send(comment);
+    }
+}));
