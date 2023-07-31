@@ -42,9 +42,9 @@ exports.postsService = {
                 }
                 const createdAt = new Date().toISOString();
                 const newPost = {
-                    title: title,
-                    shortDescription: shortDescription,
-                    content: content,
+                    title,
+                    shortDescription,
+                    content,
                     blogId: blogId,
                     blogName: blog.name,
                     createdAt: createdAt

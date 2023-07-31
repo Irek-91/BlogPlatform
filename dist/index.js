@@ -22,6 +22,7 @@ const users_router_1 = require("./routes/users-router");
 const auth_1 = require("./routes/auth");
 const users_db_repository_1 = require("./repositories/users-db-repository");
 const comments_router_1 = require("./routes/comments-router");
+const comments_db_repository_1 = require("./repositories/comments-db-repository");
 const app = (0, express_1.default)();
 const port = 3001;
 app.use(express_1.default.json());
@@ -34,6 +35,7 @@ app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, 
     yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
     yield post_db_repository_1.postRepository.deletePostAll();
     yield users_db_repository_1.userRepository.deleteUserAll();
+    yield comments_db_repository_1.commentsRepository.deleteCommentsAll();
     res.sendStatus(204);
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {

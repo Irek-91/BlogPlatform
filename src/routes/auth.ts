@@ -20,8 +20,8 @@ authRouter.post('/login',
         const newUser = await usersService.checkCredentials(loginOrEmail,passwordUser);
         if (newUser)
             {
-                const token = await jwtService.createJWT(newUser)
-                res.status(200).send(token)
+                const accessToken = await jwtService.createJWT(newUser)
+                res.status(200).send({accessToken})
             }
         else {
             res.sendStatus(401)

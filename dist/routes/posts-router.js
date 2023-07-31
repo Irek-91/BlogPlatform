@@ -83,9 +83,10 @@ exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, 
     const userId = req.user._id.toString();
     const content = req.body.content;
     const post = yield posts_service_1.postsService.getPostId(postId);
-    if (!post)
+    if (post === false) {
         return res.sendStatus(404);
-    let comment = yield comments_service_1.commentsService.createdCommentPostId(post, userId, content);
+    }
+    let comment = yield comments_service_1.commentsService.createdCommentPostId(postId, userId, content);
     if (comment === null) {
         res.sendStatus(404);
     }

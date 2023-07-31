@@ -12,6 +12,7 @@ export type commentViewModel = {
 
   export type commentMongoModel = {
     _id: ObjectId,
+    postId: string,
     content: string,
     commentatorInfo: {
         userId: string,
@@ -21,6 +22,7 @@ export type commentViewModel = {
   }
 
   export type commentInputModel = {
+    postId: string,
     content: string,
     commentatorInfo: {
         userId: string,

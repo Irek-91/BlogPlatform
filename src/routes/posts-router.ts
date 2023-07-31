@@ -111,9 +111,8 @@ postsRouter.post('/:postId/comments',
     const content = req.body.content
     const post = await postsService.getPostId(postId)
 
-    if (!post) return res.sendStatus(404)
-
-    let comment = await commentsService.createdCommentPostId(post, userId, content)
+    if (post === false) {return res.sendStatus(404)}
+    let comment = await commentsService.createdCommentPostId(postId, userId, content)
     if (comment === null) {
       res.sendStatus(404)
     }

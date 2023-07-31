@@ -3,11 +3,12 @@ import { postsRouter} from './routes/posts-router';
 import { blogsRouter} from './routes/blogs-router';
 import { blogsRepository } from './repositories/blogs-db-repository';
 import { postRepository } from './repositories/post-db-repository';
-import { runDb } from './db/db-mongo';
+import { commentsCollections, runDb } from './db/db-mongo';
 import { usersRouter } from './routes/users-router';
 import { authRouter } from './routes/auth';
 import { userRepository } from './repositories/users-db-repository';
 import { commentsRouter } from './routes/comments-router';
+import { commentsRepository } from './repositories/comments-db-repository';
 
 const app = express()
 const port = 3001
@@ -22,7 +23,8 @@ app.use('/comments', commentsRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await blogsRepository.deleteBlogAll();
   await postRepository.deletePostAll();
-  await userRepository.deleteUserAll()
+  await userRepository.deleteUserAll();
+  await commentsRepository.deleteCommentsAll()
 
   res.sendStatus(204)
 })

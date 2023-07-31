@@ -13,7 +13,7 @@ exports.commentsService = void 0;
 const comments_db_repository_1 = require("../repositories/comments-db-repository");
 const users_db_repository_1 = require("../repositories/users-db-repository");
 exports.commentsService = {
-    createdCommentPostId(post, userId, content) {
+    createdCommentPostId(postId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             const createdAt = new Date().toISOString();
             const user = yield users_db_repository_1.userRepository.findUserById(userId);
@@ -21,6 +21,7 @@ exports.commentsService = {
                 return null;
             }
             const newComment = {
+                postId: postId,
                 content: content,
                 commentatorInfo: {
                     userId: userId,

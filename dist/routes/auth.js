@@ -22,8 +22,8 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidation, aurh
     const passwordUser = req.body.password;
     const newUser = yield users_service_1.usersService.checkCredentials(loginOrEmail, passwordUser);
     if (newUser) {
-        const token = yield jwt_service_1.jwtService.createJWT(newUser);
-        res.status(200).send(token);
+        const accessToken = yield jwt_service_1.jwtService.createJWT(newUser);
+        res.status(200).send({ accessToken });
     }
     else {
         res.sendStatus(401);

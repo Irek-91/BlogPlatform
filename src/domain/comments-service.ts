@@ -6,7 +6,7 @@ import { postOutput } from "../types/types-db";
 import { paginatorComments } from "../types/types_paginator";
 
 export const commentsService = {
-    async createdCommentPostId(post: postOutput, userId: string, content: string): Promise<commentViewModel | null> {
+    async createdCommentPostId(postId: string, userId: string, content: string): Promise<commentViewModel | null> {
 
         const createdAt = new Date().toISOString();
         const user = await userRepository.findUserById(userId)
@@ -15,6 +15,7 @@ export const commentsService = {
         }
 
         const newComment: commentInputModel = {
+            postId: postId,
             content: content,
             commentatorInfo: {
                 userId: userId,

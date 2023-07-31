@@ -76,12 +76,13 @@ exports.commentsRepository = {
     findCommentsByPostId(postId, pagination) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const comments = yield db_mongo_1.commentsCollections.find({}).
+                const filter = { postId: postId };
+                const comments = yield db_mongo_1.commentsCollections.find(filter).
                     sort(pagination.sortBy, pagination.sortDirection).
                     skip(pagination.skip).
                     limit(pagination.pageSize).
                     toArray();
-                const totalCOunt = yield db_mongo_1.commentsCollections.countDocuments();
+                const totalCOunt = yield db_mongo_1.commentsCollections.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const commentsOutput = comments.map((c) => {
                     return {
@@ -101,6 +102,12 @@ exports.commentsRepository = {
             catch (e) {
                 return null;
             }
+        });
+    },
+    deleteCommentsAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const deletResult = yield db_mongo_1.commentsCollections.deleteMany({});
+            return true;
         });
     }
 };

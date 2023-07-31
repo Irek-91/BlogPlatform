@@ -32,9 +32,9 @@ export const postsService = {
         const createdAt = new Date().toISOString();
 
         const newPost:  postInput= {
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
+            title,
+            shortDescription,
+            content,
             blogId: blogId,
             blogName: blog!.name,
             createdAt: createdAt

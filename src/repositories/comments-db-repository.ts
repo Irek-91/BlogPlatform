@@ -60,12 +60,13 @@ export const commentsRepository = {
 
   async findCommentsByPostId(postId: string, pagination: QueryPaginationType): Promise<paginatorComments | null> {
     try{
-    const comments = await commentsCollections.find({}).
+    const filter = {postId: postId}
+    const comments = await commentsCollections.find(filter).
                                               sort(pagination.sortBy, pagination.sortDirection).
                                               skip(pagination.skip).
                                               limit(pagination.pageSize).
                                               toArray();
-    const totalCOunt = await commentsCollections.countDocuments()
+    const totalCOunt = await commentsCollections.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
     const commentsOutput = comments.map((c) => {
       return {
@@ -83,5 +84,9 @@ export const commentsRepository = {
       items : commentsOutput
     }                                        
   } catch (e) {return null}
+  },
+  async deleteCommentsAll() : Promise<boolean> {
+    const deletResult = await commentsCollections.deleteMany({})
+    return true
   }
 }
