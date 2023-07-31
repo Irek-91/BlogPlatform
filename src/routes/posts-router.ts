@@ -85,6 +85,11 @@ postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
 
   const pagination = getPaginationFromQuery(req.query)
   const postId = req.params.getPostId
+  const resultPostId = await postsService.getPostId(postId)
+  if (resultPostId === false) {
+    res.sendStatus(404)
+  }
+  else if (resultPostId) {
 
   const commentsPostId = await commentsService.findCommentsByPostId(postId, pagination)
 
@@ -94,6 +99,7 @@ postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
   else {
     res.sendStatus(404)
   }
+}
 
 })
 
@@ -117,7 +123,7 @@ postsRouter.post('/:postId/comments',
       res.sendStatus(404)
     }
     else {
-      res.status(201).send(comment)
+      res.status(203).send(comment)
     }
 
   })
