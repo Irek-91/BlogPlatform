@@ -16,7 +16,12 @@ exports.commentsRepository = {
     createdCommentPostId(comment) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield db_mongo_1.commentsCollections.insertOne(Object.assign(Object.assign({}, comment), { _id: new mongodb_1.ObjectId() }));
-            return Object.assign({ id: res.insertedId.toString() }, comment);
+            return {
+                id: res.insertedId.toString(),
+                content: comment.content,
+                commentatorInfo: comment.commentatorInfo,
+                createdAt: comment.createdAt
+            };
         });
     },
     findCommentById(commentId) {

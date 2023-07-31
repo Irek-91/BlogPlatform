@@ -10,7 +10,9 @@ export const commentsRepository = {
     const res = await commentsCollections.insertOne({ ...comment, _id: new ObjectId() })
     return {
       id: res.insertedId.toString(),
-      ...comment
+      content: comment.content,
+      commentatorInfo: comment.commentatorInfo,
+      createdAt: comment.createdAt
     }
   },
 

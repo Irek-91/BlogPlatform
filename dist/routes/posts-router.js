@@ -67,12 +67,18 @@ exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.tit
 exports.postsRouter.get('/:postId/comments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
     const postId = req.params.getPostId;
-    const commentsPostId = yield comments_service_1.commentsService.findCommentsByPostId(postId, pagination);
-    if (commentsPostId !== null) {
-        res.send(commentsPostId);
-    }
-    else {
+    const resultPostId = yield posts_service_1.postsService.getPostId(postId);
+    if (resultPostId === false) {
         res.sendStatus(404);
+    }
+    else if (resultPostId) {
+        const commentsPostId = yield comments_service_1.commentsService.findCommentsByPostId(postId, pagination);
+        if (commentsPostId !== null) {
+            res.send(commentsPostId);
+        }
+        else {
+            res.sendStatus(404);
+        }
     }
 }));
 exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -91,6 +97,6 @@ exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, 
         res.sendStatus(404);
     }
     else {
-        res.status(201).send(comment);
+        res.status(203).send(comment);
     }
 }));
