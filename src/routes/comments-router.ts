@@ -32,7 +32,7 @@ commentsRouter.put('/:commentsId',
         if (resultContent === false) {
             res.sendStatus(403)
         }
-        if (resultContent === true) {
+        else if (resultContent === true) {
             res.sendStatus(204)
         }
         else {

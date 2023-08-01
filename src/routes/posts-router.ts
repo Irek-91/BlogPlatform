@@ -123,7 +123,7 @@ postsRouter.post('/:postId/comments',
       res.sendStatus(404)
     }
     else {
-      res.status(203).send(comment)
+      res.status(201).send(comment)
     }
 
   })

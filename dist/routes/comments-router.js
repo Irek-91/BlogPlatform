@@ -36,7 +36,7 @@ exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, pos
     if (resultContent === false) {
         res.sendStatus(403);
     }
-    if (resultContent === true) {
+    else if (resultContent === true) {
         res.sendStatus(204);
     }
     else {

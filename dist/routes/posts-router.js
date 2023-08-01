@@ -97,6 +97,6 @@ exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, 
         res.sendStatus(404);
     }
     else {
-        res.status(203).send(comment);
+        res.status(201).send(comment);
     }
 }));
