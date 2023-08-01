@@ -66,7 +66,7 @@ exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.tit
 }));
 exports.postsRouter.get('/:postId/comments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
-    const postId = req.params.getPostId;
+    const postId = req.params.postId;
     const resultPostId = yield posts_service_1.postsService.getPostId(postId);
     if (resultPostId === false) {
         res.sendStatus(404);

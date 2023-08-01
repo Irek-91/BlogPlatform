@@ -84,7 +84,7 @@ postsRouter.put('/:id',
 postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
 
   const pagination = getPaginationFromQuery(req.query)
-  const postId = req.params.getPostId
+  const postId = req.params.postId
   const resultPostId = await postsService.getPostId(postId)
   if (resultPostId === false) {
     res.sendStatus(404)
