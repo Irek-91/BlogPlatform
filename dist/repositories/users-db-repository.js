@@ -16,13 +16,17 @@ exports.userRepository = {
     findUsers(paginatorUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const filter = {};
+            // const filter = {
+            //   $or: [{login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' }
+            //   ]
+            // }
             if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
                 filter.$or = [];
                 if (paginatorUser.searchLoginTerm) {
-                    filter.$or.push({ login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' } });
+                    filter.$or.push({ 'accountData.login': { $regex: paginatorUser.searchLoginTerm, $options: 'i' } });
                 }
                 if (paginatorUser.searchEmailTerm) {
-                    filter.$or.push({ email: { $regex: paginatorUser.searchEmailTerm, $options: 'i' } });
+                    filter.$or.push({ 'accountData.email': { $regex: paginatorUser.searchEmailTerm, $options: 'i' } });
                 }
             }
             const users = yield db_mongo_1.usersCollections.find(filter).
@@ -34,9 +38,9 @@ exports.userRepository = {
             const usersOutput = users.map((b) => {
                 return {
                     id: b._id.toString(),
-                    login: b.login,
-                    email: b.email,
-                    createdAt: b.createdAt,
+                    login: b.accountData.login,
+                    email: b.accountData.email,
+                    createdAt: b.accountData.createdAt,
                 };
             });
             return {
@@ -53,9 +57,9 @@ exports.userRepository = {
             const res = yield db_mongo_1.usersCollections.insertOne(Object.assign(Object.assign({}, newUser), { _id: new mongodb_1.ObjectId() }));
             const userViewVodel = {
                 id: res.insertedId.toString(),
-                login: newUser.login,
-                email: newUser.email,
-                createdAt: newUser.createdAt
+                login: newUser.accountData.login,
+                email: newUser.accountData.email,
+                createdAt: newUser.accountData.createdAt
             };
             return userViewVodel;
         });
@@ -79,7 +83,7 @@ exports.userRepository = {
     },
     findByLoginOrEmailL(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield db_mongo_1.usersCollections.findOne({ $or: [{ email: loginOrEmail }, { login: loginOrEmail }] });
+            const user = yield db_mongo_1.usersCollections.findOne({ $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }] });
             if (user === null) {
                 return false;
             }
@@ -110,4 +114,32 @@ exports.userRepository = {
             }
         });
     },
+    findUserByCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let user = yield db_mongo_1.usersCollections.findOne({ "emailConfirmation.confirmationCode": code });
+                return user;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    updateConfirmation(_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield db_mongo_1.usersCollections.updateOne({ _id }, { $set: { "emailConfirmation.isConfirmed": true } });
+            return result.modifiedCount === 1;
+        });
+    },
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let user = yield db_mongo_1.usersCollections.findOne({ "accountData.email": email });
+                return user;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    }
 };

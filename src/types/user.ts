@@ -1,11 +1,18 @@
 import { ObjectId, WithId } from "mongodb"
 
 export type User = {
-    login: string,
-    email: string,
-    salt: string,
-    hash: string,
-    createdAt: string
+    accountData : {
+        login: string,
+        email: string,
+        salt: string,
+        hash: string,
+        createdAt: string
+    },
+    emailConfirmation : {
+        confirmationCode: string,
+        expiritionDate: any,
+        isConfirmed: boolean
+    }
 }
 
 export type UserEncodePassword = {
@@ -15,16 +22,29 @@ export type UserEncodePassword = {
 
 export type userMongoModel = {
     _id: ObjectId,
-    login: string,
-    email: string,
-    salt: string,
-    hash: string,
-    createdAt: string
+    accountData : {
+        login: string,
+        email: string,
+        salt: string,
+        hash: string,
+        createdAt: string
+    },
+    emailConfirmation : {
+        confirmationCode: string,
+        expiritionDate: any,
+        isConfirmed: boolean
+    }
+
 } 
 
-export type userCreatModel = Pick<User, 'login' | 'email' > & {password: string};
+//export type userCreatModel = Pick<User, 'login' | 'email' > & {password: string};
 
-export type userViewModel = Pick<User, 'login' | 'email' | 'createdAt'> & {id: string}
+export type userViewModel = {
+    id: string,
+    login: string,
+    email: string,
+    createdAt: string
+}
 
 export type userMeViewModel = {
     login: string,

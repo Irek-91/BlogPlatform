@@ -25,7 +25,7 @@ exports.commentsService = {
                 content: content,
                 commentatorInfo: {
                     userId: userId,
-                    userLogin: user.login,
+                    userLogin: user.accountData.login,
                 },
                 createdAt: createdAt
             };

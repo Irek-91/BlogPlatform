@@ -27,11 +27,18 @@ exports.usersService = {
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(passwordUser, passwordSalt);
             const newUser = {
-                login: loginUser,
-                email: emailUser,
-                salt: passwordSalt,
-                hash: passwordHash,
-                createdAt: createdAt
+                accountData: {
+                    login: loginUser,
+                    email: emailUser,
+                    salt: passwordSalt,
+                    hash: passwordHash,
+                    createdAt: createdAt
+                },
+                emailConfirmation: {
+                    confirmationCode: '',
+                    expiritionDate: '',
+                    isConfirmed: false
+                }
             };
             return yield users_db_repository_1.userRepository.createUser(newUser);
         });
@@ -53,8 +60,8 @@ exports.usersService = {
             if (!user) {
                 return false;
             }
-            const passwordHash = yield this._generateHash(passwordUser, user.salt);
-            if (user.hash !== passwordHash) {
+            const passwordHash = yield this._generateHash(passwordUser, user.accountData.salt);
+            if (user.accountData.hash !== passwordHash) {
                 return false;
             }
             else {
@@ -74,13 +81,25 @@ exports.usersService = {
             const result = yield users_db_repository_1.userRepository.findUserById(userId);
             if (result) {
                 const resultUserViewModel = {
-                    email: result.email,
-                    login: result.login,
+                    email: result.accountData.email,
+                    login: result.accountData.login,
                     userId: result._id
                 };
                 return resultUserViewModel;
             }
             return false;
+        });
+    },
+    findUserByCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user = yield users_db_repository_1.userRepository.findUserByCode(code);
+            return user;
+        });
+    },
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user = yield users_db_repository_1.userRepository.findUserByEmail(email);
+            return user;
         });
     }
 };

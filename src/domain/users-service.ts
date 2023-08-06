@@ -1,9 +1,10 @@
 import { paginatorUser } from './../types/types_paginator';
 import { QueryPaginationTypeUser } from "../midlewares/pagination-users"
 import { userRepository } from "../repositories/users-db-repository"
-import { User, userMeViewModel, userMongoModel, userViewModel } from "../types/user"
+import { User, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
 import bcrypt from 'bcrypt'
 import { jwtService } from '../application/jwt-service';
+import { usersCollections } from '../db/db-mongo';
 
 
 
@@ -16,13 +17,19 @@ export const usersService = {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10)
     const passwordHash = await this._generateHash(passwordUser, passwordSalt)
-
     const newUser: User = {
-      login: loginUser,
-      email: emailUser,
-      salt: passwordSalt,
-      hash: passwordHash,
-      createdAt: createdAt
+      accountData : {
+        login: loginUser,
+        email: emailUser,
+        salt: passwordSalt,
+        hash: passwordHash,
+        createdAt: createdAt
+    },
+    emailConfirmation : {
+        confirmationCode: '',
+        expiritionDate: '',
+        isConfirmed: false
+    }
     }
     return await userRepository.createUser(newUser)
   },
@@ -41,14 +48,15 @@ export const usersService = {
     if (!user) {
       return false
     }
-    const passwordHash = await this._generateHash(passwordUser, user.salt)
-    if (user.hash !== passwordHash) {
+    const passwordHash = await this._generateHash(passwordUser, user.accountData.salt)
+    if (user.accountData.hash !== passwordHash) {
       return false
     }
     else {
       return user
     }
   },
+
 
   async deleteUserAll(): Promise<boolean> {
     return await userRepository.deleteUserAll()
@@ -60,12 +68,22 @@ export const usersService = {
     const result = await userRepository.findUserById(userId)
     if (result) {
       const resultUserViewModel = {
-        email: result.email,
-        login: result.login,
+        email: result.accountData.email,
+        login: result.accountData.login,
         userId: result._id
       }
     return resultUserViewModel
     }
     return false
+  },
+
+  async findUserByCode(code: string) : Promise<userMongoModel | null> {
+    let user = await userRepository.findUserByCode(code)
+    return user
+  },
+
+  async findUserByEmail(email: string) : Promise<userMongoModel | null> {
+    let user = await userRepository.findUserByEmail(email)
+    return user
   }
 }

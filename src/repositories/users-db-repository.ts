@@ -1,6 +1,7 @@
+import { log } from 'console';
 import { usersCollections } from '../db/db-mongo';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { User, userCreatModel, userMeViewModel, userMongoModel, userViewModel, } from '../types/user';
+import { User, userMeViewModel, userMongoModel, userViewModel, } from '../types/user';
 import { Filter, ObjectId } from "mongodb";
 
 
@@ -9,17 +10,23 @@ export const userRepository = {
 
     async findUsers(paginatorUser: QueryPaginationTypeUser) {
       const filter: Filter<userMongoModel> = {};
+      // const filter = {
+      //   $or: [{login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' }
+
+      //   ]
+      // }
 
       if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
         filter.$or = []
           if (paginatorUser.searchLoginTerm) {
-            filter.$or.push( {login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' }})
+            filter.$or.push( {'accountData.login': { $regex: paginatorUser.searchLoginTerm, $options: 'i' }})
           }
           if (paginatorUser.searchEmailTerm) {
-            filter.$or.push( {email: { $regex: paginatorUser.searchEmailTerm, $options: 'i' }})
+            filter.$or.push( {'accountData.email': { $regex: paginatorUser.searchEmailTerm, $options: 'i' }})
           }
 
       }
+      
       const users = await usersCollections.find(filter).
                                 sort(paginatorUser.sortBy,paginatorUser.sortDirection).
                                 skip(paginatorUser.skip).
@@ -29,12 +36,12 @@ export const userRepository = {
       const usersOutput =  users.map((b) => {
             return {
               id: b._id.toString(),
-              login: b.login,
-              email: b.email,
-              createdAt: b.createdAt,
+              login: b.accountData.login,
+              email: b.accountData.email,
+              createdAt: b.accountData.createdAt,
             }
         })
-    
+  
         return {
             pagesCount: Math.ceil(totalCount/paginatorUser.pageSize),
             page: paginatorUser.pageNumber,
@@ -48,9 +55,9 @@ export const userRepository = {
             const res = await usersCollections.insertOne({...newUser, _id: new ObjectId()})
             const userViewVodel = {
               id: res.insertedId.toString(),
-              login: newUser.login,
-              email: newUser.email,
-              createdAt: newUser.createdAt
+              login: newUser.accountData.login,
+              email: newUser.accountData.email,
+              createdAt: newUser.accountData.createdAt
             }
             return userViewVodel        
           },
@@ -72,8 +79,8 @@ export const userRepository = {
 
 
 
-    async findByLoginOrEmailL(loginOrEmail: string) {
-        const user  = await usersCollections.findOne({$or: [{email: loginOrEmail }, {login: loginOrEmail}]})
+    async findByLoginOrEmailL(loginOrEmail: string): Promise<userMongoModel | false> {
+        const user  = await usersCollections.findOne({$or: [{'accountData.email': loginOrEmail }, {'accountData.login': loginOrEmail}]})
         if (user === null) {
           return false
         }
@@ -98,5 +105,23 @@ export const userRepository = {
       }
       } catch (e) {return false}
     },
+
+    async findUserByCode(code: string): Promise<userMongoModel | null> {
+      try {let user = await usersCollections.findOne({"emailConfirmation.confirmationCode": code})
+      return user}
+      catch (e) {return null}
+    },
+
+    async updateConfirmation(_id: ObjectId): Promise<boolean> {
+      let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.isConfirmed": true}})
+      return result.modifiedCount === 1
+    },
+
+    async findUserByEmail(email: string): Promise<userMongoModel | null>{
+      try {let user = await usersCollections.findOne({"accountData.email": email})
+      return user}
+      catch (e) {return null}
+    }
+    
       
 }
