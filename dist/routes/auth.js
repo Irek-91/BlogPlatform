@@ -18,6 +18,7 @@ const jwt_service_1 = require("../application/jwt-service");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const users_validation_1 = require("../midlewares/users_validation");
 const auth_service_1 = require("../domain/auth-service");
+const email_adapter_1 = require("../application/email-adapter");
 exports.authRouter = (0, express_1.Router)({});
 exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidation, aurh_validation_1.passwordValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
@@ -85,4 +86,8 @@ exports.authRouter.post('/registration-email-resending', users_validation_1.emai
             ]
         });
     }
+}));
+exports.authRouter.post('/registration-email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const info = yield email_adapter_1.emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.code);
+    res.sendStatus(204);
 }));

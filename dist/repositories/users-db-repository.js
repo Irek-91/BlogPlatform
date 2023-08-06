@@ -92,17 +92,6 @@ exports.userRepository = {
             }
         });
     },
-    findByEmailL(email) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = yield db_mongo_1.usersCollections.findOne({ 'accountData.email': email });
-            if (user === null) {
-                return false;
-            }
-            else {
-                return user;
-            }
-        });
-    },
     deleteUserAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongo_1.usersCollections.deleteMany({});

@@ -107,3 +107,9 @@ authRouter.post('/registration-email-resending',
     }
 )
 
+
+authRouter.post('/registration-email',
+    async (req: Request, res: Response) => {
+    const info = await emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.code)
+    res.sendStatus(204)
+})
