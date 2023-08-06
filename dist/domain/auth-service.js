@@ -23,7 +23,8 @@ exports.authService = {
     creatUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
             const emailChack = yield users_db_repository_1.userRepository.findUserByEmail(email);
-            if (emailChack) {
+            const loginChack = yield users_db_repository_1.userRepository.findUserByLogin(login);
+            if (emailChack || loginChack) {
                 return null;
             } //пользователь с данным адресом электронной почты или паролем уже существует
             const createdAt = new Date().toISOString();
