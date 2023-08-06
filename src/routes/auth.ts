@@ -88,7 +88,7 @@ authRouter.post('/registration-confirmation',
 )
 
 
-authRouter.post('/registration-email-confirmation',
+authRouter.post('/registration-email-resending',
     emailValidation,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
@@ -107,9 +107,3 @@ authRouter.post('/registration-email-confirmation',
     }
 )
 
-
-authRouter.post('/registration-email',
-    async (req: Request, res: Response) => {
-    const info = await emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.code)
-    res.sendStatus(204)
-})
