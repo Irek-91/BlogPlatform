@@ -22,8 +22,8 @@ const email_adapter_1 = require("../application/email-adapter");
 exports.authService = {
     creatUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const emailChack = yield users_db_repository_1.userRepository.findByLoginOrEmailL(email);
-            if (emailChack) {
+            const emailChack = yield users_db_repository_1.userRepository.findByEmailL(email);
+            if (emailChack === false) {
                 return null;
             } //пользователь с данным адресом электронной почты или паролем уже существует
             const createdAt = new Date().toISOString();

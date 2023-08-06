@@ -7,10 +7,11 @@ import { usersService } from './users-service';
 import { emailAdapter } from '../application/email-adapter';
 
 
+
 export const authService = {
     async creatUser (login: string, password: string, email: string): Promise<userViewModel | null> {
-        const emailChack = await userRepository.findByLoginOrEmailL(email)
-        if (emailChack) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
+        const emailChack = await userRepository.findByEmailL(email)
+        if (emailChack === false) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
