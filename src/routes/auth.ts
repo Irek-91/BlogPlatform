@@ -63,10 +63,18 @@ authRouter.post('/registration',
             res.sendStatus(204)
         }
         else {
-            res.sendStatus(400)
+          res.status(400).send({
+                errorsMessages: [
+                    {
+                        message: "if email is already confirmed",
+                        field: "email"
+                    }
+                ]
+            })
         }
     }
 )
+
 
 authRouter.post('/registration-confirmation',
     async (req: Request, res: Response) => {

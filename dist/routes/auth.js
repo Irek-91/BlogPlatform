@@ -52,7 +52,14 @@ exports.authRouter.post('/registration', users_validation_1.loginValidation, use
         res.sendStatus(204);
     }
     else {
-        res.sendStatus(400);
+        res.status(400).send({
+            errorsMessages: [
+                {
+                    message: "if email is already confirmed",
+                    field: "email"
+                }
+            ]
+        });
     }
 }));
 exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

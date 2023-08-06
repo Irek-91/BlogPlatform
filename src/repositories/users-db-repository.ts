@@ -123,7 +123,12 @@ export const userRepository = {
       try {let user = await usersCollections.findOne({"accountData.email": email})
       return user}
       catch (e) {return null}
-    }
+    },
+
+    async updateCode(_id: ObjectId, code: string, expiritionDate: Date): Promise<boolean> {
+      let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate" : expiritionDate}})
+      return result.modifiedCount === 2
+    },
     
-      
+    
 }

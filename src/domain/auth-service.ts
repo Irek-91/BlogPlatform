@@ -11,11 +11,11 @@ import { emailAdapter } from '../application/email-adapter';
 export const authService = {
     async creatUser (login: string, password: string, email: string): Promise<userViewModel | null> {
         const emailChack = await userRepository.findUserByEmail(email)
-        if (emailChack === null) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
+        if (emailChack) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
-        
+
         const newUser: User = {
             accountData: {
                 login: login,
@@ -27,7 +27,7 @@ export const authService = {
             emailConfirmation: {
                 confirmationCode: uuidv4(),
                 expiritionDate: add(new Date(), {
-                    hours: 1,
+                    //hours: 1,
                     minutes: 3
                 }),
                 isConfirmed: false
@@ -64,13 +64,33 @@ export const authService = {
 
     async resendingEmail(email: string) : Promise<null | boolean> {
         let user = await usersService.findUserByEmail(email)
-        if (!user) return false
+        if (user === null) return false
         if (user.emailConfirmation.isConfirmed === true) return false
-        try {
-            await emailAdapter.sendEmail(user.accountData.email, 'code', user.emailConfirmation.confirmationCode)
-            return true
-        } catch(e) {
+        if (user.emailConfirmation.expiritionDate > new Date ()) {
+            try {
+                console.log('tut')
+                await emailAdapter.sendEmail(user.accountData.email, 'code', user.emailConfirmation.confirmationCode)
+                return true
+            } catch(e) {
             return null
+            }
+        }
+        else {
+            const confirmationCode = uuidv4();
+            const expiritionDate = add(new Date(), {
+                //hours: 1,
+                minutes: 2
+            })
+            const updateCodeUser = await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
+            if (updateCodeUser) {
+                try {
+                    await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
+                    return true
+                } catch(e) {
+                return null
+                }
+            }
+            else {return null}
         }
     }
 
