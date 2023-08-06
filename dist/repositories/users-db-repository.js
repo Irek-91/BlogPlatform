@@ -142,10 +142,21 @@ exports.userRepository = {
             }
         });
     },
+    findUserByLogin(login) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let user = yield db_mongo_1.usersCollections.findOne({ "accountData.login": login });
+                return user;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
     updateCode(_id, code, expiritionDate) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongo_1.usersCollections.updateOne({ _id }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate": expiritionDate } });
             return result.modifiedCount === 2;
         });
-    },
+    }
 };

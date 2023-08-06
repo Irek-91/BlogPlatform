@@ -124,11 +124,16 @@ export const userRepository = {
       return user}
       catch (e) {return null}
     },
+    async findUserByLogin(login: string): Promise<userMongoModel | null>{
+      try {let user = await usersCollections.findOne({"accountData.login": login})
+      return user}
+      catch (e) {return null}
+    },
 
     async updateCode(_id: ObjectId, code: string, expiritionDate: Date): Promise<boolean> {
       let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate" : expiritionDate}})
       return result.modifiedCount === 2
-    },
+    }
     
     
 }

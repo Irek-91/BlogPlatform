@@ -11,7 +11,9 @@ import { emailAdapter } from '../application/email-adapter';
 export const authService = {
     async creatUser (login: string, password: string, email: string): Promise<userViewModel | null> {
         const emailChack = await userRepository.findUserByEmail(email)
-        if (emailChack) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
+        const loginChack = await userRepository.findUserByLogin(login)
+
+        if (emailChack || loginChack) {return null} //пользователь с данным адресом электронной почты или паролем уже существует
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -27,7 +29,7 @@ export const authService = {
             emailConfirmation: {
                 confirmationCode: uuidv4(),
                 expiritionDate: add(new Date(), {
-                    //hours: 1,
+                    hours: 1,
                     minutes: 3
                 }),
                 isConfirmed: false
@@ -78,7 +80,7 @@ export const authService = {
         else {
             const confirmationCode = uuidv4();
             const expiritionDate = add(new Date(), {
-                //hours: 1,
+                hours: 1,
                 minutes: 2
             })
             const updateCodeUser = await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
