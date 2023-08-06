@@ -88,15 +88,6 @@ export const userRepository = {
           return user
         }
     },
-    async findByEmailL(email: string): Promise<userMongoModel | false> {
-      const user  = await usersCollections.findOne({'accountData.email': email })
-      if (user === null) {
-        return false
-      }
-      else {
-        return user
-      }
-  },
 
 
     async deleteUserAll() : Promise<boolean> {
