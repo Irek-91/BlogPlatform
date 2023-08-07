@@ -22,11 +22,6 @@ const email_adapter_1 = require("../application/email-adapter");
 exports.authService = {
     creatUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const emailChack = yield users_db_repository_1.userRepository.findUserByEmail(email);
-            const loginChack = yield users_db_repository_1.userRepository.findUserByLogin(login);
-            if (emailChack || loginChack) {
-                return null;
-            } //пользователь с данным адресом электронной почты или паролем уже существует
             const createdAt = new Date().toISOString();
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(password, passwordSalt);
@@ -88,35 +83,20 @@ exports.authService = {
                 return false;
             if (user.emailConfirmation.isConfirmed === true)
                 return false;
-            if (user.emailConfirmation.expiritionDate > new Date()) {
-                try {
-                    console.log('tut');
-                    yield email_adapter_1.emailAdapter.sendEmail(user.accountData.email, 'code', user.emailConfirmation.confirmationCode);
-                    return true;
-                }
-                catch (e) {
-                    return null;
-                }
-            }
-            else {
+            if (user.emailConfirmation.expiritionDate < new Date())
+                return false;
+            try {
                 const confirmationCode = (0, uuid_1.v4)();
                 const expiritionDate = (0, add_1.default)(new Date(), {
                     hours: 1,
                     minutes: 2
                 });
-                const updateCodeUser = yield users_db_repository_1.userRepository.updateCode(user._id, confirmationCode, expiritionDate);
-                if (updateCodeUser) {
-                    try {
-                        yield email_adapter_1.emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode);
-                        return true;
-                    }
-                    catch (e) {
-                        return null;
-                    }
-                }
-                else {
-                    return null;
-                }
+                yield users_db_repository_1.userRepository.updateCode(user._id, confirmationCode, expiritionDate);
+                yield email_adapter_1.emailAdapter.sendEmail(user.accountData.email, 'code', user.emailConfirmation.confirmationCode);
+                return true;
+            }
+            catch (e) {
+                return null;
             }
         });
     }

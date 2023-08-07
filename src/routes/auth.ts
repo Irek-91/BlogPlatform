@@ -1,6 +1,7 @@
+import { passwordValidation } from './../midlewares/users_validation';
 import { body } from 'express-validator';
 import { Request, Response, Router } from "express";
-import { loginOrEmailValidation, passwordValidation } from "../midlewares/aurh-validation";
+import { loginOrEmailValidation } from "../midlewares/aurh-validation";
 import { usersService } from "../domain/users-service";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { jwtService } from "../application/jwt-service";
