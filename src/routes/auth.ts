@@ -40,7 +40,7 @@ authRouter.get('/me',
     authMiddleware,
     async (req: Request, res: Response) => {
         if (req.user !== false) {
-            const user = await usersService.findByUserId(req.user._id.toString())
+            const user = await usersService.findByUserId(req.user._id)
             if (user !== false) {
                 res.status(200).send(user)
             }

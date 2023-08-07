@@ -5,6 +5,7 @@ import { User, userMeViewModel, userMongoModel, userViewModel, } from "../types/
 import bcrypt from 'bcrypt'
 import { jwtService } from '../application/jwt-service';
 import { usersCollections } from '../db/db-mongo';
+import { ObjectId } from 'mongodb';
 
 
 
@@ -62,7 +63,7 @@ export const usersService = {
     return await userRepository.deleteUserAll()
   },
 
-  async findByUserId(userId: string): Promise<userMeViewModel | false> {
+  async findByUserId(userId: ObjectId): Promise<userMeViewModel | false> {
     /*const userId = await jwtService.getUserIdByToken()
     if (userId) {*/
     const result = await userRepository.findUserById(userId)

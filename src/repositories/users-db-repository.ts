@@ -95,8 +95,8 @@ export const userRepository = {
       return true
     },
     
-    async findUserById(userId: string) : Promise<userMongoModel | false> {
-      try {let user =  await usersCollections.findOne({_id: new ObjectId(userId)});
+    async findUserById(userId: ObjectId) : Promise<userMongoModel | false> {
+      try {let user =  await usersCollections.findOne({_id: userId});
       if (user === null)
       {
           return false

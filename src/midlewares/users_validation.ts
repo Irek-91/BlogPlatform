@@ -1,8 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { userRepository } from "../repositories/users-db-repository";
 
-
-
 export const loginValidation = body('login').trim().notEmpty().
                                             matches('^[a-zA-Z0-9_-]*$').
                                             withMessage('error in login').
@@ -10,7 +8,7 @@ export const loginValidation = body('login').trim().notEmpty().
 
                                                 const user = await userRepository.findUserByLogin(login);
                                               
-                                                if(!user){
+                                                if(user){
                                                   throw new Error("User with this login not found")
                                                 }
                                                 return true
@@ -30,7 +28,7 @@ export const emailValidation = body('email').trim().notEmpty().
 
                                                 const user = await userRepository.findUserByEmail(email);
                                               
-                                                if(!user){
+                                                if(user){
                                                   throw new Error("User with this email not found")
                                                 }
                                                 return true

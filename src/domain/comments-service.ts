@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { QueryPaginationType } from "../midlewares/pagination";
 import { commentsRepository } from "../repositories/comments-db-repository";
 import { userRepository } from "../repositories/users-db-repository";
@@ -9,7 +10,7 @@ export const commentsService = {
     async createdCommentPostId(postId: string, userId: string, content: string): Promise<commentViewModel | null> {
 
         const createdAt = new Date().toISOString();
-        const user = await userRepository.findUserById(userId)
+        const user = await userRepository.findUserById(new ObjectId(userId))
         if (!user) {
             return null
         }
