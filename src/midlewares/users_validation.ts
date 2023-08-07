@@ -2,6 +2,7 @@ import { body, validationResult } from "express-validator";
 import { userRepository } from "../repositories/users-db-repository";
 
 
+
 export const loginValidation = body('login').trim().notEmpty().
                                             matches('^[a-zA-Z0-9_-]*$').
                                             withMessage('error in login').
