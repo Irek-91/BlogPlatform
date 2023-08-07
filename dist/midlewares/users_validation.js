@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emailValidation = exports.passwordValidation = exports.loginValidationLength = exports.loginValidation = void 0;
+exports.emailValidationCustom = exports.emailValidation = exports.passwordValidation = exports.loginValidationLength = exports.loginValidation = void 0;
 const express_validator_1 = require("express-validator");
 const users_db_repository_1 = require("../repositories/users-db-repository");
 exports.loginValidation = (0, express_validator_1.body)('login').trim().notEmpty().
@@ -30,7 +30,8 @@ exports.passwordValidation = (0, express_validator_1.body)('password').trim().no
     withMessage('error in password');
 exports.emailValidation = (0, express_validator_1.body)('email').trim().notEmpty().
     matches(/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/).
-    withMessage('error in email').
+    withMessage('error in email');
+exports.emailValidationCustom = (0, express_validator_1.body)('email').
     custom((email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_db_repository_1.userRepository.findUserByEmail(email);
     if (user) {

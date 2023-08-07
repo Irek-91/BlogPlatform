@@ -23,7 +23,9 @@ export const passwordValidation = body('password').trim().notEmpty().isString().
 
 export const emailValidation = body('email').trim().notEmpty().
                                             matches(/^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$/).
-                                            withMessage('error in email').
+                                            withMessage('error in email')
+                                                                          
+export const emailValidationCustom = body('email').
                                             custom(async (email) => {
 
                                                 const user = await userRepository.findUserByEmail(email);
@@ -32,6 +34,5 @@ export const emailValidation = body('email').trim().notEmpty().
                                                   throw new Error("User with this email not found")
                                                 }
                                                 return true
-                                              })                               
-
+                                              }) 
 

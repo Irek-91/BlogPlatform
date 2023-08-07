@@ -1,4 +1,4 @@
-import { passwordValidation } from './../midlewares/users_validation';
+import { emailValidationCustom, passwordValidation } from './../midlewares/users_validation';
 import { body } from 'express-validator';
 import { Request, Response, Router } from "express";
 import { loginOrEmailValidation } from "../midlewares/aurh-validation";
@@ -57,6 +57,7 @@ authRouter.post('/registration',
     loginValidationLength,
     passwordValidation,
     emailValidation,
+    emailValidationCustom,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         const user = await authService.creatUser(req.body.login, req.body.password, req.body.email)
