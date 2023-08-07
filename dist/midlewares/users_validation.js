@@ -18,7 +18,7 @@ exports.loginValidation = (0, express_validator_1.body)('login').trim().notEmpty
     custom((login) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_db_repository_1.userRepository.findUserByLogin(login);
     if (!user) {
-        throw new Error("Blog with this BlogId not found");
+        throw new Error("User with this login not found");
     }
     return true;
 }));
@@ -34,7 +34,7 @@ exports.emailValidation = (0, express_validator_1.body)('email').trim().notEmpty
     custom((email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_db_repository_1.userRepository.findUserByEmail(email);
     if (!user) {
-        throw new Error("Blog with this BlogId not found");
+        throw new Error("User with this email not found");
     }
     return true;
 }));

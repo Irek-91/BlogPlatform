@@ -10,7 +10,7 @@ export const loginValidation = body('login').trim().notEmpty().
                                                 const user = await userRepository.findUserByLogin(login);
                                               
                                                 if(!user){
-                                                  throw new Error("Blog with this BlogId not found")
+                                                  throw new Error("User with this login not found")
                                                 }
                                                 return true
                                               })
@@ -30,7 +30,7 @@ export const emailValidation = body('email').trim().notEmpty().
                                                 const user = await userRepository.findUserByEmail(email);
                                               
                                                 if(!user){
-                                                  throw new Error("Blog with this BlogId not found")
+                                                  throw new Error("User with this email not found")
                                                 }
                                                 return true
                                               })                               
