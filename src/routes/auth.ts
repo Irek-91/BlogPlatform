@@ -57,7 +57,7 @@ authRouter.post('/registration',
     loginValidationLength,
     passwordValidation,
     emailValidation,
-    //emailValidationCustom,
+    emailValidationCustom,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         const user = await authService.creatUser(req.body.login, req.body.password, req.body.email)

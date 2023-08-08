@@ -31,7 +31,7 @@ export const emailValidationCustom = body('email').
                                                 const user = await userRepository.findUserByEmail(email);
                                               
                                                 if(user){
-                                                  throw new Error("User with this email not found")
+                                                  throw new Error("User with this email")
                                                 }
                                                 return true
                                               }) 

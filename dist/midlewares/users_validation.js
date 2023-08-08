@@ -35,7 +35,7 @@ exports.emailValidationCustom = (0, express_validator_1.body)('email').
     custom((email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_db_repository_1.userRepository.findUserByEmail(email);
     if (user) {
-        throw new Error("User with this email not found");
+        throw new Error("User with this email");
     }
     return true;
 }));
