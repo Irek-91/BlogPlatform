@@ -64,11 +64,7 @@ export const authService = {
         let user = await usersService.findUserByEmail(email)
         if (user === null) return false
         if (user.emailConfirmation.isConfirmed === true) return false
-        if (user.emailConfirmation.expiritionDate > new Date ()) {
-            await emailAdapter.sendEmail(user.accountData.email, 'code', user.emailConfirmation.confirmationCode)
-            return true
-        }
-         else {
+      
                 const confirmationCode = uuidv4();
                 const expiritionDate = add(new Date(), {
                     hours: 1,
@@ -77,7 +73,5 @@ export const authService = {
                 await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
                 await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
                 return true
-        }
     }
-
 }
