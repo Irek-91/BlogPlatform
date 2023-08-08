@@ -17,7 +17,7 @@ exports.loginValidation = (0, express_validator_1.body)('login').trim().notEmpty
     withMessage('error in login').
     custom((login) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_db_repository_1.userRepository.findUserByLogin(login);
-    if (!user) {
+    if (user) {
         throw new Error("User ");
     }
     return true;

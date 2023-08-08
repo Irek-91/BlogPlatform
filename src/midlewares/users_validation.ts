@@ -8,7 +8,7 @@ export const loginValidation = body('login').trim().notEmpty().
 
                                                 const user = await userRepository.findUserByLogin(login);
                                               
-                                                if(!user){
+                                                if(user){
                                                   throw new Error("User ")
                                                 }
                                                 return true
