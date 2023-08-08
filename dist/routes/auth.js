@@ -47,7 +47,9 @@ exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __
         res.sendStatus(401);
     }
 }));
-exports.authRouter.post('/registration', users_validation_2.loginValidation, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, users_validation_1.emailValidationCustom, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration', users_validation_2.loginValidation, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, 
+//emailValidationCustom,
+input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_service_1.authService.creatUser(req.body.login, req.body.password, req.body.email);
     if (user) {
         res.sendStatus(204);
