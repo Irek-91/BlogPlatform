@@ -24,6 +24,7 @@ const users_db_repository_1 = require("./repositories/users-db-repository");
 const comments_router_1 = require("./routes/comments-router");
 const comments_db_repository_1 = require("./repositories/comments-db-repository");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const tokens_db_repository_1 = require("./repositories/tokens-db-repository");
 const app = (0, express_1.default)();
 const port = 3001;
 app.use((0, cookie_parser_1.default)());
@@ -38,6 +39,7 @@ app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, 
     yield post_db_repository_1.postRepository.deletePostAll();
     yield users_db_repository_1.userRepository.deleteUserAll();
     yield comments_db_repository_1.commentsRepository.deleteCommentsAll();
+    yield tokens_db_repository_1.tokensRepository.deleteTokensAll();
     res.sendStatus(204);
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {

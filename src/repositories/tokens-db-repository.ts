@@ -11,9 +11,15 @@ export const tokensRepository = {
             return result}
         catch (e) {return null}
     },
-    async addRefreshToken (token: string): Promise<boolean> {
-        const res = await refreshTokenCollections.insertOne({token, _id: new ObjectId()})
-        return res.acknowledged
+    async addRefreshToken (token: string): Promise<boolean | null> {
+        try {const res = await refreshTokenCollections.insertOne({token, _id: new ObjectId()})
+        return res.acknowledged}
+        catch (e) {return null}
 
+    },
+
+    async deleteTokensAll () {
+        const deletResult = await refreshTokenCollections.deleteMany({})
+        return true
     }
 }

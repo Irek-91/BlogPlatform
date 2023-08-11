@@ -26,7 +26,7 @@ export const tokensService = {
         return newRefreshToken
     },
 
-    async deleteRefreshToken(refreshToken: string): Promise <boolean> {
+    async deleteRefreshToken(refreshToken: string): Promise <boolean | null> {
         const result = await tokensRepository.addRefreshToken(refreshToken)
         return result
     } 

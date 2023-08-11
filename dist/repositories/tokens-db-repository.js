@@ -26,8 +26,19 @@ exports.tokensRepository = {
     },
     addRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_mongo_1.refreshTokenCollections.insertOne({ token, _id: new mongodb_1.ObjectId() });
-            return res.acknowledged;
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.insertOne({ token, _id: new mongodb_1.ObjectId() });
+                return res.acknowledged;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    deleteTokensAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const deletResult = yield db_mongo_1.refreshTokenCollections.deleteMany({});
+            return true;
         });
     }
 };

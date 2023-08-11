@@ -10,6 +10,7 @@ import { userRepository } from './repositories/users-db-repository';
 import { commentsRouter } from './routes/comments-router';
 import { commentsRepository } from './repositories/comments-db-repository';
 import cookieParser from 'cookie-parser';
+import { tokensRepository } from './repositories/tokens-db-repository';
 
 const app = express()
 const port = 3001
@@ -27,8 +28,8 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await blogsRepository.deleteBlogAll();
   await postRepository.deletePostAll();
   await userRepository.deleteUserAll();
-  await commentsRepository.deleteCommentsAll()
-
+  await commentsRepository.deleteCommentsAll();
+  await tokensRepository.deleteTokensAll()
   res.sendStatus(204)
 })
 
