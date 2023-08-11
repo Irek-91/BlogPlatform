@@ -101,5 +101,5 @@ exports.usersService = {
             let user = yield users_db_repository_1.userRepository.findUserByEmail(email);
             return user;
         });
-    }
+    },
 };

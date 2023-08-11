@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import { userMongoModel } from '../types/user';
 import { postMongoDb } from '../types/types-db';
 import { commentMongoModel, commentViewModel } from '../types/comments';
+import { refreshTokenMongo } from '../types/token-types';
 dotenv.config()
 
 
@@ -18,6 +19,8 @@ export const blogsCollections = db.collection('blogs')
 export const postsCollections = db.collection<postMongoDb>('posts')
 export const usersCollections = db.collection<userMongoModel>('users')
 export const commentsCollections = db.collection<commentMongoModel>('comments')
+export const refreshTokenCollections = db.collection<refreshTokenMongo>('refreshTokens')
+
 
 
 

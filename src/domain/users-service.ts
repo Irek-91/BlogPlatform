@@ -26,7 +26,7 @@ export const usersService = {
         hash: passwordHash,
         createdAt: createdAt
     },
-    emailConfirmation : {
+      emailConfirmation : {
         confirmationCode: '',
         expiritionDate: '',
         isConfirmed: false
@@ -86,5 +86,6 @@ export const usersService = {
   async findUserByEmail(email: string) : Promise<userMongoModel | null> {
     let user = await userRepository.findUserByEmail(email)
     return user
-  }
+  },
+
 }

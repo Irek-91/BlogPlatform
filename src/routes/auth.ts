@@ -1,7 +1,7 @@
 import { emailValidationCustom, passwordValidation } from './../midlewares/users_validation';
-import { body } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import { Request, Response, Router } from "express";
-import { loginOrEmailValidation } from "../midlewares/aurh-validation";
+import { loginOrEmailValidationAuth, passwordValidationAuth } from "../midlewares/aurh-validation";
 import { usersService } from "../domain/users-service";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { jwtService } from "../application/jwt-service";
@@ -10,13 +10,14 @@ import { emailValidation, loginValidation, loginValidationLength } from "../midl
 import { authService } from "../domain/auth-service";
 import { emailAdapter } from "../application/email-adapter";
 import { userInfo } from 'os';
+import { tokensService } from '../domain/token-service';
 
 export const authRouter = Router({});
 
 
 authRouter.post('/login',
-    loginOrEmailValidation,
-    passwordValidation,
+    loginOrEmailValidationAuth,
+    passwordValidationAuth,
     inputValidationMiddleware,
 
     async (req: Request, res: Response) => {
@@ -25,8 +26,49 @@ authRouter.post('/login',
 
         const newUser = await usersService.checkCredentials(loginOrEmail, passwordUser);
         if (newUser) {
-            const accessToken = await jwtService.createJWT(newUser)
-            res.status(200).send({ accessToken })
+            const accessToken = await jwtService.createdJWTAccessToken(newUser._id)
+            const refreshToken = await jwtService.createJWTRefreshToken(newUser._id)
+            if (accessToken !== null || refreshToken !== null) {
+                res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
+                res.status(200).send({ accessToken })
+            }
+        }
+        else {
+            res.sendStatus(401)
+        }
+    }
+)
+
+
+authRouter.post('/refresh-token',
+    async (req: Request, res: Response) => {
+        const cookiesRefreshToken = req.cookies.refreshToken
+        if (!cookiesRefreshToken) res.sendStatus(401)
+        const validationToken = await jwtService.checkingTokenKey(cookiesRefreshToken)
+        if (validationToken === null) res.sendStatus(401)
+        const expiredToken = await jwtService.findToken(cookiesRefreshToken)
+        if (expiredToken !== null) res.sendStatus(401)
+        
+        const newAccessToken = await tokensService.updateAccessTokens(cookiesRefreshToken)
+        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken)
+
+        if (newAccessToken !== null || newRefreshToken !== null) {
+            res.cookie('refreshToken', newRefreshToken, {httpOnly: true,secure: true})
+            res.status(200).send({ newAccessToken })
+            }
+        else {
+        res.sendStatus(401)
+        }
+    }
+)
+
+authRouter.post('/logout',
+    async (req: Request, res: Response) => {
+        const cookiesRefreshToken = req.cookies.refreshToken
+        if (!cookiesRefreshToken) res.sendStatus(401)
+        const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
+        if (result) {
+            res.sendStatus(204)
         }
         else {
             res.sendStatus(401)

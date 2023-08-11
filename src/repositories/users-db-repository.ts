@@ -133,7 +133,25 @@ export const userRepository = {
     async updateCode(_id: ObjectId, code: string, expiritionDate: Date): Promise<boolean> {
       let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate" : expiritionDate}})
       return result.modifiedCount === 2
+    },
+
+    async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
+      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
+      return result.matchedCount === 1}
+      catch (e) {return null}
+    },
+    async addNewrefreshToken(userId: ObjectId, refreshToken: string): Promise<boolean | null>{
+      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.refreshToken': refreshToken}})
+      return result.matchedCount === 1}
+      catch (e) {return null}
+    },
+
+    async findAccesTokenByRefreshToken(refreshToken :string): Promise<userMongoModel | null>{
+      try {let user = await usersCollections.findOne({"tokens.refreshToken": refreshToken})
+          if (user) {return user}
+          else {return null}
+      }
+      catch (e) {return null}
     }
-    
     
 }

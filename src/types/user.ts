@@ -34,6 +34,10 @@ export type userMongoModel = {
         expiritionDate: any,
         isConfirmed: boolean
     }
+    /*tokens : {
+        accessToken: string,
+        refreshToken: string
+    }*/
 
 } 
 

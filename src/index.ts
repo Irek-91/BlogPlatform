@@ -9,11 +9,13 @@ import { authRouter } from './routes/auth';
 import { userRepository } from './repositories/users-db-repository';
 import { commentsRouter } from './routes/comments-router';
 import { commentsRepository } from './repositories/comments-db-repository';
+import cookieParser from 'cookie-parser';
 
 const app = express()
 const port = 3001
 
 
+app.use(cookieParser())
 
 app.use(express.json())
 app.use('/posts', postsRouter)
