@@ -68,10 +68,10 @@ authRouter.post('/logout',
         if (!cookiesRefreshToken) res.sendStatus(401)
         const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
         if (result) {
-            res.sendStatus(204)
+            res.status(204)
         }
         else {
-            res.sendStatus(401)
+            res.status(401)
         }
     }
 )

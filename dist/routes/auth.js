@@ -64,10 +64,10 @@ exports.authRouter.post('/logout', (req, res) => __awaiter(void 0, void 0, void 
         res.sendStatus(401);
     const result = yield token_service_1.tokensService.deleteRefreshToken(cookiesRefreshToken);
     if (result) {
-        res.sendStatus(204);
+        res.status(204);
     }
     else {
-        res.sendStatus(401);
+        res.status(401);
     }
 }));
 exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
