@@ -62,23 +62,13 @@ exports.authRouter.post('/logout', (req, res) => __awaiter(void 0, void 0, void 
     const cookiesRefreshToken = req.cookies.refreshToken;
     if (!cookiesRefreshToken)
         res.sendStatus(401);
-    const validationToken = yield jwt_service_1.jwtService.checkingTokenKey(cookiesRefreshToken);
-    if (validationToken === null)
-        res.sendStatus(401);
-    const expiredToken = yield jwt_service_1.jwtService.findToken(cookiesRefreshToken);
-    if (expiredToken !== null)
-        res.sendStatus(401);
-    if (!cookiesRefreshToken) {
-        res.sendStatus(401);
+    const result = yield token_service_1.tokensService.deleteRefreshToken(cookiesRefreshToken);
+    if (result === true) {
+        res.clearCookie('refreshToken');
+        res.sendStatus(204);
     }
     else {
-        const result = yield token_service_1.tokensService.deleteRefreshToken(cookiesRefreshToken);
-        if (result === true) {
-            res.status(204);
-        }
-        else {
-            res.status(401);
-        }
+        res.status(401);
     }
 }));
 exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
