@@ -57,7 +57,7 @@ authRouter.post('/refresh-token',
             res.status(200).send({ newAccessToken })
             }
         else {
-        res.sendStatus(401)
+        res.status(401)
         }
     }
 )
@@ -66,12 +66,19 @@ authRouter.post('/logout',
     async (req: Request, res: Response) => {
         const cookiesRefreshToken = req.cookies.refreshToken
         if (!cookiesRefreshToken) res.sendStatus(401)
-        const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
-        if (result) {
-            res.status(204)
-        }
-        else {
-            res.status(401)
+        const validationToken = await jwtService.checkingTokenKey(cookiesRefreshToken)
+        if (validationToken === null) res.sendStatus(401)
+        const expiredToken = await jwtService.findToken(cookiesRefreshToken)
+        if (expiredToken !== null) res.sendStatus(401)
+
+        if (!cookiesRefreshToken) {res.sendStatus(401)}
+        else {const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
+                if (result === true) {
+                    res.status(204)
+                }
+                else {
+                    res.status(401)
+                }
         }
     }
 )
