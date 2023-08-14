@@ -21,6 +21,7 @@ const users_validation_2 = require("../midlewares/users_validation");
 const auth_service_1 = require("../domain/auth-service");
 const email_adapter_1 = require("../application/email-adapter");
 const token_service_1 = require("../domain/token-service");
+const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 exports.authRouter = (0, express_1.Router)({});
 exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
@@ -38,16 +39,8 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, 
         res.sendStatus(401);
     }
 }));
-exports.authRouter.post('/refresh-token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
-    if (!cookiesRefreshToken)
-        return res.sendStatus(401);
-    const validationToken = yield jwt_service_1.jwtService.checkingTokenKey(cookiesRefreshToken);
-    if (validationToken === null)
-        return res.sendStatus(401);
-    const expiredToken = yield jwt_service_1.jwtService.findToken(cookiesRefreshToken);
-    if (expiredToken !== null)
-        return res.sendStatus(401);
     const newAccessToken = yield token_service_1.tokensService.updateAccessTokens(cookiesRefreshToken);
     const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken);
     if (newAccessToken !== null || newRefreshToken !== null) {
@@ -58,17 +51,15 @@ exports.authRouter.post('/refresh-token', (req, res) => __awaiter(void 0, void 0
         res.status(401);
     }
 }));
-exports.authRouter.post('/logout', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/logout', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
-    if (!cookiesRefreshToken)
-        res.sendStatus(401);
     const result = yield token_service_1.tokensService.deleteRefreshToken(cookiesRefreshToken);
     if (result === true) {
         res.clearCookie('refreshToken');
         res.sendStatus(204);
     }
     else {
-        res.status(401);
+        res.sendStatus(401);
     }
 }));
 exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

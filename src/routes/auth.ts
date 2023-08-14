@@ -11,6 +11,7 @@ import { authService } from "../domain/auth-service";
 import { emailAdapter } from "../application/email-adapter";
 import { userInfo } from 'os';
 import { tokensService } from '../domain/token-service';
+import { chekRefreshToken } from '../midlewares/chek-refreshToket';
 
 export const authRouter = Router({});
 
@@ -41,13 +42,10 @@ authRouter.post('/login',
 
 
 authRouter.post('/refresh-token',
+    chekRefreshToken,
     async (req: Request, res: Response) => {
         const cookiesRefreshToken = req.cookies.refreshToken
-        if (!cookiesRefreshToken) return res.sendStatus(401)
-        const validationToken = await jwtService.checkingTokenKey(cookiesRefreshToken)
-        if (validationToken === null) return res.sendStatus(401)
-        const expiredToken = await jwtService.findToken(cookiesRefreshToken)
-        if (expiredToken !== null) return res.sendStatus(401)
+        
         
         const newAccessToken = await tokensService.updateAccessTokens(cookiesRefreshToken)
         const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken)
@@ -63,17 +61,18 @@ authRouter.post('/refresh-token',
 )
 
 authRouter.post('/logout',
+    chekRefreshToken,
     async (req: Request, res: Response) => {
         const cookiesRefreshToken = req.cookies.refreshToken
-        if (!cookiesRefreshToken) res.sendStatus(401)
 
+        
         const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
                 if (result === true) {
                     res.clearCookie('refreshToken')
                     res.sendStatus(204)
                 }
                 else {
-                    res.status(401)
+                    res.sendStatus(401)
                 }
         }
 )
