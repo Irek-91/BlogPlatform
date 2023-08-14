@@ -12,7 +12,7 @@ import { commentsRepository } from './repositories/comments-db-repository';
 import cookieParser from 'cookie-parser';
 import { tokensRepository } from './repositories/tokens-db-repository';
 
-const app = express()
+export const app = express()
 const port = 3001
 
 

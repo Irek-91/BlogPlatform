@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const posts_router_1 = require("./routes/posts-router");
 const blogs_router_1 = require("./routes/blogs-router");
@@ -25,16 +26,16 @@ const comments_router_1 = require("./routes/comments-router");
 const comments_db_repository_1 = require("./repositories/comments-db-repository");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const tokens_db_repository_1 = require("./repositories/tokens-db-repository");
-const app = (0, express_1.default)();
+exports.app = (0, express_1.default)();
 const port = 3001;
-app.use((0, cookie_parser_1.default)());
-app.use(express_1.default.json());
-app.use('/posts', posts_router_1.postsRouter);
-app.use('/blogs', blogs_router_1.blogsRouter);
-app.use('/users', users_router_1.usersRouter);
-app.use('/auth', auth_1.authRouter);
-app.use('/comments', comments_router_1.commentsRouter);
-app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.app.use((0, cookie_parser_1.default)());
+exports.app.use(express_1.default.json());
+exports.app.use('/posts', posts_router_1.postsRouter);
+exports.app.use('/blogs', blogs_router_1.blogsRouter);
+exports.app.use('/users', users_router_1.usersRouter);
+exports.app.use('/auth', auth_1.authRouter);
+exports.app.use('/comments', comments_router_1.commentsRouter);
+exports.app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
     yield post_db_repository_1.postRepository.deletePostAll();
     yield users_db_repository_1.userRepository.deleteUserAll();
@@ -44,7 +45,7 @@ app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_mongo_1.runDb)();
-    app.listen(port, () => {
+    exports.app.listen(port, () => {
         console.log(`Example app listening on port ${port}`);
     });
 });
