@@ -41,18 +41,18 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, 
 exports.authRouter.post('/refresh-token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
     if (!cookiesRefreshToken)
-        res.sendStatus(401);
+        return res.sendStatus(401);
     const validationToken = yield jwt_service_1.jwtService.checkingTokenKey(cookiesRefreshToken);
     if (validationToken === null)
-        res.sendStatus(401);
+        return res.sendStatus(401);
     const expiredToken = yield jwt_service_1.jwtService.findToken(cookiesRefreshToken);
     if (expiredToken !== null)
-        res.sendStatus(401);
+        return res.sendStatus(401);
     const newAccessToken = yield token_service_1.tokensService.updateAccessTokens(cookiesRefreshToken);
     const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken);
     if (newAccessToken !== null || newRefreshToken !== null) {
         res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
-        res.status(200).send({ newAccessToken });
+        res.status(200).send({ accessToken: newAccessToken });
     }
     else {
         res.status(401);
