@@ -20,7 +20,7 @@ const tokens_db_repository_1 = require("../repositories/tokens-db-repository");
 exports.jwtService = {
     createdJWTAccessToken(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: '10' });
+            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 10 });
             /*const addTokenUser = await userRepository.addNewAccessToken(user._id, accessToken)
             if (addTokenUser) {return accessToken}
             else {return null}*/
@@ -51,7 +51,7 @@ exports.jwtService = {
     },
     createJWTRefreshToken(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: '20' });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 20 });
             /*const addTokenUser = await userRepository.addNewrefreshToken(user._id, refreshToken)
             if (addTokenUser) {return refreshToken}
             else {return null}
