@@ -10,25 +10,41 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokensRepository = void 0;
-const mongodb_1 = require("mongodb");
 const db_mongo_1 = require("../db/db-mongo");
 exports.tokensRepository = {
-    findToken(token) {
+    addRefreshToken(newDeviceAndRefreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let result = yield db_mongo_1.refreshTokenCollections.findOne({ token: token });
-                return result;
+                const res = yield db_mongo_1.refreshTokenCollections.insertOne(Object.assign({}, newDeviceAndRefreshToken));
+                return res.acknowledged;
             }
             catch (e) {
                 return null;
             }
         });
     },
-    addRefreshToken(token) {
+    findTokenAndDevice(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.refreshTokenCollections.insertOne({ token, _id: new mongodb_1.ObjectId() });
-                return res.acknowledged;
+                const res = yield db_mongo_1.refreshTokenCollections.findOne({ issuedAt: issuedAt });
+                if (res === null) {
+                    return null;
+                }
+                return true;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    deleteTokenAndDevice(issuedAt) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.deleteOne({ issuedAt: issuedAt });
+                if (res === null) {
+                    return null;
+                }
+                return true;
             }
             catch (e) {
                 return null;
@@ -39,6 +55,48 @@ exports.tokensRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongo_1.refreshTokenCollections.deleteMany({});
             return true;
+        });
+    },
+    getTokenAndDevice(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.find({ userId: userId }).toArray();
+                if (res === null) {
+                    return null;
+                }
+                return res;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    deleteDeviceId(deviceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.deleteOne({ deviceId: deviceId });
+                if (res === null) {
+                    return null;
+                }
+                return res.acknowledged;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    deleteAllButOne(issuedAt) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.deleteMany({ issuedAt: { $nin: [issuedAt] } });
+                if (res === null) {
+                    return null;
+                }
+                return res.acknowledged;
+            }
+            catch (e) {
+                return null;
+            }
         });
     }
 };

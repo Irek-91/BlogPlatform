@@ -8,26 +8,54 @@ describe ('/blogs', () => {
         await request(app).delete('/testing/all-data')
     })
 
-    it ('return blogs', async () => {
-        await request(app)
+    it ('return blogs ', async () => {
+        const creatResponse = await request(app)
             .get('/blogs')
             .expect(200)
+        const getBlogs = creatResponse.body
+        expect(getBlogs).toEqual({pagesCount: 0,
+                                  page: 1,
+                                  pageSize: 10,
+                                  totalCount: 0,
+                                  items: []
+                                 })
+
     })
 
-    it ('shoul return 404, ', async () => {
+    it ('error 404 is returned, there is no such user', async () => {
         await request(app)
                 .get('/blogs/:5')
                 .expect(404)
     })
     
-    it ('', async () => {
+    it (`should'nt create blogs witch incorrect input data `, async () => {
         await request(app)
                 .post('/blogs')
                 .send({
-                    "name": "",
-                    "description": "string",
-                    "websiteUrl": "https://vc12.com"
+                    name: "new blog",
+                    description: "string",
+                    websiteUrl: "https://vc12.com"
                   })
-                .expect(404)
+                .expect(401)
+
+        const creatResponse = await request(app)
+                .get('/blogs')
+                .expect(200)
+
+        const getBlogs = creatResponse.body
+        expect(getBlogs).toEqual({pagesCount: 0,
+                                page: 1,
+                                pageSize: 10,
+                                totalCount: 0,
+                                items: []
+                                })
     })
+
+
+
+    afterAll(async() => {
+        await request(app).close()
+    })
+
+    
 })

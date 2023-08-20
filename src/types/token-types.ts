@@ -7,5 +7,19 @@ export type refreshToken = {
 
 export type refreshTokenMongo = {
     _id: ObjectId,
-    token: string,
+    issuedAt: Date,
+    expirationDate: Date,
+    deviceId: string,
+    IP: string,
+    deviceName: string,
+    userId: ObjectId
+}
+
+
+
+export type DeviceViewModel = {
+    ip : string,
+    title: string,
+    lastActiveDate: Date,
+    deviceId: string
 }

@@ -10,12 +10,16 @@ import { refreshTokenMongo } from '../types/token-types';
 export const jwtService = {
     async createdJWTAccessToken (userId : ObjectId) {
         const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 10})
-        /*const addTokenUser = await userRepository.addNewAccessToken(user._id, accessToken)
-        if (addTokenUser) {return accessToken}
-        else {return null}*/
         return accessToken
         
     },
+
+    async createJWTRefreshToken (userId: ObjectId, deviceId: string): Promise< string | null> {
+        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 20})
+        return refreshToken
+    },
+
+
 
     async getUserIdByToken (token: string) : Promise<ObjectId | null> {
         try {
@@ -37,17 +41,25 @@ export const jwtService = {
         }
     },
 
-    async createJWTRefreshToken (userId: ObjectId): Promise< string | null> {
-        const refreshToken = jwt.sign({userId: userId}, settings.JWT_SECRET, {expiresIn: 20})
-        /*const addTokenUser = await userRepository.addNewrefreshToken(user._id, refreshToken)
-        if (addTokenUser) {return refreshToken}
-        else {return null}
-        */
-       return refreshToken
+    async getDeviceIdByRefreshToken (token: string) : Promise<string | null> {
+        try {
+            const result: any = jwt.verify(token, settings.JWT_SECRET)
+            return result.deviceId
+        } 
+        catch (e) {
+            return null
+        }
     },
 
-    async findToken (token: string): Promise<refreshTokenMongo | null> {
-        return tokensRepository.findToken(token)
+
+    async getIssuedAttByRefreshToken (token: string) : Promise<Date | null> {
+        try {
+            const result: any = jwt.verify(token, settings.JWT_SECRET)
+            return new Date ((result.iat)*1000)
+        }
+        catch (e) {
+            return null
+        }
     },
 
 

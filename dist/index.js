@@ -26,15 +26,18 @@ const comments_router_1 = require("./routes/comments-router");
 const comments_db_repository_1 = require("./repositories/comments-db-repository");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const tokens_db_repository_1 = require("./repositories/tokens-db-repository");
+const securityDevice_router_1 = require("./routes/securityDevice-router");
 exports.app = (0, express_1.default)();
 const port = 3001;
 exports.app.use((0, cookie_parser_1.default)());
+exports.app.set('trust proxy', true);
 exports.app.use(express_1.default.json());
 exports.app.use('/posts', posts_router_1.postsRouter);
 exports.app.use('/blogs', blogs_router_1.blogsRouter);
 exports.app.use('/users', users_router_1.usersRouter);
 exports.app.use('/auth', auth_1.authRouter);
 exports.app.use('/comments', comments_router_1.commentsRouter);
+exports.app.use('/security', securityDevice_router_1.securityDeviceRouter);
 exports.app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
     yield post_db_repository_1.postRepository.deletePostAll();

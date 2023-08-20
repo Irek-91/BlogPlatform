@@ -1,5 +1,4 @@
 import { emailValidationCustom, passwordValidation } from './../midlewares/users_validation';
-import { body, validationResult } from 'express-validator';
 import { Request, Response, Router } from "express";
 import { loginOrEmailValidationAuth, passwordValidationAuth } from "../midlewares/aurh-validation";
 import { usersService } from "../domain/users-service";
@@ -9,9 +8,10 @@ import { authMiddleware } from "../midlewares/auth-middleware";
 import { emailValidation, loginValidation, loginValidationLength } from "../midlewares/users_validation";
 import { authService } from "../domain/auth-service";
 import { emailAdapter } from "../application/email-adapter";
-import { userInfo } from 'os';
 import { tokensService } from '../domain/token-service';
 import { chekRefreshToken } from '../midlewares/chek-refreshToket';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export const authRouter = Router({});
 
@@ -24,11 +24,12 @@ authRouter.post('/login',
     async (req: Request, res: Response) => {
         const loginOrEmail = req.body.loginOrEmail;
         const passwordUser = req.body.password;
-
+        const divicId= uuidv4();
+        const IP = req.ip
         const newUser = await usersService.checkCredentials(loginOrEmail, passwordUser);
         if (newUser) {
             const accessToken = await jwtService.createdJWTAccessToken(newUser._id)
-            const refreshToken = await jwtService.createJWTRefreshToken(newUser._id)
+            const refreshToken = await tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP)
             if (accessToken !== null || refreshToken !== null) {
                 res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
                 res.status(200).send({ accessToken })
@@ -45,17 +46,17 @@ authRouter.post('/refresh-token',
     chekRefreshToken,
     async (req: Request, res: Response) => {
         const cookiesRefreshToken = req.cookies.refreshToken
+        const IP = req.ip
         
-        
-        const newAccessToken = await tokensService.updateAccessTokens(cookiesRefreshToken)
-        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken)
+        const newAccessToken = await tokensService.updateAccessToken(cookiesRefreshToken)
+        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken, IP)
 
         if (newAccessToken !== null || newRefreshToken !== null) {
             res.cookie('refreshToken', newRefreshToken, {httpOnly: true,secure: true})
             res.status(200).send({ accessToken: newAccessToken })
             }
         else {
-        res.status(401)
+        res.sendStatus(401)
         }
     }
 )
@@ -66,7 +67,7 @@ authRouter.post('/logout',
         const cookiesRefreshToken = req.cookies.refreshToken
 
         
-        const result = await tokensService.deleteRefreshToken(cookiesRefreshToken)
+        const result = await tokensService.deleteDeviceIdRefreshToken(cookiesRefreshToken)
                 if (result === true) {
                     res.clearCookie('refreshToken')
                     res.sendStatus(204)

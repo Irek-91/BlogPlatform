@@ -135,7 +135,7 @@ export const userRepository = {
       return result.modifiedCount === 2
     },
 
-    async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
+    /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
       try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
       return result.matchedCount === 1}
       catch (e) {return null}
@@ -153,5 +153,6 @@ export const userRepository = {
       }
       catch (e) {return null}
     }
+    */
     
 }

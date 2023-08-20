@@ -22,14 +22,17 @@ const auth_service_1 = require("../domain/auth-service");
 const email_adapter_1 = require("../application/email-adapter");
 const token_service_1 = require("../domain/token-service");
 const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
+const uuid_1 = require("uuid");
 exports.authRouter = (0, express_1.Router)({});
 exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
     const passwordUser = req.body.password;
+    const divicId = (0, uuid_1.v4)();
+    const IP = req.ip;
     const newUser = yield users_service_1.usersService.checkCredentials(loginOrEmail, passwordUser);
     if (newUser) {
         const accessToken = yield jwt_service_1.jwtService.createdJWTAccessToken(newUser._id);
-        const refreshToken = yield jwt_service_1.jwtService.createJWTRefreshToken(newUser._id);
+        const refreshToken = yield token_service_1.tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP);
         if (accessToken !== null || refreshToken !== null) {
             res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
             res.status(200).send({ accessToken });
@@ -41,19 +44,20 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, 
 }));
 exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
-    const newAccessToken = yield token_service_1.tokensService.updateAccessTokens(cookiesRefreshToken);
-    const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken);
+    const IP = req.ip;
+    const newAccessToken = yield token_service_1.tokensService.updateAccessToken(cookiesRefreshToken);
+    const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken, IP);
     if (newAccessToken !== null || newRefreshToken !== null) {
         res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
         res.status(200).send({ accessToken: newAccessToken });
     }
     else {
-        res.status(401);
+        res.sendStatus(401);
     }
 }));
 exports.authRouter.post('/logout', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
-    const result = yield token_service_1.tokensService.deleteRefreshToken(cookiesRefreshToken);
+    const result = yield token_service_1.tokensService.deleteDeviceIdRefreshToken(cookiesRefreshToken);
     if (result === true) {
         res.clearCookie('refreshToken');
         res.sendStatus(204);

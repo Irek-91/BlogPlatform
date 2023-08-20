@@ -159,42 +159,23 @@ exports.userRepository = {
             return result.modifiedCount === 2;
         });
     },
-    addNewAccessToken(userId, accessToken) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let result = yield db_mongo_1.usersCollections.updateOne({ _id: userId }, { $set: { 'tokens.accessToken': accessToken } });
-                return result.matchedCount === 1;
-            }
-            catch (e) {
-                return null;
-            }
-        });
+    /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
+      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
+      return result.matchedCount === 1}
+      catch (e) {return null}
     },
-    addNewrefreshToken(userId, refreshToken) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let result = yield db_mongo_1.usersCollections.updateOne({ _id: userId }, { $set: { 'tokens.refreshToken': refreshToken } });
-                return result.matchedCount === 1;
-            }
-            catch (e) {
-                return null;
-            }
-        });
+    async addNewrefreshToken(userId: ObjectId, refreshToken: string): Promise<boolean | null>{
+      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.refreshToken': refreshToken}})
+      return result.matchedCount === 1}
+      catch (e) {return null}
     },
-    findAccesTokenByRefreshToken(refreshToken) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let user = yield db_mongo_1.usersCollections.findOne({ "tokens.refreshToken": refreshToken });
-                if (user) {
-                    return user;
-                }
-                else {
-                    return null;
-                }
-            }
-            catch (e) {
-                return null;
-            }
-        });
+
+    async findAccesTokenByRefreshToken(refreshToken :string): Promise<userMongoModel | null>{
+      try {let user = await usersCollections.findOne({"tokens.refreshToken": refreshToken})
+          if (user) {return user}
+          else {return null}
+      }
+      catch (e) {return null}
     }
+    */
 };

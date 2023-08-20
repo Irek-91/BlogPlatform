@@ -6,20 +6,59 @@ import { refreshTokenMongo } from "../types/token-types"
 
 export const tokensRepository = {
 
-    async findToken(token: string): Promise<refreshTokenMongo | null> {
-        try {let result = await refreshTokenCollections.findOne({token: token})
-            return result}
-        catch (e) {return null}
-    },
-    async addRefreshToken (token: string): Promise<boolean | null> {
-        try {const res = await refreshTokenCollections.insertOne({token, _id: new ObjectId()})
+    async addRefreshToken (newDeviceAndRefreshToken: refreshTokenMongo): Promise<boolean | null> {
+        try {const res = await refreshTokenCollections.insertOne({...newDeviceAndRefreshToken})
         return res.acknowledged}
         catch (e) {return null}
 
     },
 
+    async findTokenAndDevice(issuedAt: Date): Promise <true | null> {
+        
+        try {const res = await refreshTokenCollections.findOne({issuedAt: issuedAt})
+            if (res === null) {return null}
+            return true
+        }
+        catch (e) {return null}
+    },
+
+    async deleteTokenAndDevice(issuedAt: Date): Promise <true | null> {
+        try {const res = await refreshTokenCollections.deleteOne({issuedAt: issuedAt})
+            if (res === null) {return null}
+            return true
+        }
+        catch (e) {return null}
+    },
+
     async deleteTokensAll () {
         const deletResult = await refreshTokenCollections.deleteMany({})
         return true
+    },
+
+    async getTokenAndDevice(userId: ObjectId): Promise <refreshTokenMongo[] | null> {
+        
+        try {const res = await refreshTokenCollections.find({userId: userId}).toArray();
+            if (res === null) {return null}
+            return res
+        }
+        catch (e) {return null}
+    },
+
+    async deleteDeviceId(deviceId: string): Promise<null | boolean > {
+        try {const res = await refreshTokenCollections.deleteOne({deviceId: deviceId});
+            if (res === null) {return null}
+            return res.acknowledged
+        }
+        catch (e) {return null}
+    },
+
+    async deleteAllButOne(issuedAt: Date): Promise<Boolean | null> {
+        try {const res = await refreshTokenCollections.deleteMany({issuedAt: {$nin:[issuedAt]}});
+            if (res === null) {return null}
+            return res.acknowledged
+        }
+        catch (e) {return null}
     }
+
+
 }

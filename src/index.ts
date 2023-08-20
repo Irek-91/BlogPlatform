@@ -11,12 +11,15 @@ import { commentsRouter } from './routes/comments-router';
 import { commentsRepository } from './repositories/comments-db-repository';
 import cookieParser from 'cookie-parser';
 import { tokensRepository } from './repositories/tokens-db-repository';
+import { securityDeviceRouter } from './routes/securityDevice-router';
 
 export const app = express()
 const port = 3001
 
 
 app.use(cookieParser())
+app.set('trust proxy', true)
+
 
 app.use(express.json())
 app.use('/posts', postsRouter)
@@ -24,6 +27,7 @@ app.use('/blogs', blogsRouter)
 app.use('/users', usersRouter)
 app.use('/auth', authRouter)
 app.use('/comments', commentsRouter)
+app.use('/security', securityDeviceRouter)
 app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await blogsRepository.deleteBlogAll();
   await postRepository.deletePostAll();
