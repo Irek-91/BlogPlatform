@@ -9,13 +9,13 @@ import { refreshTokenMongo } from '../types/token-types';
 
 export const jwtService = {
     async createdJWTAccessToken (userId : ObjectId) {
-        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 100})
+        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 10})
         return accessToken
         
     },
 
     async createJWTRefreshToken (userId: ObjectId, deviceId: string): Promise< string> {
-        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 200})
+        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 20})
         return refreshToken
     },
 

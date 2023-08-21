@@ -19,13 +19,13 @@ const mongodb_1 = require("mongodb");
 exports.jwtService = {
     createdJWTAccessToken(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 100 });
+            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 10 });
             return accessToken;
         });
     },
     createJWTRefreshToken(userId, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 200 });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 20 });
             return refreshToken;
         });
     },
