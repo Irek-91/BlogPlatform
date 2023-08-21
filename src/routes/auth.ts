@@ -26,10 +26,11 @@ authRouter.post('/login',
         const passwordUser = req.body.password;
         const divicId= uuidv4();
         const IP = req.ip
+        const title = req.headers['user-agent'] || 'custom-ua'
         const newUser = await usersService.checkCredentials(loginOrEmail, passwordUser);
         if (newUser) {
             const accessToken = await jwtService.createdJWTAccessToken(newUser._id)
-            const refreshToken = await tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP)
+            const refreshToken = await tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title)
             if (accessToken !== null || refreshToken !== null) {
                 res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
                 res.status(200).send({ accessToken })
@@ -47,9 +48,10 @@ authRouter.post('/refresh-token',
     async (req: Request, res: Response) => {
         const cookiesRefreshToken = req.cookies.refreshToken
         const IP = req.ip
-        
+        const title = req.headers['user-agent'] || 'custom-ua'
+
         const newAccessToken = await tokensService.updateAccessToken(cookiesRefreshToken)
-        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken, IP)
+        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken, IP, title)
 
         if (newAccessToken !== null || newRefreshToken !== null) {
             res.cookie('refreshToken', newRefreshToken, {httpOnly: true,secure: true})
