@@ -29,10 +29,11 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, 
     const passwordUser = req.body.password;
     const divicId = (0, uuid_1.v4)();
     const IP = req.ip;
+    const title = req.headers['user-agent'] || 'custom-ua';
     const newUser = yield users_service_1.usersService.checkCredentials(loginOrEmail, passwordUser);
     if (newUser) {
         const accessToken = yield jwt_service_1.jwtService.createdJWTAccessToken(newUser._id);
-        const refreshToken = yield token_service_1.tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP);
+        const refreshToken = yield token_service_1.tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title);
         if (accessToken !== null || refreshToken !== null) {
             res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
             res.status(200).send({ accessToken });
@@ -45,8 +46,9 @@ exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, 
 exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
     const IP = req.ip;
+    const title = req.headers['user-agent'] || 'custom-ua';
     const newAccessToken = yield token_service_1.tokensService.updateAccessToken(cookiesRefreshToken);
-    const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken, IP);
+    const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken, IP, title);
     if (newAccessToken !== null || newRefreshToken !== null) {
         res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
         res.status(200).send({ accessToken: newAccessToken });

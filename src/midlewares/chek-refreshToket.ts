@@ -7,9 +7,10 @@ export const chekRefreshToken = async (req:Request, res: Response, next: NextFun
         if (!cookiesRefreshToken) return res.sendStatus(401)
         const validationToken = await jwtService.checkingTokenKey(cookiesRefreshToken)
         if (validationToken === null) return res.sendStatus(401)
-        
+
         
         const expiredToken = await tokensService.findTokenAndDevice(cookiesRefreshToken)
         if (expiredToken === null) return res.sendStatus(401)
+
         next()
     }

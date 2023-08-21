@@ -13,7 +13,7 @@ export const tokensRepository = {
 
     },
 
-    async findTokenAndDevice(issuedAt: Date): Promise <true | null> {
+    async findTokenAndDeviceByissuedAt(issuedAt: string): Promise <true | null> {
         
         try {const res = await refreshTokenCollections.findOne({issuedAt: issuedAt})
             if (res === null) {return null}
@@ -22,7 +22,7 @@ export const tokensRepository = {
         catch (e) {return null}
     },
 
-    async deleteTokenAndDevice(issuedAt: Date): Promise <true | null> {
+    async deleteTokenAndDevice(issuedAt: string): Promise <true | null> {
         try {const res = await refreshTokenCollections.deleteOne({issuedAt: issuedAt})
             if (res === null) {return null}
             return true
@@ -52,7 +52,7 @@ export const tokensRepository = {
         catch (e) {return null}
     },
 
-    async deleteAllButOne(issuedAt: Date): Promise<Boolean | null> {
+    async deleteAllButOne(issuedAt: string): Promise<Boolean | null> {
         try {const res = await refreshTokenCollections.deleteMany({issuedAt: {$nin:[issuedAt]}});
             if (res === null) {return null}
             return res.acknowledged

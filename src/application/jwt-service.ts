@@ -9,13 +9,13 @@ import { refreshTokenMongo } from '../types/token-types';
 
 export const jwtService = {
     async createdJWTAccessToken (userId : ObjectId) {
-        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 10})
+        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 100})
         return accessToken
         
     },
 
-    async createJWTRefreshToken (userId: ObjectId, deviceId: string): Promise< string | null> {
-        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 20})
+    async createJWTRefreshToken (userId: ObjectId, deviceId: string): Promise< string> {
+        const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 200})
         return refreshToken
     },
 
@@ -52,16 +52,26 @@ export const jwtService = {
     },
 
 
-    async getIssuedAttByRefreshToken (token: string) : Promise<Date | null> {
+    async getIssuedAttByRefreshToken (token: string) : Promise<string | null> {
         try {
             const result: any = jwt.verify(token, settings.JWT_SECRET)
-            return new Date ((result.iat)*1000)
+            return (new Date ((result.iat)*1000)).toISOString()
         }
         catch (e) {
             return null
         }
     },
 
+    async getExpiresAttByRefreshToken (token: string) : Promise<string> {
+            const result: any = jwt.decode(token)
+            return (new Date ((result.exp)*1000)).toISOString()
+    },
+
+
+    async getIssueAttByRefreshToken (token: string) : Promise<string> {
+        const result: any = jwt.decode(token)
+        return (new Date ((result.iat)*1000)).toISOString()
+},
 
     async checkingTokenKey (token: string) {
         try {

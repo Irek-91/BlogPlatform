@@ -35,15 +35,15 @@ exports.securityDeviceRouter.delete('/devices', chek_refreshToket_1.chekRefreshT
         res.sendStatus(401);
     }
 }));
-exports.securityDeviceRouter.delete('/devices:deviceId', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.securityDeviceRouter.delete('/devices/:deviceId', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
     const deviceId = req.params.deviceId;
     const deviceIdByUser = yield securityDevice_service_1.securityDeviceService.getDeviceByUserId(refreshToken, deviceId);
     if (deviceIdByUser === false) {
-        res.sendStatus(403);
+        return res.sendStatus(403);
     }
     const resultDeleteDeviceId = yield securityDevice_service_1.securityDeviceService.deleteDeviceId(deviceId);
     if (resultDeleteDeviceId) {
-        res.sendStatus(204);
+        return res.sendStatus(204);
     }
 }));

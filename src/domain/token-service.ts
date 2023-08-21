@@ -7,26 +7,23 @@ import { ObjectId } from 'mongodb';
 
 export const tokensService = {
     async findTokenAndDevice (token: string): Promise<boolean | null> {
-        const issuedAt = await jwtService.getIssuedAttByRefreshToken(token)
-        if (issuedAt === null) {return null}
-
-        const resultIssuedAt = await tokensRepository.findTokenAndDevice(issuedAt)
+        const issuedAt = await jwtService.getIssueAttByRefreshToken(token)
+        const resultIssuedAt = await tokensRepository.findTokenAndDeviceByissuedAt(issuedAt)
         if (resultIssuedAt) {return true}
         else {return null}
     },
 
-    async addDeviceIdRefreshToken (userId: ObjectId, deviceId: string, IP: string): Promise<null | string> {
-        const issuedAt = new Date();
-        const expirationDate = new Date (issuedAt.setSeconds(issuedAt.getSeconds() + 20))
+    async addDeviceIdRefreshToken (userId: ObjectId, deviceId: string, IP: string, deviceName: string): Promise<null | string> {
         const refreshToken = await jwtService.createJWTRefreshToken(userId, deviceId)
-        if (refreshToken === null) {return null}
+        const issuedAt = await jwtService.getIssueAttByRefreshToken(refreshToken)
+        const expirationDate = await jwtService.getExpiresAttByRefreshToken(refreshToken)
         const newDeviceAndRefreshToken: refreshTokenMongo = {
                 _id: new ObjectId(),
                 issuedAt,
                 expirationDate,
                 deviceId,
                 IP: IP,
-                deviceName: "string",
+                deviceName,
                 userId
             }
         const addTokenUser = await tokensRepository.addRefreshToken(newDeviceAndRefreshToken)
@@ -44,7 +41,7 @@ export const tokensService = {
 
 
 
-    async updateRefreshTokens (refreshToken: string, IP: string): Promise<string | null> {
+    async updateRefreshTokens (refreshToken: string, IP: string, deviceName: string): Promise<string | null> {
         const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
         if (userId === null) {return null}
         const deviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
@@ -56,7 +53,7 @@ export const tokensService = {
         const resultDelete = await tokensRepository.deleteTokenAndDevice(issuedAt)
         if (resultDelete === null) {return null}
 
-        const result = await tokensService.addDeviceIdRefreshToken(userId, deviceId, IP)
+        const result = await tokensService.addDeviceIdRefreshToken(userId, deviceId, IP, deviceName)
 
         if (result) {
             return result

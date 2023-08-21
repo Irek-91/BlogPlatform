@@ -52,10 +52,6 @@ describe ('/blogs', () => {
     })
 
 
-
     afterAll(async() => {
-        await request(app).close()
-    })
-
-    
+    })  
 })

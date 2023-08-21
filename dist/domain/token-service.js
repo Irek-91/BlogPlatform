@@ -16,11 +16,8 @@ const mongodb_1 = require("mongodb");
 exports.tokensService = {
     findTokenAndDevice(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const issuedAt = yield jwt_service_1.jwtService.getIssuedAttByRefreshToken(token);
-            if (issuedAt === null) {
-                return null;
-            }
-            const resultIssuedAt = yield tokens_db_repository_1.tokensRepository.findTokenAndDevice(issuedAt);
+            const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(token);
+            const resultIssuedAt = yield tokens_db_repository_1.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt);
             if (resultIssuedAt) {
                 return true;
             }
@@ -29,21 +26,18 @@ exports.tokensService = {
             }
         });
     },
-    addDeviceIdRefreshToken(userId, deviceId, IP) {
+    addDeviceIdRefreshToken(userId, deviceId, IP, deviceName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const issuedAt = new Date();
-            const expirationDate = new Date(issuedAt.setSeconds(issuedAt.getSeconds() + 20));
             const refreshToken = yield jwt_service_1.jwtService.createJWTRefreshToken(userId, deviceId);
-            if (refreshToken === null) {
-                return null;
-            }
+            const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(refreshToken);
+            const expirationDate = yield jwt_service_1.jwtService.getExpiresAttByRefreshToken(refreshToken);
             const newDeviceAndRefreshToken = {
                 _id: new mongodb_1.ObjectId(),
                 issuedAt,
                 expirationDate,
                 deviceId,
                 IP: IP,
-                deviceName: "string",
+                deviceName,
                 userId
             };
             const addTokenUser = yield tokens_db_repository_1.tokensRepository.addRefreshToken(newDeviceAndRefreshToken);
@@ -63,7 +57,7 @@ exports.tokensService = {
             return newAccessToken;
         });
     },
-    updateRefreshTokens(refreshToken, IP) {
+    updateRefreshTokens(refreshToken, IP, deviceName) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
             if (userId === null) {
@@ -81,7 +75,7 @@ exports.tokensService = {
             if (resultDelete === null) {
                 return null;
             }
-            const result = yield exports.tokensService.addDeviceIdRefreshToken(userId, deviceId, IP);
+            const result = yield exports.tokensService.addDeviceIdRefreshToken(userId, deviceId, IP, deviceName);
             if (result) {
                 return result;
             }
