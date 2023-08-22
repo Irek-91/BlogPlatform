@@ -19,13 +19,13 @@ const mongodb_1 = require("mongodb");
 exports.jwtService = {
     createdJWTAccessToken(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 10 });
+            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 100 });
             return accessToken;
         });
     },
     createJWTRefreshToken(userId, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 20 });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 200 });
             return refreshToken;
         });
     },
@@ -42,24 +42,14 @@ exports.jwtService = {
     },
     getUserIdByRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = jsonwebtoken_1.default.verify(token, settings_1.settings.JWT_SECRET);
-                return new mongodb_1.ObjectId(result.userId);
-            }
-            catch (e) {
-                return null;
-            }
+            const result = jsonwebtoken_1.default.decode(token);
+            return new mongodb_1.ObjectId(result.userId);
         });
     },
     getDeviceIdByRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = jsonwebtoken_1.default.verify(token, settings_1.settings.JWT_SECRET);
-                return result.deviceId;
-            }
-            catch (e) {
-                return null;
-            }
+            const result = jsonwebtoken_1.default.decode(token);
+            return result.deviceId;
         });
     },
     getIssuedAttByRefreshToken(token) {

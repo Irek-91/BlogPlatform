@@ -16,9 +16,6 @@ exports.securityDeviceService = {
     getDeviceByToken(token, IP) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(token);
-            if (userId === null) {
-                return null;
-            }
             const results = yield tokens_db_repository_1.tokensRepository.getTokenAndDevice(userId);
             if (results === null) {
                 return null;
@@ -26,7 +23,7 @@ exports.securityDeviceService = {
             const resultDeviceIdOutput = results.map((b) => {
                 return {
                     ip: b.IP,
-                    title: 'string',
+                    title: b.deviceName,
                     lastActiveDate: b.issuedAt,
                     deviceId: b.deviceId
                 };
@@ -43,13 +40,12 @@ exports.securityDeviceService = {
     getDeviceByUserId(refreshToken, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             const resultDeviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
-            if (resultDeviceId === null) {
-                return null;
-            }
             if (resultDeviceId !== deviceId) {
                 return false;
             }
-            return true;
+            else {
+                return true;
+            }
         });
     },
     deleteAllButOne(refreshToken) {

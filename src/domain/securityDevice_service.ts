@@ -6,14 +6,13 @@ import { DeviceViewModel } from "../types/token-types"
 export const securityDeviceService = {
     async getDeviceByToken (token: string, IP:string): Promise<DeviceViewModel[] | null> {
         const userId = await jwtService.getUserIdByRefreshToken(token)
-        if (userId=== null) {return null}
         const results = await tokensRepository.getTokenAndDevice(userId)
         if (results=== null) {return null}
 
         const resultDeviceIdOutput =  results.map((b) => {
             return {
                 ip: b.IP,
-                title: 'string',
+                title: b.deviceName,
                 lastActiveDate: b.issuedAt,
                 deviceId: b.deviceId
             }
@@ -28,11 +27,10 @@ export const securityDeviceService = {
         return result     
     },
 
-    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean | null> {
+    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean> {
         const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
-        if (resultDeviceId === null) {return null}
         if (resultDeviceId !== deviceId) {return false}
-        return true
+        else {return true}
     },
 
     async deleteAllButOne (refreshToken: string): Promise<Boolean | null> {

@@ -23,7 +23,6 @@ securityDeviceRouter.get('/devices',
 )
 
 securityDeviceRouter.delete('/devices',
-    chekRefreshToken,
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         const resultDelete = await securityDeviceService.deleteAllButOne(refreshToken)
@@ -38,7 +37,6 @@ securityDeviceRouter.delete('/devices',
 
 
 securityDeviceRouter.delete('/devices/:deviceId',
-    chekRefreshToken,
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         const deviceId = req.params.deviceId
