@@ -44,6 +44,7 @@ exports.app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, 
     yield users_db_repository_1.userRepository.deleteUserAll();
     yield comments_db_repository_1.commentsRepository.deleteCommentsAll();
     yield tokens_db_repository_1.tokensRepository.deleteTokensAll();
+    yield db_mongo_1.arrayIPAndURICollections.deleteMany({});
     res.sendStatus(204);
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {

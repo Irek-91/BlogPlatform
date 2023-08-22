@@ -3,7 +3,7 @@ import { postsRouter} from './routes/posts-router';
 import { blogsRouter} from './routes/blogs-router';
 import { blogsRepository } from './repositories/blogs-db-repository';
 import { postRepository } from './repositories/post-db-repository';
-import { commentsCollections, runDb } from './db/db-mongo';
+import { arrayIPAndURICollections, commentsCollections, runDb } from './db/db-mongo';
 import { usersRouter } from './routes/users-router';
 import { authRouter } from './routes/auth';
 import { userRepository } from './repositories/users-db-repository';
@@ -33,7 +33,8 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
   await postRepository.deletePostAll();
   await userRepository.deleteUserAll();
   await commentsRepository.deleteCommentsAll();
-  await tokensRepository.deleteTokensAll()
+  await tokensRepository.deleteTokensAll();
+  await arrayIPAndURICollections.deleteMany({})
   res.sendStatus(204)
 })
 
