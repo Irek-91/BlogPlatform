@@ -11,6 +11,7 @@ import { emailAdapter } from "../application/email-adapter";
 import { tokensService } from '../domain/token-service';
 import { chekRefreshToken } from '../midlewares/chek-refreshToket';
 import { v4 as uuidv4 } from 'uuid';
+import { filterCountIPAndURL } from '../midlewares/count-IPAndURIFilter';
 
 
 export const authRouter = Router({});
@@ -20,6 +21,7 @@ authRouter.post('/login',
     loginOrEmailValidationAuth,
     passwordValidationAuth,
     inputValidationMiddleware,
+    filterCountIPAndURL,
 
     async (req: Request, res: Response) => {
         const loginOrEmail = req.body.loginOrEmail;
@@ -99,6 +101,8 @@ authRouter.get('/me',
     })
 
 authRouter.post('/registration',
+filterCountIPAndURL,
+
     loginValidation,
     loginValidationLength,
     passwordValidation,
@@ -125,6 +129,8 @@ authRouter.post('/registration',
 
 
 authRouter.post('/registration-confirmation',
+    filterCountIPAndURL,
+
     async (req: Request, res: Response) => {
         const result = await authService.confirmationCode(req.body.code)
         if (result) {
@@ -147,6 +153,8 @@ authRouter.post('/registration-confirmation',
 authRouter.post('/registration-email-resending',
     emailValidation,
     inputValidationMiddleware,
+    filterCountIPAndURL,
+
     async (req: Request, res: Response) => {
     const result = await authService.resendingEmail(req.body.email)
     if (result) {res.sendStatus(204)}

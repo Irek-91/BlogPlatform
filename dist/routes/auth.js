@@ -23,8 +23,9 @@ const email_adapter_1 = require("../application/email-adapter");
 const token_service_1 = require("../domain/token-service");
 const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 const uuid_1 = require("uuid");
+const count_IPAndURIFilter_1 = require("../midlewares/count-IPAndURIFilter");
 exports.authRouter = (0, express_1.Router)({});
-exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
     const passwordUser = req.body.password;
     const divicId = (0, uuid_1.v4)();
@@ -82,7 +83,7 @@ exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __
         res.sendStatus(401);
     }
 }));
-exports.authRouter.post('/registration', users_validation_2.loginValidation, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, users_validation_1.emailValidationCustom, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.loginValidation, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, users_validation_1.emailValidationCustom, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_service_1.authService.creatUser(req.body.login, req.body.password, req.body.email);
     if (user) {
         res.sendStatus(204);
@@ -98,7 +99,7 @@ exports.authRouter.post('/registration', users_validation_2.loginValidation, use
         });
     }
 }));
-exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-confirmation', count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.confirmationCode(req.body.code);
     if (result) {
         res.sendStatus(204);
@@ -114,7 +115,7 @@ exports.authRouter.post('/registration-confirmation', (req, res) => __awaiter(vo
         });
     }
 }));
-exports.authRouter.post('/registration-email-resending', users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-email-resending', users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.resendingEmail(req.body.email);
     if (result) {
         res.sendStatus(204);

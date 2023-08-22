@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.refreshTokenCollections = exports.commentsCollections = exports.usersCollections = exports.postsCollections = exports.blogsCollections = void 0;
+exports.runDb = exports.arrayIPAndURICollections = exports.refreshTokenCollections = exports.commentsCollections = exports.usersCollections = exports.postsCollections = exports.blogsCollections = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -27,6 +27,7 @@ exports.postsCollections = db.collection('posts');
 exports.usersCollections = db.collection('users');
 exports.commentsCollections = db.collection('comments');
 exports.refreshTokenCollections = db.collection('refreshTokens');
+exports.arrayIPAndURICollections = db.collection('arrayIPAndURL');
 const runDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield client.connect();
