@@ -40,20 +40,24 @@ exports.securityDeviceService = {
     getDeviceByUserId(refreshToken, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             const resultDeviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
+            const userByDeviceId = yield tokens_db_repository_1.tokensRepository.getUserByDeviceId(resultDeviceId);
+            if (userByDeviceId === null) {
+                return null;
+            }
             if (resultDeviceId !== deviceId) {
                 return false;
             }
-            else {
-                return true;
-            }
+            return true;
+            //get userByDeviceId
+            //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
+            //if user exist but device id fon uri param not include in user devices
         });
     },
     deleteAllButOne(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const issuedAt = yield jwt_service_1.jwtService.getIssuedAttByRefreshToken(refreshToken);
-            if (issuedAt === null)
-                return null;
-            const res = yield tokens_db_repository_1.tokensRepository.deleteAllButOne(issuedAt);
+            const deviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
+            const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
+            const res = yield tokens_db_repository_1.tokensRepository.deleteAllButOne(deviceId, userId);
             return res;
         });
     }

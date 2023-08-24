@@ -1,4 +1,3 @@
-import { paginatorBlog } from './../types/types_paginator';
 import { blogType } from "../types/types";
 import { blogInput, blogOutput, blogsCollectionsType } from "../types/types-db";
 import { blogsRepository } from "../repositories/blogs-db-repository";

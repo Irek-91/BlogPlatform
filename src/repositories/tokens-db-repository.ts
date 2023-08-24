@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { refreshTokenCollections } from "../db/db-mongo"
 import { refreshTokenMongo } from "../types/token-types"
+import { jwtService } from "../application/jwt-service"
 
 
 
@@ -11,6 +12,18 @@ export const tokensRepository = {
         return res.acknowledged}
         catch (e) {return null}
 
+    },
+
+    
+
+
+    async getUserByDeviceId(deviceId: string): Promise <ObjectId | null> {
+        
+        try {const res = await refreshTokenCollections.findOne({deviceId: deviceId});
+            if (res === null) {return null}
+            return res.userId
+        }
+        catch (e) {return null}
     },
 
     async findTokenAndDeviceByissuedAt(issuedAt: string): Promise <true | null> {
@@ -52,8 +65,13 @@ export const tokensRepository = {
         catch (e) {return null}
     },
 
-    async deleteAllButOne(issuedAt: string): Promise<Boolean | null> {
-        try {const res = await refreshTokenCollections.deleteMany({issuedAt: {$nin:[issuedAt]}});
+    async deleteAllButOne(deviceId: string, userId: ObjectId): Promise<Boolean | null> {
+//добавить фильтр по userId
+
+        try {
+            const checkUserIdByDeviceId = await refreshTokenCollections.find({userId: userId, deviceId: deviceId}).toArray()
+            if (checkUserIdByDeviceId.length === 0) {return null}
+            const res = await refreshTokenCollections.deleteMany({deviceId: {$ne:deviceId}});
             if (res === null) {return null}
             return res.acknowledged
         }

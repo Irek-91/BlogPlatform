@@ -41,14 +41,18 @@ securityDeviceRouter.delete('/devices/:deviceId',
         const refreshToken = req.cookies.refreshToken
         const deviceId = req.params.deviceId
         const deviceIdByUser = await securityDeviceService.getDeviceByUserId(refreshToken, deviceId)
+        if (deviceIdByUser === null) {
+            return res.sendStatus(404)
+        }
         if (deviceIdByUser === false) {
             return res.sendStatus(403)
         }
-
-        const resultDeleteDeviceId = await securityDeviceService.deleteDeviceId(deviceId)
-
-        if (resultDeleteDeviceId) {
-            return res.sendStatus(204)
-        }
+        
+        if (deviceIdByUser === true) {
+            const resultDeleteDeviceId = await securityDeviceService.deleteDeviceId(deviceId)
+                if (resultDeleteDeviceId) {
+                    return res.sendStatus(204)
+                }
     }
-)
+
+})

@@ -23,6 +23,20 @@ exports.tokensRepository = {
             }
         });
     },
+    getUserByDeviceId(deviceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.findOne({ deviceId: deviceId });
+                if (res === null) {
+                    return null;
+                }
+                return res.userId;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
     findTokenAndDeviceByissuedAt(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -85,10 +99,15 @@ exports.tokensRepository = {
             }
         });
     },
-    deleteAllButOne(issuedAt) {
+    deleteAllButOne(deviceId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
+            //добавить фильтр по userId
             try {
-                const res = yield db_mongo_1.refreshTokenCollections.deleteMany({ issuedAt: { $nin: [issuedAt] } });
+                const checkUserIdByDeviceId = yield db_mongo_1.refreshTokenCollections.find({ userId: userId, deviceId: deviceId }).toArray();
+                if (checkUserIdByDeviceId.length === 0) {
+                    return null;
+                }
+                const res = yield db_mongo_1.refreshTokenCollections.deleteMany({ deviceId: { $ne: deviceId } });
                 if (res === null) {
                     return null;
                 }
