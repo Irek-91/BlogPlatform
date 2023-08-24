@@ -65,7 +65,7 @@ export const tokensRepository = {
         catch (e) {return null}
     },
 
-    async deleteAllButOne(deviceId: string, userId: ObjectId): Promise<Boolean | null> {
+    async deleteAllDevicesExceptOne(deviceId: string, userId: ObjectId): Promise<Boolean | null> {
 //добавить фильтр по userId
 
         try {

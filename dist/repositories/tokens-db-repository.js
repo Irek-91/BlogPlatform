@@ -99,7 +99,7 @@ exports.tokensRepository = {
             }
         });
     },
-    deleteAllButOne(deviceId, userId) {
+    deleteAllDevicesExceptOne(deviceId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             //добавить фильтр по userId
             try {

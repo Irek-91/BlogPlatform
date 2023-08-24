@@ -42,11 +42,11 @@ export const securityDeviceService = {
         //if user exist but device id fon uri param not include in user devices
     },
 
-    async deleteAllButOne (refreshToken: string): Promise<Boolean | null> {
+    async deleteAllDevicesExceptOne (refreshToken: string): Promise<Boolean | null> {
         const deviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
         const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
 
-        const res = await tokensRepository.deleteAllButOne(deviceId, userId)
+        const res = await tokensRepository.deleteAllDevicesExceptOne(deviceId, userId)
         return res
     }
 

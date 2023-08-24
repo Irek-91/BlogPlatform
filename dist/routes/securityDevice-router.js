@@ -27,7 +27,7 @@ exports.securityDeviceRouter.get('/devices', chek_refreshToket_1.chekRefreshToke
 }));
 exports.securityDeviceRouter.delete('/devices', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.refreshToken;
-    const resultDelete = yield securityDevice_service_1.securityDeviceService.deleteAllButOne(refreshToken);
+    const resultDelete = yield securityDevice_service_1.securityDeviceService.deleteAllDevicesExceptOne(refreshToken);
     if (resultDelete) {
         res.sendStatus(204);
     }

@@ -20,7 +20,6 @@ const port = 3001
 app.use(cookieParser())
 app.set('trust proxy', true)
 
-
 app.use(express.json())
 app.use('/posts', postsRouter)
 app.use('/blogs', blogsRouter)

@@ -151,6 +151,7 @@ authRouter.post('/registration-confirmation',
 
 
 authRouter.post('/registration-email-resending',
+
     emailValidation,
     inputValidationMiddleware,
     filterCountIPAndURL,

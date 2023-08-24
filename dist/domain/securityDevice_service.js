@@ -53,11 +53,11 @@ exports.securityDeviceService = {
             //if user exist but device id fon uri param not include in user devices
         });
     },
-    deleteAllButOne(refreshToken) {
+    deleteAllDevicesExceptOne(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             const deviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
-            const res = yield tokens_db_repository_1.tokensRepository.deleteAllButOne(deviceId, userId);
+            const res = yield tokens_db_repository_1.tokensRepository.deleteAllDevicesExceptOne(deviceId, userId);
             return res;
         });
     }
