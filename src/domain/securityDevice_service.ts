@@ -1,5 +1,7 @@
+import { NextFunction } from "express"
 import { jwtService } from "../application/jwt-service"
 import { tokensRepository } from "../repositories/tokens-db-repository"
+import { ResultObject } from "../types/resultObject"
 import { DeviceViewModel } from "../types/token-types"
 
 
@@ -27,16 +29,24 @@ export const securityDeviceService = {
         return result     
     },
 
-    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean> {
+    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean | null> {
         const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
-        if (resultDeviceId !== deviceId) {return false}
-        else {return true}
+        const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
+        if (userByDeviceId === null) {return null}
+        if( resultDeviceId !== deviceId) {return false}
+        return true
+            
+
+        //get userByDeviceId
+        //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
+        //if user exist but device id fon uri param not include in user devices
     },
 
     async deleteAllButOne (refreshToken: string): Promise<Boolean | null> {
-        const issuedAt = await jwtService.getIssuedAttByRefreshToken(refreshToken)
-        if (issuedAt === null) return null
-        const res = await tokensRepository.deleteAllButOne(issuedAt)
+        const deviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
+        const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
+
+        const res = await tokensRepository.deleteAllButOne(deviceId, userId)
         return res
     }
 
