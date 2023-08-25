@@ -25,6 +25,10 @@ securityDeviceRouter.get('/devices',
 securityDeviceRouter.delete('/devices',
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
+        if (!refreshToken) {
+            return res.sendStatus(401)
+        }
+        
         const resultDelete = await securityDeviceService.deleteAllDevicesExceptOne(refreshToken)
         if (resultDelete) {
             res.sendStatus(204)
