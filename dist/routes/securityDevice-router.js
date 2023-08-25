@@ -47,8 +47,6 @@ exports.securityDeviceRouter.delete('/devices/:deviceId', (req, res) => __awaite
     }
     if (deviceIdByUser === true) {
         const resultDeleteDeviceId = yield securityDevice_service_1.securityDeviceService.deleteDeviceId(deviceId);
-        if (resultDeleteDeviceId) {
-            return res.sendStatus(204);
-        }
+        return res.sendStatus(204);
     }
 }));

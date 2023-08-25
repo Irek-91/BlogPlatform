@@ -50,9 +50,7 @@ securityDeviceRouter.delete('/devices/:deviceId',
         
         if (deviceIdByUser === true) {
             const resultDeleteDeviceId = await securityDeviceService.deleteDeviceId(deviceId)
-                if (resultDeleteDeviceId) {
-                    return res.sendStatus(204)
-                }
+                return res.sendStatus(204)
     }
 
 })
