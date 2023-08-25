@@ -17,7 +17,7 @@ export const tokensRepository = {
     
 
 
-    async getUserByDeviceId(deviceId: string): Promise <ObjectId | null> {
+    async getUserIdByDeviceId(deviceId: string): Promise <ObjectId | null> {
         
         try {const res = await refreshTokenCollections.findOne({deviceId: deviceId});
             if (res === null) {return null}
