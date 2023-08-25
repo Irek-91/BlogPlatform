@@ -22,9 +22,8 @@ const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0
         date: new Date()
     };
     const result = yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
-    const countIP = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ $or: [{ IP: newAPI.IP }, { date: { $gte: new Date((newAPI.date).getTime() - 10000) } }] });
-    const countURL = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ $or: [{ URL: newAPI.URL }, { date: { $gte: new Date((newAPI.date).getTime() - 10000) } }] });
-    if (countIP > 5 || countURL > 5) {
+    const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ date: { $gte: new Date((newAPI.date).getTime() - 10000) } });
+    if (count > 5) {
         return res.sendStatus(429);
     }
     next();
