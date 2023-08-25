@@ -115,7 +115,7 @@ exports.authRouter.post('/registration-confirmation', count_IPAndURIFilter_1.fil
         });
     }
 }));
-exports.authRouter.post('/registration-email-resending', users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-email-resending', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.resendingEmail(req.body.email);
     if (result) {
         res.sendStatus(204);

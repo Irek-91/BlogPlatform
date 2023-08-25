@@ -151,10 +151,9 @@ authRouter.post('/registration-confirmation',
 
 
 authRouter.post('/registration-email-resending',
-
+    filterCountIPAndURL,
     emailValidation,
     inputValidationMiddleware,
-    filterCountIPAndURL,
 
     async (req: Request, res: Response) => {
     const result = await authService.resendingEmail(req.body.email)
