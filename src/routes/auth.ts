@@ -18,10 +18,11 @@ export const authRouter = Router({});
 
 
 authRouter.post('/login',
-    filterCountIPAndURL,
     loginOrEmailValidationAuth,
     passwordValidationAuth,
     inputValidationMiddleware,
+    filterCountIPAndURL,
+
 
     async (req: Request, res: Response) => {
         const loginOrEmail = req.body.loginOrEmail;
@@ -151,9 +152,10 @@ authRouter.post('/registration-confirmation',
 
 
 authRouter.post('/registration-email-resending',
-    filterCountIPAndURL,
     emailValidation,
     inputValidationMiddleware,
+    filterCountIPAndURL,
+
 
     async (req: Request, res: Response) => {
     const result = await authService.resendingEmail(req.body.email)

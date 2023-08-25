@@ -25,7 +25,7 @@ const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 const uuid_1 = require("uuid");
 const count_IPAndURIFilter_1 = require("../midlewares/count-IPAndURIFilter");
 exports.authRouter = (0, express_1.Router)({});
-exports.authRouter.post('/login', count_IPAndURIFilter_1.filterCountIPAndURL, aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
     const passwordUser = req.body.password;
     const divicId = (0, uuid_1.v4)();
@@ -115,7 +115,7 @@ exports.authRouter.post('/registration-confirmation', count_IPAndURIFilter_1.fil
         });
     }
 }));
-exports.authRouter.post('/registration-email-resending', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration-email-resending', users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.resendingEmail(req.body.email);
     if (result) {
         res.sendStatus(204);
