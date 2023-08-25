@@ -31,8 +31,10 @@ export const securityDeviceService = {
 
     async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean | null> {
         const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
+        
         const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
-        if (userByDeviceId === null) {return null}
+        const userByDeviceIdParams = await tokensRepository.getUserByDeviceId(deviceId)
+        if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
         if( resultDeviceId !== deviceId) {return false}
         return true
             

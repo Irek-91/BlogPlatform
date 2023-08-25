@@ -41,7 +41,8 @@ exports.securityDeviceService = {
         return __awaiter(this, void 0, void 0, function* () {
             const resultDeviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
             const userByDeviceId = yield tokens_db_repository_1.tokensRepository.getUserByDeviceId(resultDeviceId);
-            if (userByDeviceId === null) {
+            const userByDeviceIdParams = yield tokens_db_repository_1.tokensRepository.getUserByDeviceId(deviceId);
+            if (userByDeviceId === null || userByDeviceIdParams === null) {
                 return null;
             }
             if (resultDeviceId !== deviceId) {
