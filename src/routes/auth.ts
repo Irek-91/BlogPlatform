@@ -18,10 +18,10 @@ export const authRouter = Router({});
 
 
 authRouter.post('/login',
+    filterCountIPAndURL,
     loginOrEmailValidationAuth,
     passwordValidationAuth,
     inputValidationMiddleware,
-    filterCountIPAndURL,
 
     async (req: Request, res: Response) => {
         const loginOrEmail = req.body.loginOrEmail;

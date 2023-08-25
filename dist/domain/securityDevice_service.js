@@ -45,14 +45,18 @@ exports.securityDeviceService = {
             //if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
             //if( resultDeviceId !== deviceId) {return false}
             //return true
-            const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
-            const device = yield tokens_db_repository_1.tokensRepository.findOneDeviceId(deviceId);
-            if (!device)
+            const resultDeviceId = yield tokens_db_repository_1.tokensRepository.findOneDeviceId(deviceId);
+            if (!resultDeviceId) {
                 return 404;
-            if (device.userId !== userId)
+            }
+            const resultUserId = yield jwt_service_1.jwtService.getUserIdByToken(refreshToken);
+            if (resultDeviceId.userId.toString() !== resultUserId.toString()) {
                 return 403;
-            const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
-            return 204;
+            }
+            else {
+                const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
+                return 204;
+            }
             //get userByDeviceId
             //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
             //if user exist but device id fon uri param not include in user devices

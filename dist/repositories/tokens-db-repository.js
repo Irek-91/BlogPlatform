@@ -23,7 +23,7 @@ exports.tokensRepository = {
             }
         });
     },
-    getUserByDeviceId(deviceId) {
+    getUserIdByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const res = yield db_mongo_1.refreshTokenCollections.findOne({ deviceId: deviceId });

@@ -37,12 +37,13 @@ export const securityDeviceService = {
         //if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
         //if( resultDeviceId !== deviceId) {return false}
         //return true
-        const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
-        const device = await tokensRepository.findOneDeviceId(deviceId)
-        if(!device) return 404
-        if(device.userId !== userId) return 403
-        const result = await tokensRepository.deleteDeviceId(deviceId)
-        return 204
+
+        const resultDeviceId = await tokensRepository.findOneDeviceId(deviceId)
+        if(!resultDeviceId) {return 404}
+        const resultUserId = await jwtService.getUserIdByToken(refreshToken)
+        if(resultDeviceId.userId.toString() !== resultUserId!.toString()) {return 403}
+        else {const result = await tokensRepository.deleteDeviceId(deviceId)
+        return 204}
         //get userByDeviceId
         //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
         //if user exist but device id fon uri param not include in user devices
