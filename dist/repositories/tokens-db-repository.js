@@ -117,5 +117,19 @@ exports.tokensRepository = {
                 return null;
             }
         });
+    },
+    findOneDeviceId(deviceId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield db_mongo_1.refreshTokenCollections.findOne({ deviceId: deviceId });
+                if (res === null) {
+                    return null;
+                }
+                return res;
+            }
+            catch (e) {
+                return null;
+            }
+        });
     }
 };

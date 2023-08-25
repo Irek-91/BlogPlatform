@@ -3,6 +3,7 @@ import { jwtService } from "../application/jwt-service"
 import { tokensRepository } from "../repositories/tokens-db-repository"
 import { ResultObject } from "../types/resultObject"
 import { DeviceViewModel } from "../types/token-types"
+import { refreshTokenCollections } from "../db/db-mongo"
 
 
 export const securityDeviceService = {
@@ -29,16 +30,19 @@ export const securityDeviceService = {
         return result     
     },
 
-    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<boolean | null> {
-        const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
-        
-        const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
-        const userByDeviceIdParams = await tokensRepository.getUserByDeviceId(deviceId)
-        if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
-        if( resultDeviceId !== deviceId) {return false}
-        return true
-            
-
+    async getDeviceByUserId (refreshToken:string, deviceId:string): Promise<number> {
+        //const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
+        //const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
+        //const userByDeviceIdParams = await tokensRepository.getUserByDeviceId(deviceId)
+        //if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
+        //if( resultDeviceId !== deviceId) {return false}
+        //return true
+        const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
+        const device = await tokensRepository.findOneDeviceId(deviceId)
+        if(!device) return 404
+        if(device.userId !== userId) return 403
+        const result = await tokensRepository.deleteDeviceId(deviceId)
+        return 204
         //get userByDeviceId
         //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
         //if user exist but device id fon uri param not include in user devices

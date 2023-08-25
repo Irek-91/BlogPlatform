@@ -39,16 +39,20 @@ exports.securityDeviceService = {
     },
     getDeviceByUserId(refreshToken, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const resultDeviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
-            const userByDeviceId = yield tokens_db_repository_1.tokensRepository.getUserByDeviceId(resultDeviceId);
-            const userByDeviceIdParams = yield tokens_db_repository_1.tokensRepository.getUserByDeviceId(deviceId);
-            if (userByDeviceId === null || userByDeviceIdParams === null) {
-                return null;
-            }
-            if (resultDeviceId !== deviceId) {
-                return false;
-            }
-            return true;
+            //const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
+            //const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
+            //const userByDeviceIdParams = await tokensRepository.getUserByDeviceId(deviceId)
+            //if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
+            //if( resultDeviceId !== deviceId) {return false}
+            //return true
+            const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
+            const device = yield tokens_db_repository_1.tokensRepository.findOneDeviceId(deviceId);
+            if (!device)
+                return 404;
+            if (device.userId !== userId)
+                return 403;
+            const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
+            return 204;
             //get userByDeviceId
             //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
             //if user exist but device id fon uri param not include in user devices

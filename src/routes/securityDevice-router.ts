@@ -2,6 +2,7 @@ import { refreshToken } from './../types/token-types';
 import { Request, Response, Router } from "express";
 import { chekRefreshToken } from "../midlewares/chek-refreshToket";
 import { securityDeviceService } from '../domain/securityDevice_service';
+import { chekRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
 
 export const securityDeviceRouter = Router({});
 
@@ -40,22 +41,14 @@ securityDeviceRouter.delete('/devices',
 
 
 securityDeviceRouter.delete('/devices/:deviceId',
-    chekRefreshToken,    
-
+    chekRefreshTokenDeleteDevice,
     async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         const deviceId = req.params.deviceId
-        const deviceIdByUser = await securityDeviceService.getDeviceByUserId(refreshToken, deviceId)
-        if (deviceIdByUser === null) {
-            return res.sendStatus(404)
-        }
-        if (deviceIdByUser === false) {
-            return res.sendStatus(403)
-        }
+        const result = await securityDeviceService.getDeviceByUserId(refreshToken, deviceId)
+    
+        return res.sendStatus(result)
         
-        if (deviceIdByUser === true) {
-            const resultDeleteDeviceId = await securityDeviceService.deleteDeviceId(deviceId)
-                return res.sendStatus(204)
-    }
-
+        
+        
 })

@@ -9,23 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filterCountIPAndURL = void 0;
-const db_mongo_1 = require("../db/db-mongo");
-const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // date.toIsoString()
-    // 2000.00
-    const IP = req.ip;
-    const URL = req.baseUrl || req.originalUrl; //log  ()
-    const newAPI = {
-        IP,
-        URL,
-        date: new Date()
-    };
-    const result = yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
-    const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ date: { $gte: new Date((newAPI.date).getTime() - 10000) } });
-    if (count > 5) {
-        return res.sendStatus(429);
-    }
+exports.chekRefreshToken = void 0;
+const jwt_service_1 = require("../application/jwt-service");
+const token_service_1 = require("../domain/token-service");
+const chekRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const cookiesRefreshToken = req.cookies.refreshToken;
+    if (!cookiesRefreshToken)
+        return res.sendStatus(401);
+    const validationToken = yield jwt_service_1.jwtService.checkingTokenKey(cookiesRefreshToken);
+    if (validationToken === null)
+        return res.sendStatus(401);
+    const expiredToken = yield token_service_1.tokensService.findTokenAndDevice(cookiesRefreshToken);
+    if (expiredToken === null)
+        return res.sendStatus(401);
     next();
 });
-exports.filterCountIPAndURL = filterCountIPAndURL;
+exports.chekRefreshToken = chekRefreshToken;

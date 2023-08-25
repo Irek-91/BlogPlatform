@@ -76,6 +76,14 @@ export const tokensRepository = {
             return res.acknowledged
         }
         catch (e) {return null}
+    },
+
+    async findOneDeviceId(deviceId: string) :Promise<refreshTokenMongo | null>  {
+        try {const res = await refreshTokenCollections.findOne({deviceId: deviceId});
+            if (res === null) {return null}
+            return res
+        }
+        catch (e) {return null}
     }
 
 
