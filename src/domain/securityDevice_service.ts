@@ -1,9 +1,7 @@
 import { NextFunction } from "express"
 import { jwtService } from "../application/jwt-service"
 import { tokensRepository } from "../repositories/tokens-db-repository"
-import { ResultObject } from "../types/resultObject"
 import { DeviceViewModel } from "../types/token-types"
-import { refreshTokenCollections } from "../db/db-mongo"
 
 
 export const securityDeviceService = {

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { refreshTokenCollections } from "../db/db-mongo"
+import { deviceTokenCollections } from "../db/db-mongo"
 import { refreshTokenMongo } from "../types/token-types"
 import { jwtService } from "../application/jwt-service"
 
@@ -8,7 +8,7 @@ import { jwtService } from "../application/jwt-service"
 export const tokensRepository = {
 
     async addRefreshToken (newDeviceAndRefreshToken: refreshTokenMongo): Promise<boolean | null> {
-        try {const res = await refreshTokenCollections.insertOne({...newDeviceAndRefreshToken})
+        try {const res = await deviceTokenCollections.insertOne({...newDeviceAndRefreshToken})
         return res.acknowledged}
         catch (e) {return null}
 
@@ -19,7 +19,7 @@ export const tokensRepository = {
 
     async getUserIdByDeviceId(deviceId: string): Promise <ObjectId | null> {
         
-        try {const res = await refreshTokenCollections.findOne({deviceId: deviceId});
+        try {const res = await deviceTokenCollections.findOne({deviceId: deviceId});
             if (res === null) {return null}
             return res.userId
         }
@@ -28,7 +28,7 @@ export const tokensRepository = {
 
     async findTokenAndDeviceByissuedAt(issuedAt: string): Promise <true | null> {
         
-        try {const res = await refreshTokenCollections.findOne({issuedAt: issuedAt})
+        try {const res = await deviceTokenCollections.findOne({issuedAt: issuedAt})
             if (res === null) {return null}
             return true
         }
@@ -36,7 +36,7 @@ export const tokensRepository = {
     },
 
     async deleteTokenAndDevice(issuedAt: string): Promise <true | null> {
-        try {const res = await refreshTokenCollections.deleteOne({issuedAt: issuedAt})
+        try {const res = await deviceTokenCollections.deleteOne({issuedAt: issuedAt})
             if (res === null) {return null}
             return true
         }
@@ -44,13 +44,13 @@ export const tokensRepository = {
     },
 
     async deleteTokensAll () {
-        const deletResult = await refreshTokenCollections.deleteMany({})
+        const deletResult = await deviceTokenCollections.deleteMany({})
         return true
     },
 
     async getTokenAndDevice(userId: ObjectId): Promise <refreshTokenMongo[] | null> {
         
-        try {const res = await refreshTokenCollections.find({userId: userId}).toArray();
+        try {const res = await deviceTokenCollections.find({userId: userId}).toArray();
             if (res === null) {return null}
             return res
         }
@@ -58,7 +58,7 @@ export const tokensRepository = {
     },
 
     async deleteDeviceId(deviceId: string): Promise<null | boolean > {
-        try {const res = await refreshTokenCollections.deleteOne({deviceId: deviceId});
+        try {const res = await deviceTokenCollections.deleteOne({deviceId: deviceId});
             if (res === null) {return null}
             return res.acknowledged
         }
@@ -69,9 +69,9 @@ export const tokensRepository = {
 //добавить фильтр по userId
 
         try {
-            const checkUserIdByDeviceId = await refreshTokenCollections.find({userId: userId, deviceId: deviceId}).toArray()
+            const checkUserIdByDeviceId = await deviceTokenCollections.find({userId: userId, deviceId: deviceId}).toArray()
             if (checkUserIdByDeviceId.length === 0) {return null}
-            const res = await refreshTokenCollections.deleteMany({deviceId: {$ne:deviceId}});
+            const res = await deviceTokenCollections.deleteMany({deviceId: {$ne:deviceId}});
             if (res === null) {return null}
             return res.acknowledged
         }
@@ -79,7 +79,7 @@ export const tokensRepository = {
     },
 
     async findOneDeviceId(deviceId: string) :Promise<refreshTokenMongo | null>  {
-        try {const res = await refreshTokenCollections.findOne({deviceId: deviceId});
+        try {const res = await deviceTokenCollections.findOne({deviceId: deviceId});
             if (res === null) {return null}
             return res
         }

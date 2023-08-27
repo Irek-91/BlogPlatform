@@ -16,7 +16,6 @@ import { securityDeviceRouter } from './routes/securityDevice-router';
 export const app = express()
 const port = 3001
 
-
 app.use(cookieParser())
 app.set('trust proxy', true)
 

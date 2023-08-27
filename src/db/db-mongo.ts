@@ -20,7 +20,7 @@ export const blogsCollections = db.collection('blogs')
 export const postsCollections = db.collection<postMongoDb>('posts')
 export const usersCollections = db.collection<userMongoModel>('users')
 export const commentsCollections = db.collection<commentMongoModel>('comments')
-export const refreshTokenCollections = db.collection<refreshTokenMongo>('refreshTokens')
+export const deviceTokenCollections = db.collection<refreshTokenMongo>('refreshTokens')
 export const arrayIPAndURICollections = db.collection<arrayIPAndURL>('arrayIPAndURL')
 
 

@@ -19,7 +19,9 @@ export const authRouter = Router({});
 
 authRouter.post('/login',
     loginOrEmailValidationAuth,
+    loginValidation,
     passwordValidationAuth,
+
     inputValidationMiddleware,
     filterCountIPAndURL,
 
@@ -31,19 +33,15 @@ authRouter.post('/login',
         const IP = req.ip
         const title = req.headers['user-agent'] || 'custom-ua'
         const newUser = await usersService.checkCredentials(loginOrEmail, passwordUser);
-        if (newUser) {
-            const accessToken = await jwtService.createdJWTAccessToken(newUser._id)
-            const refreshToken = await tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title)
+        if (newUser === false) return res.sendStatus(401)
+
+        const accessToken = await jwtService.createdJWTAccessToken(newUser._id)
+        const refreshToken = await tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title)
             if (accessToken !== null || refreshToken !== null) {
                 res.cookie('refreshToken', refreshToken, {httpOnly: true,secure: true})
                 res.status(200).send({ accessToken })
             }
-        }
-        else {
-            res.sendStatus(401)
-        }
-    }
-)
+})
 
 
 authRouter.post('/refresh-token',
@@ -102,13 +100,14 @@ authRouter.get('/me',
     })
 
 authRouter.post('/registration',
-filterCountIPAndURL,
 
     loginValidation,
+    emailValidationCustom,
+    filterCountIPAndURL,
+
     loginValidationLength,
     passwordValidation,
     emailValidation,
-    emailValidationCustom,
     inputValidationMiddleware,
     async (req: Request, res: Response) => {
         const user = await authService.creatUser(req.body.login, req.body.password, req.body.email)

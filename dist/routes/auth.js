@@ -25,23 +25,20 @@ const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 const uuid_1 = require("uuid");
 const count_IPAndURIFilter_1 = require("../midlewares/count-IPAndURIFilter");
 exports.authRouter = (0, express_1.Router)({});
-exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/login', aurh_validation_1.loginOrEmailValidationAuth, users_validation_2.loginValidation, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, count_IPAndURIFilter_1.filterCountIPAndURL, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginOrEmail = req.body.loginOrEmail;
     const passwordUser = req.body.password;
     const divicId = (0, uuid_1.v4)();
     const IP = req.ip;
     const title = req.headers['user-agent'] || 'custom-ua';
     const newUser = yield users_service_1.usersService.checkCredentials(loginOrEmail, passwordUser);
-    if (newUser) {
-        const accessToken = yield jwt_service_1.jwtService.createdJWTAccessToken(newUser._id);
-        const refreshToken = yield token_service_1.tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title);
-        if (accessToken !== null || refreshToken !== null) {
-            res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-            res.status(200).send({ accessToken });
-        }
-    }
-    else {
-        res.sendStatus(401);
+    if (newUser === false)
+        return res.sendStatus(401);
+    const accessToken = yield jwt_service_1.jwtService.createdJWTAccessToken(newUser._id);
+    const refreshToken = yield token_service_1.tokensService.addDeviceIdRefreshToken(newUser._id, divicId, IP, title);
+    if (accessToken !== null || refreshToken !== null) {
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+        res.status(200).send({ accessToken });
     }
 }));
 exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,7 +80,7 @@ exports.authRouter.get('/me', auth_middleware_1.authMiddleware, (req, res) => __
         res.sendStatus(401);
     }
 }));
-exports.authRouter.post('/registration', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.loginValidation, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, users_validation_1.emailValidationCustom, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRouter.post('/registration', users_validation_2.loginValidation, users_validation_1.emailValidationCustom, count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_service_1.authService.creatUser(req.body.login, req.body.password, req.body.email);
     if (user) {
         res.sendStatus(204);
