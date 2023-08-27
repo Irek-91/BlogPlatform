@@ -17,7 +17,7 @@ export const filterCountIPAndURL = async (req: Request, res: Response, next: Nex
 
     const count = await arrayIPAndURICollections.countDocuments({date: {$gte: filterDate}})
 
-    if (count > 5) {return res.sendStatus(429)}
+    if (count > 4) {return res.sendStatus(429)}
 
     next()
 }
