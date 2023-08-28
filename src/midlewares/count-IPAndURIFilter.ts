@@ -14,7 +14,7 @@ export const filterCountIPAndURL = async (req: Request, res: Response, next: Nex
         URL,
         date: connectionDate.toISOString()
     }
-    const count = await arrayIPAndURICollections.countDocuments({date: {$gte: addSeconds(connectionDate, -10).toISOString()}})
+    const count = await arrayIPAndURICollections.countDocuments({IP: newAPI.IP, URL: newAPI.URL, date: {$gte: addSeconds(connectionDate, -10).toISOString()}})
 
     if (count + 1 > 5) {
         return res.sendStatus(429)
