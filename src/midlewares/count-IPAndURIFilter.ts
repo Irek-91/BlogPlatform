@@ -6,19 +6,19 @@ export const filterCountIPAndURL = async (req: Request, res: Response, next: Nex
     // date.toIsoString()
     // 2000.00
     const IP = req.ip
-    const URL =  req.originalUrl || req.baseUrl
-    
+    const URL = req.originalUrl //|| req.baseUrl 
     const newAPI = {
         IP,
         URL,
         date: (new Date()).toISOString()
     }
-    const filterDate = (new Date((new Date(newAPI.date)).setSeconds(-9))).toISOString()
-    const result = await arrayIPAndURICollections.insertOne({...newAPI})
+    const filterDate = (new Date((new Date(newAPI.date)).setSeconds(-10))).toISOString()
 
     const count = await arrayIPAndURICollections.countDocuments({date: {$gte: filterDate}})
 
-    if (count > 5) {return res.sendStatus(429)}
+    if (count > 4) {return res.sendStatus(429)}
+    const result = await arrayIPAndURICollections.insertOne({...newAPI})
+
 
     next()
 }
