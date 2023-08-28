@@ -2,7 +2,7 @@ import { app } from './../src/index';
 import request from 'supertest'
 
 
-describe ('/blogs', () => {
+describe ('tests for blogs', () => {
      
     beforeAll(async () => {
         await request(app).delete('/testing/all-data')

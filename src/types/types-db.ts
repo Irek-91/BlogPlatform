@@ -8,6 +8,14 @@ export type postInput = {
     blogName: string,
     createdAt: string,
 }
+
+export type postInputModel = {
+  title: string,
+  shortDescription: string,
+  content: string,
+  blogId: string,
+}
+
 export type postsCollectionsType = postOutput[];
 export type blogsCollectionsType = blogOutput[];
 
