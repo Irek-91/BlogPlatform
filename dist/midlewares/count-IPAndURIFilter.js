@@ -23,7 +23,7 @@ const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0
     };
     const filterDate = (new Date((new Date(newAPI.date)).setSeconds(-10))).toISOString();
     const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ date: { $gte: filterDate } });
-    if (count > 4) {
+    if (count > 5) {
         return res.sendStatus(429);
     }
     const result = yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
