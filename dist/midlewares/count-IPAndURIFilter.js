@@ -11,22 +11,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterCountIPAndURL = void 0;
 const db_mongo_1 = require("../db/db-mongo");
+const date_fns_1 = require("date-fns");
 const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // date.toIsoString()
     // 2000.00
+    const connectionDate = new Date();
     const IP = req.ip;
     const URL = req.originalUrl; //|| req.baseUrl 
     const newAPI = {
         IP,
         URL,
-        date: (new Date()).toISOString()
+        date: connectionDate.toISOString()
     };
-    const filterDate = (new Date((new Date(newAPI.date)).setSeconds(-10))).toISOString();
-    const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ date: { $gte: filterDate } });
-    if (count > 4) {
+    const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ date: { $gte: (0, date_fns_1.addSeconds)(connectionDate, -10).toISOString() } });
+    if (count + 1 > 5) {
         return res.sendStatus(429);
     }
-    const result = yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
+    yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
     next();
 });
 exports.filterCountIPAndURL = filterCountIPAndURL;

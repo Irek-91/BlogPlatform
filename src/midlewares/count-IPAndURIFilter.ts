@@ -1,23 +1,25 @@
 import { NextFunction, Request, Response } from 'express';
 import { arrayIPAndURICollections } from '../db/db-mongo';
+import {  addSeconds } from 'date-fns';
 
 
 export const filterCountIPAndURL = async (req: Request, res: Response, next: NextFunction) => {
     // date.toIsoString()
     // 2000.00
+    const connectionDate = new Date()
     const IP = req.ip
     const URL = req.originalUrl //|| req.baseUrl 
     const newAPI = {
         IP,
         URL,
-        date: (new Date()).toISOString()
+        date: connectionDate.toISOString()
     }
-    const filterDate = (new Date((new Date(newAPI.date)).setSeconds(-10))).toISOString()
+    const count = await arrayIPAndURICollections.countDocuments({date: {$gte: addSeconds(connectionDate, -10).toISOString()}})
 
-    const count = await arrayIPAndURICollections.countDocuments({date: {$gte: filterDate}})
-
-    if (count > 4) {return res.sendStatus(429)}
-    const result = await arrayIPAndURICollections.insertOne({...newAPI})
+    if (count + 1 > 5) {
+        return res.sendStatus(429)
+    }
+    await arrayIPAndURICollections.insertOne({...newAPI})
 
 
     next()
