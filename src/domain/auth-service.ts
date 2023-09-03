@@ -99,7 +99,7 @@ export const authService = {
             })
         let result = await userRepository.findUserByCode(recoveryCode)
         if (result === null) return false
-        if (result.emailConfirmation.expiritionDate < date) return false
+        if ((new Date (result.emailConfirmation.expiritionDate)).getTime() < date.getTime()) return false
         const resultUpdateCode = await userRepository.updateCode(result._id, recoveryCode, expiritionDate)
         if (resultUpdateCode === false) return false
         const passwordSalt = await bcrypt.genSalt(10)

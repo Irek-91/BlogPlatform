@@ -115,7 +115,7 @@ export const userRepository = {
     },
 
     async findUserByCode(code: string): Promise<userMongoModel | null> {
-      try {let user = await UsersModelClass.findOne({"emailConfirmation.confirmationCode": code})
+      try {let user = await UsersModelClass.findOne({"emailConfirmation.confirmationCode": code}).lean()
       return user}
       catch (e) {return null}
     },
@@ -126,12 +126,12 @@ export const userRepository = {
     },
 
     async findUserByEmail(email: string): Promise<userMongoModel | null>{
-      try {let user = await UsersModelClass.findOne({"accountData.email": email})
+      try {let user = await UsersModelClass.findOne({"accountData.email": email}).lean()
       return user}
       catch (e) {return null}
     },
     async findUserByLogin(login: string): Promise<userMongoModel | null>{
-      try {let user = await UsersModelClass.findOne({"accountData.login": login})
+      try {let user = await UsersModelClass.findOne({"accountData.login": login}).lean()
       return user}
       catch (e) {return null}
     },

@@ -118,7 +118,7 @@ exports.authService = {
             let result = yield users_db_repository_1.userRepository.findUserByCode(recoveryCode);
             if (result === null)
                 return false;
-            if (result.emailConfirmation.expiritionDate < date)
+            if ((new Date(result.emailConfirmation.expiritionDate)).getTime() < date.getTime())
                 return false;
             const resultUpdateCode = yield users_db_repository_1.userRepository.updateCode(result._id, recoveryCode, expiritionDate);
             if (resultUpdateCode === false)

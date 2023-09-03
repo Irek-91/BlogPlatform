@@ -121,7 +121,7 @@ exports.userRepository = {
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongoos_1.UsersModelClass.findOne({ "emailConfirmation.confirmationCode": code });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "emailConfirmation.confirmationCode": code }).lean();
                 return user;
             }
             catch (e) {
@@ -138,7 +138,7 @@ exports.userRepository = {
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.email": email });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.email": email }).lean();
                 return user;
             }
             catch (e) {
@@ -149,7 +149,7 @@ exports.userRepository = {
     findUserByLogin(login) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.login": login });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.login": login }).lean();
                 return user;
             }
             catch (e) {
