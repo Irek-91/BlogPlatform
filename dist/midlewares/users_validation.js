@@ -42,7 +42,10 @@ exports.emailValidationCustom = (0, express_validator_1.body)('email').
 const newPasswordValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const newPassword = req.body.newPassword;
     if (newPassword.length > 20 || newPassword.length < 6) {
-        res.sendStatus(400);
+        res.status(400).send({
+            message: "newPassword is incorrect",
+            field: "newPassword"
+        });
     }
     else {
         next();

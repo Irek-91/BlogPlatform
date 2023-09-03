@@ -39,7 +39,12 @@ export const emailValidationCustom = body('email').
 export const newPasswordValidation = async (req: Request, res: Response, next: NextFunction) => {
   const newPassword = req.body.newPassword
   if (newPassword.length > 20 || newPassword.length < 6) {
-    res.sendStatus(400)  
+    res.status(400).send(
+      {
+        message: "newPassword is incorrect",
+        field: "newPassword"
+    }
+    )  
   }
   else {
     next()
