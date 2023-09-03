@@ -40,10 +40,11 @@ export const newPasswordValidation = async (req: Request, res: Response, next: N
   const newPassword = req.body.newPassword
   if (newPassword.length > 20 || newPassword.length < 6) {
     res.status(400).send(
-      {
-        message: "newPassword is incorrect",
-        field: "newPassword"
-    }
+      { errorsMessages: [{
+                          message: 'error in newPassword length', 
+                          field: "newPassword" 
+        }]
+      }
     )  
   }
   else {
