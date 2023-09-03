@@ -5,6 +5,9 @@ import { User, userMeViewModel, userMongoModel, userViewModel, } from "../types/
 import bcrypt from 'bcrypt'
 import { jwtService } from '../application/jwt-service';
 import { ObjectId } from 'mongodb';
+import { add } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 
@@ -17,6 +20,13 @@ export const usersService = {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10)
     const passwordHash = await this._generateHash(passwordUser, passwordSalt)
+    const confirmationCode = uuidv4()
+
+    const expiritionDate = add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                })
+
     const newUser: User = {
       accountData : {
         login: loginUser,
@@ -26,8 +36,8 @@ export const usersService = {
         createdAt: createdAt
     },
       emailConfirmation : {
-        confirmationCode: '',
-        expiritionDate: '',
+        confirmationCode: confirmationCode,
+        expiritionDate: expiritionDate.toISOString(),
         isConfirmed: false
     }
     }

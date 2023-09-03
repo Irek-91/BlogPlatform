@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.usersService = void 0;
 const users_db_repository_1 = require("../repositories/users-db-repository");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const date_fns_1 = require("date-fns");
+const uuid_1 = require("uuid");
 exports.usersService = {
     findUsers(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,6 +28,11 @@ exports.usersService = {
             const createdAt = new Date().toISOString();
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(passwordUser, passwordSalt);
+            const confirmationCode = (0, uuid_1.v4)();
+            const expiritionDate = (0, date_fns_1.add)(new Date(), {
+                hours: 1,
+                minutes: 3
+            });
             const newUser = {
                 accountData: {
                     login: loginUser,
@@ -35,8 +42,8 @@ exports.usersService = {
                     createdAt: createdAt
                 },
                 emailConfirmation: {
-                    confirmationCode: '',
-                    expiritionDate: '',
+                    confirmationCode: confirmationCode,
+                    expiritionDate: expiritionDate.toISOString(),
                     isConfirmed: false
                 }
             };
