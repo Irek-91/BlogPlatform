@@ -4,7 +4,6 @@ import { userRepository } from "../repositories/users-db-repository"
 import { User, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
 import bcrypt from 'bcrypt'
 import { jwtService } from '../application/jwt-service';
-import { usersCollections } from '../db/db-mongo';
 import { ObjectId } from 'mongodb';
 
 

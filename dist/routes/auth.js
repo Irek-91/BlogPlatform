@@ -46,7 +46,7 @@ exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, 
     const IP = req.ip;
     const title = req.headers['user-agent'] || 'custom-ua';
     const newAccessToken = yield token_service_1.tokensService.updateAccessToken(cookiesRefreshToken);
-    const newRefreshToken = yield token_service_1.tokensService.updateRefreshTokens(cookiesRefreshToken, IP, title);
+    const newRefreshToken = yield token_service_1.tokensService.updateDevicesModelClass(cookiesRefreshToken, IP, title);
     if (newAccessToken !== null || newRefreshToken !== null) {
         res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
         res.status(200).send({ accessToken: newAccessToken });
@@ -123,6 +123,28 @@ exports.authRouter.post('/registration-email-resending', count_IPAndURIFilter_1.
                 {
                     message: "if email is already confirmed",
                     field: "email"
+                }
+            ]
+        });
+    }
+}));
+exports.authRouter.post('/password-recovery', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.authService.passwordRecovery(req.body.email);
+    res.sendStatus(204);
+}));
+exports.authRouter.post('/new-password', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_1.newPasswordValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newPassword = req.body.newPassword;
+    const recoveryCode = req.body.recoveryCode;
+    const result = yield auth_service_1.authService.newPassword(newPassword, recoveryCode);
+    if (result) {
+        res.sendStatus(204);
+    }
+    else {
+        res.status(400).send({
+            errorsMessages: [
+                {
+                    message: "RecoveryCode is incorrect or expired",
+                    field: "recoveryCode"
                 }
             ]
         });

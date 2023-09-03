@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { userRepository } from "../repositories/users-db-repository";
+import { Request, Response, NextFunction } from 'express';
 
 export const loginValidation = body('login').trim().notEmpty().
                                             matches('^[a-zA-Z0-9_-]*$').
@@ -35,4 +36,13 @@ export const emailValidationCustom = body('email').
                                                 }
                                                 return true
                                               }) 
+export const newPasswordValidation = async (req: Request, res: Response, next: NextFunction) => {
+  const newPassword = req.body.newPassword
+  if (newPassword.length > 20 || newPassword.length < 6) {
+    res.sendStatus(401)  
+  }
+  else {
+    next()
+  }
+}
 

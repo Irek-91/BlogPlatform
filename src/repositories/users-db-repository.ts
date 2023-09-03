@@ -1,8 +1,8 @@
 import { log } from 'console';
-import { usersCollections } from '../db/db-mongo';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
 import { User, userMeViewModel, userMongoModel, userViewModel, } from '../types/user';
 import { Filter, ObjectId } from "mongodb";
+import { UsersModelClass } from '../db/db-mongoos';
 
 
 
@@ -26,19 +26,20 @@ export const userRepository = {
           }
 
       }
-      
-      const users = await usersCollections.find(filter).
-                                sort(paginatorUser.sortBy,paginatorUser.sortDirection).
+            
+      const users = await UsersModelClass.find().
+                                where(filter).
+                                sort([[paginatorUser.sortBy,paginatorUser.sortDirection]]).
                                 skip(paginatorUser.skip).
                                 limit(paginatorUser.pageSize).
-                                toArray();
-      const totalCount = await usersCollections.countDocuments(filter)                    
-      const usersOutput =  users.map((b) => {
+                                lean()
+      const totalCount = await UsersModelClass.countDocuments([filter])                    
+      const usersOutput: userViewModel[] =  users.map((b) => {
             return {
               id: b._id.toString(),
-              login: b.accountData.login,
-              email: b.accountData.email,
-              createdAt: b.accountData.createdAt,
+              login: b.accountData!.login,
+              email: b.accountData!.email,
+              createdAt: b.accountData!.createdAt,
             }
         })
   
@@ -52,22 +53,27 @@ export const userRepository = {
         },
         
     async createUser(newUser:User): Promise<userViewModel> {
-            const res = await usersCollections.insertOne({...newUser, _id: new ObjectId()})
+            //const res = await UsersModelClass.insertMany({...newUser, _id: new ObjectId()})
+            const userInstance = new UsersModelClass(newUser)
+            userInstance._id = new ObjectId()
+
+            await userInstance.save()
+
             const userViewVodel = {
-              id: res.insertedId.toString(),
-              login: newUser.accountData.login,
-              email: newUser.accountData.email,
-              createdAt: newUser.accountData.createdAt
+              id: userInstance._id.toString(),
+              login: userInstance.accountData!.login,
+              email: userInstance.accountData!.email,
+              createdAt: userInstance.accountData!.createdAt
             }
             return userViewVodel        
           },
 
     async deleteUserId(id: string):Promise<boolean> {
-            let user = await usersCollections.findOne({_id: new ObjectId(id)})
+            let user = await UsersModelClass.findOne({_id: new ObjectId(id)})
 
             if (user) {
                 try {
-                    await usersCollections.deleteOne({_id: user._id})
+                    await UsersModelClass.deleteOne({_id: user._id})
                     return true}
                 catch (e) 
                     {return false}
@@ -80,7 +86,7 @@ export const userRepository = {
 
 
     async findByLoginOrEmailL(loginOrEmail: string): Promise<userMongoModel | false> {
-        const user  = await usersCollections.findOne({$or: [{'accountData.email': loginOrEmail }, {'accountData.login': loginOrEmail}]})
+        const user  = await UsersModelClass.findOne({$or: [{'accountData.email': loginOrEmail }, {'accountData.login': loginOrEmail}]}).lean()
         if (user === null) {
           return false
         }
@@ -91,12 +97,12 @@ export const userRepository = {
 
 
     async deleteUserAll() : Promise<boolean> {
-      const deletResult = await usersCollections.deleteMany({})
+      const deletResult = await UsersModelClass.deleteMany({})
       return true
     },
     
     async findUserById(userId: ObjectId) : Promise<userMongoModel | false> {
-      try {let user =  await usersCollections.findOne({_id: userId});
+      try {let user =  await UsersModelClass.findOne({_id: userId});
       if (user === null)
       {
           return false
@@ -109,31 +115,37 @@ export const userRepository = {
     },
 
     async findUserByCode(code: string): Promise<userMongoModel | null> {
-      try {let user = await usersCollections.findOne({"emailConfirmation.confirmationCode": code})
+      try {let user = await UsersModelClass.findOne({"emailConfirmation.confirmationCode": code})
       return user}
       catch (e) {return null}
     },
 
     async updateConfirmation(_id: ObjectId): Promise<boolean> {
-      let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.isConfirmed": true}})
+      let result = await UsersModelClass.updateOne({_id}, {$set : {"emailConfirmation.isConfirmed": true}})
       return result.modifiedCount === 1
     },
 
     async findUserByEmail(email: string): Promise<userMongoModel | null>{
-      try {let user = await usersCollections.findOne({"accountData.email": email})
+      try {let user = await UsersModelClass.findOne({"accountData.email": email})
       return user}
       catch (e) {return null}
     },
     async findUserByLogin(login: string): Promise<userMongoModel | null>{
-      try {let user = await usersCollections.findOne({"accountData.login": login})
+      try {let user = await UsersModelClass.findOne({"accountData.login": login})
       return user}
       catch (e) {return null}
     },
 
     async updateCode(_id: ObjectId, code: string, expiritionDate: Date): Promise<boolean> {
-      let result = await usersCollections.updateOne({_id}, {$set : {"emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate" : expiritionDate}})
+      let result = await UsersModelClass.updateOne({_id}, {$set : {"emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate" : expiritionDate}})
       return result.modifiedCount === 2
     },
+
+    async updatePassword(_id: ObjectId, salt: string, hash: string): Promise<boolean> {
+      let result = await UsersModelClass.updateOne({_id}, {$set : {"accountData.salt": salt, "accountData.hash" : hash}})
+      return result.modifiedCount === 2
+    },
+
 
     /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
       try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})

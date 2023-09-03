@@ -29,7 +29,7 @@ export type postMongoDb = {
   createdAt: string,
 };
 export type postOutput = {
-  id: string | null,
+  id: string,
   title: string,
   shortDescription: string,
   content: string,
@@ -39,7 +39,7 @@ export type postOutput = {
 }
 
 export type blogMongoDB = {
-    _id: object,
+    _id: ObjectId,
     name: string,
     description: string,
     websiteUrl: string,
@@ -59,8 +59,6 @@ export type blogInput = {
     name: string,
     description: string,
     websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
   }
 
 

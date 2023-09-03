@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRepository = void 0;
-const db_mongo_1 = require("../db/db-mongo");
 const mongodb_1 = require("mongodb");
+const db_mongoos_1 = require("../db/db-mongoos");
 exports.userRepository = {
     findUsers(paginatorUser) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,12 +29,13 @@ exports.userRepository = {
                     filter.$or.push({ 'accountData.email': { $regex: paginatorUser.searchEmailTerm, $options: 'i' } });
                 }
             }
-            const users = yield db_mongo_1.usersCollections.find(filter).
-                sort(paginatorUser.sortBy, paginatorUser.sortDirection).
+            const users = yield db_mongoos_1.UsersModelClass.find().
+                where(filter).
+                sort([[paginatorUser.sortBy, paginatorUser.sortDirection]]).
                 skip(paginatorUser.skip).
                 limit(paginatorUser.pageSize).
-                toArray();
-            const totalCount = yield db_mongo_1.usersCollections.countDocuments(filter);
+                lean();
+            const totalCount = yield db_mongoos_1.UsersModelClass.countDocuments([filter]);
             const usersOutput = users.map((b) => {
                 return {
                     id: b._id.toString(),
@@ -54,22 +55,25 @@ exports.userRepository = {
     },
     createUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_mongo_1.usersCollections.insertOne(Object.assign(Object.assign({}, newUser), { _id: new mongodb_1.ObjectId() }));
+            //const res = await UsersModelClass.insertMany({...newUser, _id: new ObjectId()})
+            const userInstance = new db_mongoos_1.UsersModelClass(newUser);
+            userInstance._id = new mongodb_1.ObjectId();
+            yield userInstance.save();
             const userViewVodel = {
-                id: res.insertedId.toString(),
-                login: newUser.accountData.login,
-                email: newUser.accountData.email,
-                createdAt: newUser.accountData.createdAt
+                id: userInstance._id.toString(),
+                login: userInstance.accountData.login,
+                email: userInstance.accountData.email,
+                createdAt: userInstance.accountData.createdAt
             };
             return userViewVodel;
         });
     },
     deleteUserId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield db_mongo_1.usersCollections.findOne({ _id: new mongodb_1.ObjectId(id) });
+            let user = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (user) {
                 try {
-                    yield db_mongo_1.usersCollections.deleteOne({ _id: user._id });
+                    yield db_mongoos_1.UsersModelClass.deleteOne({ _id: user._id });
                     return true;
                 }
                 catch (e) {
@@ -83,7 +87,7 @@ exports.userRepository = {
     },
     findByLoginOrEmailL(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield db_mongo_1.usersCollections.findOne({ $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }] });
+            const user = yield db_mongoos_1.UsersModelClass.findOne({ $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }] }).lean();
             if (user === null) {
                 return false;
             }
@@ -94,14 +98,14 @@ exports.userRepository = {
     },
     deleteUserAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.usersCollections.deleteMany({});
+            const deletResult = yield db_mongoos_1.UsersModelClass.deleteMany({});
             return true;
         });
     },
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongo_1.usersCollections.findOne({ _id: userId });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ _id: userId });
                 if (user === null) {
                     return false;
                 }
@@ -117,7 +121,7 @@ exports.userRepository = {
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongo_1.usersCollections.findOne({ "emailConfirmation.confirmationCode": code });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "emailConfirmation.confirmationCode": code });
                 return user;
             }
             catch (e) {
@@ -127,14 +131,14 @@ exports.userRepository = {
     },
     updateConfirmation(_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = yield db_mongo_1.usersCollections.updateOne({ _id }, { $set: { "emailConfirmation.isConfirmed": true } });
+            let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.isConfirmed": true } });
             return result.modifiedCount === 1;
         });
     },
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongo_1.usersCollections.findOne({ "accountData.email": email });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.email": email });
                 return user;
             }
             catch (e) {
@@ -145,7 +149,7 @@ exports.userRepository = {
     findUserByLogin(login) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let user = yield db_mongo_1.usersCollections.findOne({ "accountData.login": login });
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "accountData.login": login });
                 return user;
             }
             catch (e) {
@@ -155,7 +159,13 @@ exports.userRepository = {
     },
     updateCode(_id, code, expiritionDate) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = yield db_mongo_1.usersCollections.updateOne({ _id }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate": expiritionDate } });
+            let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate": expiritionDate } });
+            return result.modifiedCount === 2;
+        });
+    },
+    updatePassword(_id, salt, hash) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "accountData.salt": salt, "accountData.hash": hash } });
             return result.modifiedCount === 2;
         });
     },

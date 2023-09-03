@@ -1,7 +1,8 @@
 import { blogType } from "../types/types";
-import { blogInput, blogOutput, blogsCollectionsType } from "../types/types-db";
+import { blogInput, blogMongoDB, blogOutput, blogsCollectionsType } from "../types/types-db";
 import { blogsRepository } from "../repositories/blogs-db-repository";
 import { QueryPaginationType } from '../midlewares/pagination';
+import { ObjectId } from "mongodb";
 
 
 
@@ -14,15 +15,24 @@ export const blogsService = {
         return await blogsRepository.getBlogId(id)
     },
 
-    async createBlog(name: string, description: string, websiteUrl:string ): Promise<blogType> {
-        const newBlog : blogInput = {
+    async createBlog(name: string, description: string, websiteUrl:string ): Promise<blogOutput> {
+        const newBlog : blogMongoDB = {
+            _id: new ObjectId(),
             name: name,
             description: description,
             websiteUrl: websiteUrl,
             createdAt: new Date ().toISOString(),
             isMembership: false
         }
-        return await blogsRepository.createBlog(newBlog)
+        await blogsRepository.createBlog(newBlog)
+        return {
+            id: newBlog._id.toString(),
+            name: newBlog.name,
+            description: newBlog.description,
+            websiteUrl:newBlog. websiteUrl,
+            createdAt: newBlog.createdAt,
+            isMembership: newBlog.isMembership
+        }
     },
     
     async updateBlog(name: string, description: string, websiteUrl: string, id: string) : Promise<boolean> {

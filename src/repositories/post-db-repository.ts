@@ -1,22 +1,20 @@
 import { QueryPaginationType } from './../midlewares/pagination';
-import { blogsRepository } from "./blogs-db-repository";
-import { postsCollections } from "../db/db-mongo";
-import { postInput, postMongoDb, postOutput, postsCollectionsType } from "../types/types-db";
+import { postInput, postOutput } from "../types/types-db";
 import { ObjectId } from "mongodb";
 import { paginatorPost } from "../types/types_paginator";
+import { PostsModelClass } from '../db/db-mongoos';
 
 
 export const postRepository = {
     
     async findPost(paginationQuery: QueryPaginationType,) : Promise<paginatorPost> {
-        const posts = await postsCollections.find({}).
-                                            sort(paginationQuery.sortBy,paginationQuery.sortDirection).
+        const posts = await PostsModelClass.find({}).
+                                            sort([[paginationQuery.sortBy, paginationQuery.sortDirection]]).
                                             skip(paginationQuery.skip).
-                                            limit(paginationQuery.pageSize).
-                                            toArray();
-        const totalCount = await postsCollections.countDocuments()
+                                            limit(paginationQuery.pageSize)
+        const totalCount = await PostsModelClass.countDocuments()
         const pagesCount = Math.ceil(totalCount/paginationQuery.pageSize)
-        const postsOutput = posts.map((b) => {
+        const postsOutput : postOutput[] = posts.map((b) => {
             return {
                 id: b._id.toString(),
                 title: b.title,
@@ -38,16 +36,16 @@ export const postRepository = {
         try {
             
             const filter = {blogId:blogId}
-            const posts = await postsCollections
+            const posts = await PostsModelClass
                                             .find(filter)
-                                            .sort(paginationQuery.sortBy, paginationQuery.sortDirection)
+                                            .sort([[paginationQuery.sortBy, paginationQuery.sortDirection]])
                                             .skip(paginationQuery.skip)
                                             .limit(paginationQuery.pageSize)
-                                            .toArray();
+                                            .lean();
        
-        const totalCount = await postsCollections.countDocuments(filter);
+        const totalCount = await PostsModelClass.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount/(paginationQuery.pageSize))
-        const postsOutput = posts.map((b) => {
+        const postsOutput : postOutput[] = posts.map((b) => {
             return {
                 id: b._id.toString(),
                 title: b.title,
@@ -70,7 +68,7 @@ export const postRepository = {
     
     async getPostId(id: string):Promise<postOutput | false> {
         
-        try {let post =  await postsCollections.findOne({_id: new ObjectId(id)});
+        try {let post =  await PostsModelClass.findOne({_id: new ObjectId(id)});
         if (!post) {
             return false
         } else {
@@ -87,43 +85,47 @@ export const postRepository = {
         },
 
     async deletePostId(id: string):Promise<boolean> {
-        try {let post = await postsCollections.findOne({_id: new ObjectId(id)})
-        
-        if (post) {
-            try {
-            await postsCollections.deleteOne({_id: post._id})
-            return true}
-            catch (e) {return false}
-        } else {return false}}
-        catch (e) {return false}       
-        },
+        const postInstance = await PostsModelClass.findOne({_id: new ObjectId(id)})
+        if (!postInstance) {return false}
 
+        await postInstance.deleteOne()
+        return true
+    },
+    
         
     async createdPostId(newPost:postInput): Promise<postOutput> {     
-        const res = await postsCollections.insertOne({...newPost, _id: new ObjectId()});
-              
+        //const res = await PostsModelClass.insertMany({...newPost, _id: new ObjectId()});
+        const postInstance = new PostsModelClass(newPost)
+        postInstance._id = new ObjectId()
+        /*postInstance.title = newPost.title
+        postInstance.shortDescription = newPost.shortDescription
+        postInstance.content = newPost.content
+        postInstance.blogId = newPost.blogId
+        postInstance.blogName = newPost.blogName
+        postInstance.createdAt = newPost.createdAt
+        */
+        await postInstance.save()
         return {
-            id: res.insertedId.toString(),
+            id: postInstance._id.toString(),
             ...newPost
         }
     },
 
+
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        try {const post = await postsCollections.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
-        if (post.matchedCount) {
-            return true}
-            else {
-            return false}}
-        catch (e) {return false} 
-    },
+        //const postInstance = await PostsModelClass.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
+        const postInstance = await PostsModelClass.findOne({_id: new ObjectId(id)})
+        if (!postInstance) return false
+        postInstance.title = title
+        postInstance.shortDescription = shortDescription
+        postInstance.content = content
+        postInstance.save()
+        return true
+        },
 
     async deletePostAll(): Promise<boolean> {
-        const deletResult = await postsCollections.find({}).toArray();
-        if (deletResult) {
-            try {await postsCollections.deleteMany({})
-            return true}
-            catch (e) {return false}}
-            else 
-            {return false}
+        const postInstance = await PostsModelClass.deleteMany({})
+        if (!postInstance) {return false}
+        return true
     }
 }

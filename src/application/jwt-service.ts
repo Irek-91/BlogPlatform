@@ -4,7 +4,7 @@ import { userMongoModel } from '../types/user'
 import { ObjectId } from 'mongodb';
 import { userRepository } from '../repositories/users-db-repository';
 import { tokensRepository } from '../repositories/tokens-db-repository';
-import { refreshTokenMongo } from '../types/token-types';
+import { devicesMongo } from '../types/token-types';
 
 
 export const jwtService = {

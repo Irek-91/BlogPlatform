@@ -11,23 +11,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
-const db_mongo_1 = require("../db/db-mongo");
+const db_mongoos_1 = require("../db/db-mongoos");
 exports.commentsRepository = {
     createdCommentPostId(comment) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield db_mongo_1.commentsCollections.insertOne(Object.assign(Object.assign({}, comment), { _id: new mongodb_1.ObjectId() }));
+            //const res = await CommentsModelClass.insertMany({ ...comment, _id: new ObjectId()})
+            const commentsInstance = new db_mongoos_1.CommentsModelClass(comment);
+            commentsInstance._id = new mongodb_1.ObjectId();
+            yield commentsInstance.save();
             return {
-                id: res.insertedId.toString(),
-                content: comment.content,
-                commentatorInfo: comment.commentatorInfo,
-                createdAt: comment.createdAt
+                id: commentsInstance._id.toString(),
+                content: commentsInstance.content,
+                commentatorInfo: commentsInstance.commentatorInfo,
+                createdAt: commentsInstance.createdAt
             };
         });
     },
     findCommentById(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const comment = yield db_mongo_1.commentsCollections.findOne({ _id: new mongodb_1.ObjectId(commentId) });
+                const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: new mongodb_1.ObjectId(commentId) });
                 if (comment !== null) {
                     const commentViewModel = {
                         id: comment._id.toString(),
@@ -49,7 +52,7 @@ exports.commentsRepository = {
     updateCommentId(commentsId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const post = yield db_mongo_1.commentsCollections.updateOne({ _id: new mongodb_1.ObjectId(commentsId) }, { $set: { content } });
+                const post = yield db_mongoos_1.CommentsModelClass.updateOne({ _id: new mongodb_1.ObjectId(commentsId) }, { $set: { content } });
                 if (post.matchedCount) {
                     return true;
                 }
@@ -65,7 +68,7 @@ exports.commentsRepository = {
     deletCommentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield db_mongo_1.commentsCollections.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+                const result = yield db_mongoos_1.CommentsModelClass.deleteOne({ _id: new mongodb_1.ObjectId(id) });
                 if (result.deletedCount) {
                     return true;
                 }
@@ -82,12 +85,12 @@ exports.commentsRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const filter = { postId: postId };
-                const comments = yield db_mongo_1.commentsCollections.find(filter).
-                    sort(pagination.sortBy, pagination.sortDirection).
+                const comments = yield db_mongoos_1.CommentsModelClass.find(filter).
+                    sort([[pagination.sortBy, pagination.sortDirection]]).
                     skip(pagination.skip).
                     limit(pagination.pageSize).
-                    toArray();
-                const totalCOunt = yield db_mongo_1.commentsCollections.countDocuments(filter);
+                    lean();
+                const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const commentsOutput = comments.map((c) => {
                     return {
@@ -111,7 +114,7 @@ exports.commentsRepository = {
     },
     deleteCommentsAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.commentsCollections.deleteMany({});
+            const deletResult = yield db_mongoos_1.CommentsModelClass.deleteMany({});
             return true;
         });
     }

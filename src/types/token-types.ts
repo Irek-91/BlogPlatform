@@ -5,7 +5,7 @@ export type refreshToken = {
     validToken: boolean
 }
 
-export type refreshTokenMongo = {
+export type devicesMongo = {
     _id: ObjectId,
     issuedAt: string,
     expirationDate: string,

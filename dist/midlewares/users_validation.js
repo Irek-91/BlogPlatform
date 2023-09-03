@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emailValidationCustom = exports.emailValidation = exports.passwordValidation = exports.loginValidationLength = exports.loginValidation = void 0;
+exports.newPasswordValidation = exports.emailValidationCustom = exports.emailValidation = exports.passwordValidation = exports.loginValidationLength = exports.loginValidation = void 0;
 const express_validator_1 = require("express-validator");
 const users_db_repository_1 = require("../repositories/users-db-repository");
 exports.loginValidation = (0, express_validator_1.body)('login').trim().notEmpty().
@@ -39,3 +39,13 @@ exports.emailValidationCustom = (0, express_validator_1.body)('email').
     }
     return true;
 }));
+const newPasswordValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const newPassword = req.body.newPassword;
+    if (newPassword.length > 20 || newPassword.length < 6) {
+        res.sendStatus(401);
+    }
+    else {
+        next();
+    }
+});
+exports.newPasswordValidation = newPasswordValidation;

@@ -18,7 +18,6 @@ const posts_router_1 = require("./routes/posts-router");
 const blogs_router_1 = require("./routes/blogs-router");
 const blogs_db_repository_1 = require("./repositories/blogs-db-repository");
 const post_db_repository_1 = require("./repositories/post-db-repository");
-const db_mongo_1 = require("./db/db-mongo");
 const users_router_1 = require("./routes/users-router");
 const auth_1 = require("./routes/auth");
 const users_db_repository_1 = require("./repositories/users-db-repository");
@@ -27,6 +26,7 @@ const comments_db_repository_1 = require("./repositories/comments-db-repository"
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const tokens_db_repository_1 = require("./repositories/tokens-db-repository");
 const securityDevice_router_1 = require("./routes/securityDevice-router");
+const db_mongoos_1 = require("./db/db-mongoos");
 exports.app = (0, express_1.default)();
 const port = 3001;
 exports.app.use((0, cookie_parser_1.default)());
@@ -44,11 +44,11 @@ exports.app.delete('/testing/all-data', (req, res) => __awaiter(void 0, void 0, 
     yield users_db_repository_1.userRepository.deleteUserAll();
     yield comments_db_repository_1.commentsRepository.deleteCommentsAll();
     yield tokens_db_repository_1.tokensRepository.deleteTokensAll();
-    yield db_mongo_1.arrayIPAndURICollections.deleteMany({});
+    yield db_mongoos_1.IPAndURIModelClass.deleteMany({});
     res.sendStatus(204);
 }));
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, db_mongo_1.runDb)();
+    yield (0, db_mongoos_1.runDbMongoose)();
     exports.app.listen(port, () => {
         console.log(`Example app listening on port ${port}`);
     });

@@ -57,7 +57,7 @@ exports.tokensService = {
             return newAccessToken;
         });
     },
-    updateRefreshTokens(refreshToken, IP, deviceName) {
+    updateDevicesModelClass(refreshToken, IP, deviceName) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
             if (userId === null) {

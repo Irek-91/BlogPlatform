@@ -1,12 +1,11 @@
 import {MongoClient, ServerApiVersion, ObjectId} from 'mongodb'
 import dotenv from 'dotenv'
 import { userMongoModel } from '../types/user';
-import { postMongoDb } from '../types/types-db';
+import { blogMongoDB, postMongoDb } from '../types/types-db';
 import { commentMongoModel, commentViewModel } from '../types/comments';
-import { refreshTokenMongo } from '../types/token-types';
+import { devicesMongo } from '../types/token-types';
 import { arrayIPAndURL } from '../types/arrayIPAndURI';
 dotenv.config()
-
 
 const mongoUri = process.env.MONGO_URL;
 if (!mongoUri) {
@@ -15,14 +14,14 @@ if (!mongoUri) {
 
 const client = new MongoClient(mongoUri)
 
-const db = client.db('BlogPlatform');
-export const blogsCollections = db.collection('blogs')
+/*const db = client.db('BlogPlatform');
+export const blogsCollections = db.collection<blogMongoDB>('blogs')
 export const postsCollections = db.collection<postMongoDb>('posts')
 export const usersCollections = db.collection<userMongoModel>('users')
 export const commentsCollections = db.collection<commentMongoModel>('comments')
-export const deviceTokenCollections = db.collection<refreshTokenMongo>('refreshTokens')
+export const deviceTokenCollections = db.collection<devicesMongo>('DevicesModelClass')
 export const arrayIPAndURICollections = db.collection<arrayIPAndURL>('arrayIPAndURL')
-
+*/
 
 
 

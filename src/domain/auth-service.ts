@@ -73,5 +73,39 @@ export const authService = {
                 await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
                 await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
                 return true
+    },
+
+
+    async passwordRecovery(email: string) : Promise<true>{
+        let user = await usersService.findUserByEmail(email)
+        if (user === null) return true
+            
+            const confirmationCode = uuidv4();
+                const expiritionDate = add(new Date(), {
+                    hours: 1,
+                    minutes: 2
+                    })
+            await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
+            await emailAdapter.passwordRecovery(user.accountData.email, 'code', confirmationCode)
+        return true
+    },
+
+
+    async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
+        const date = new Date()
+        const expiritionDate = add(new Date(), {
+            hours: 1,
+            minutes: 2
+            })
+        let result = await userRepository.findUserByCode(recoveryCode)
+        if (result === null) return false
+        if (result.emailConfirmation.expiritionDate < date) return false
+        const resultUpdateCode = await userRepository.updateCode(result._id, recoveryCode, expiritionDate)
+        if (resultUpdateCode === false) return false
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+        const resultUpdatePassword = await userRepository.updatePassword(result._id, passwordSalt, passwordHash)
+        if (resultUpdatePassword === false) return false
+        return true
     }
 }

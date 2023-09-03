@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.filterCountIPAndURL = void 0;
-const db_mongo_1 = require("../db/db-mongo");
 const date_fns_1 = require("date-fns");
+const db_mongoos_1 = require("../db/db-mongoos");
 const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // date.toIsoString()
     // 2000.00
@@ -23,11 +23,16 @@ const filterCountIPAndURL = (req, res, next) => __awaiter(void 0, void 0, void 0
         URL,
         date: connectionDate.toISOString()
     };
-    const count = yield db_mongo_1.arrayIPAndURICollections.countDocuments({ IP: newAPI.IP, URL: newAPI.URL, date: { $gte: (0, date_fns_1.addSeconds)(connectionDate, -10).toISOString() } });
+    const count = yield db_mongoos_1.IPAndURIModelClass.countDocuments({ IP: newAPI.IP, URL: newAPI.URL, date: { $gte: (0, date_fns_1.addSeconds)(connectionDate, -10).toISOString() } });
     if (count + 1 > 5) {
         return res.sendStatus(429);
     }
-    yield db_mongo_1.arrayIPAndURICollections.insertOne(Object.assign({}, newAPI));
+    //await IPAndURIModelClass.insertOne({...newAPI})
+    const IPAndURIInstance = new db_mongoos_1.IPAndURIModelClass(newAPI);
+    IPAndURIInstance.IP = IP;
+    IPAndURIInstance.URL = URL;
+    IPAndURIInstance.date = connectionDate.toISOString();
+    yield IPAndURIInstance.save();
     next();
 });
 exports.filterCountIPAndURL = filterCountIPAndURL;

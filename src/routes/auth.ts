@@ -1,4 +1,4 @@
-import { emailValidationCustom, passwordValidation } from './../midlewares/users_validation';
+import { emailValidationCustom, newPasswordValidation, passwordValidation } from './../midlewares/users_validation';
 import { Request, Response, Router } from "express";
 import { loginOrEmailValidationAuth, passwordValidationAuth } from "../midlewares/aurh-validation";
 import { usersService } from "../domain/users-service";
@@ -51,7 +51,7 @@ authRouter.post('/refresh-token',
         const title = req.headers['user-agent'] || 'custom-ua'
 
         const newAccessToken = await tokensService.updateAccessToken(cookiesRefreshToken)
-        const newRefreshToken = await tokensService.updateRefreshTokens(cookiesRefreshToken, IP, title)
+        const newRefreshToken = await tokensService.updateDevicesModelClass(cookiesRefreshToken, IP, title)
 
         if (newAccessToken !== null || newRefreshToken !== null) {
             res.cookie('refreshToken', newRefreshToken, {httpOnly: true,secure: true})
@@ -170,6 +170,48 @@ authRouter.post('/registration-email-resending',
     }
     }
 )
+
+
+authRouter.post('/password-recovery',
+    filterCountIPAndURL,
+    emailValidation,
+    inputValidationMiddleware,
+    
+    async (req: Request, res: Response) => {
+    const result = await authService.passwordRecovery(req.body.email)
+    res.sendStatus(204)
+})        
+
+authRouter.post('/new-password',
+    filterCountIPAndURL,
+    newPasswordValidation,
+    inputValidationMiddleware,
+
+    async (req: Request, res: Response) => {
+        const newPassword = req.body.newPassword
+        const recoveryCode = req.body.recoveryCode
+        const result = await  authService.newPassword(newPassword, recoveryCode)
+        if (result) {
+            res.sendStatus(204)
+        }
+        else {
+          res.status(400).send({
+                errorsMessages: [
+                    {
+                        message: "RecoveryCode is incorrect or expired",
+                        field: "recoveryCode"
+                    }
+                ]
+            })
+        }
+
+    }
+
+
+
+
+)
+
 
 
 authRouter.post('/registration-email',

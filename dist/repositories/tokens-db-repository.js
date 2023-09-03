@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokensRepository = void 0;
-const db_mongo_1 = require("../db/db-mongo");
+const db_mongoos_1 = require("../db/db-mongoos");
 exports.tokensRepository = {
     addRefreshToken(newDeviceAndRefreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.insertOne(Object.assign({}, newDeviceAndRefreshToken));
-                return res.acknowledged;
+                const res = yield db_mongoos_1.DevicesModelClass.insertMany(Object.assign({}, newDeviceAndRefreshToken));
+                return true;
             }
             catch (e) {
                 return null;
@@ -26,7 +26,7 @@ exports.tokensRepository = {
     getUserIdByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.findOne({ deviceId: deviceId });
+                const res = yield db_mongoos_1.DevicesModelClass.findOne({ deviceId: deviceId }).lean();
                 if (res === null) {
                     return null;
                 }
@@ -40,7 +40,7 @@ exports.tokensRepository = {
     findTokenAndDeviceByissuedAt(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.findOne({ issuedAt: issuedAt });
+                const res = yield db_mongoos_1.DevicesModelClass.findOne({ issuedAt: issuedAt });
                 if (res === null) {
                     return null;
                 }
@@ -54,7 +54,7 @@ exports.tokensRepository = {
     deleteTokenAndDevice(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.deleteOne({ issuedAt: issuedAt });
+                const res = yield db_mongoos_1.DevicesModelClass.deleteOne({ issuedAt: issuedAt });
                 if (res === null) {
                     return null;
                 }
@@ -67,14 +67,14 @@ exports.tokensRepository = {
     },
     deleteTokensAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletResult = yield db_mongo_1.deviceTokenCollections.deleteMany({});
+            const deletResult = yield db_mongoos_1.DevicesModelClass.deleteMany({});
             return true;
         });
     },
     getTokenAndDevice(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.find({ userId: userId }).toArray();
+                const res = yield db_mongoos_1.DevicesModelClass.find({ userId: userId }).lean();
                 if (res === null) {
                     return null;
                 }
@@ -88,7 +88,7 @@ exports.tokensRepository = {
     deleteDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.deleteOne({ deviceId: deviceId });
+                const res = yield db_mongoos_1.DevicesModelClass.deleteOne({ deviceId: deviceId });
                 if (res === null) {
                     return null;
                 }
@@ -103,11 +103,11 @@ exports.tokensRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             //добавить фильтр по userId
             try {
-                const checkUserIdByDeviceId = yield db_mongo_1.deviceTokenCollections.find({ userId: userId, deviceId: deviceId }).toArray();
+                const checkUserIdByDeviceId = yield db_mongoos_1.DevicesModelClass.find({ userId: userId, deviceId: deviceId });
                 if (checkUserIdByDeviceId.length === 0) {
                     return null;
                 }
-                const res = yield db_mongo_1.deviceTokenCollections.deleteMany({ deviceId: { $ne: deviceId } });
+                const res = yield db_mongoos_1.DevicesModelClass.deleteMany({ deviceId: { $ne: deviceId } });
                 if (res === null) {
                     return null;
                 }
@@ -121,7 +121,7 @@ exports.tokensRepository = {
     findOneDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield db_mongo_1.deviceTokenCollections.findOne({ deviceId: deviceId });
+                const res = yield db_mongoos_1.DevicesModelClass.findOne({ deviceId: deviceId });
                 if (res === null) {
                     return null;
                 }

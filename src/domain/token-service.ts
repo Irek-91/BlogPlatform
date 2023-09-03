@@ -1,6 +1,6 @@
 import { refreshToken } from './../types/token-types';
 import { tokensRepository } from "../repositories/tokens-db-repository"
-import { refreshTokenMongo } from "../types/token-types"
+import { devicesMongo } from "../types/token-types"
 import { jwtService } from '../application/jwt-service';
 import { ObjectId } from 'mongodb';
 
@@ -17,7 +17,7 @@ export const tokensService = {
         const refreshToken = await jwtService.createJWTRefreshToken(userId, deviceId)
         const issuedAt = await jwtService.getIssueAttByRefreshToken(refreshToken)
         const expirationDate = await jwtService.getExpiresAttByRefreshToken(refreshToken)
-        const newDeviceAndRefreshToken: refreshTokenMongo = {
+        const newDeviceAndRefreshToken: devicesMongo = {
                 _id: new ObjectId(),
                 issuedAt,
                 expirationDate,
@@ -41,7 +41,7 @@ export const tokensService = {
 
 
 
-    async updateRefreshTokens (refreshToken: string, IP: string, deviceName: string): Promise<string | null> {
+    async updateDevicesModelClass (refreshToken: string, IP: string, deviceName: string): Promise<string | null> {
         const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
         if (userId === null) {return null}
         const deviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)

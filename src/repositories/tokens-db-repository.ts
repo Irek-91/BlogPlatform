@@ -1,17 +1,16 @@
 import { ObjectId } from "mongodb"
-import { deviceTokenCollections } from "../db/db-mongo"
-import { refreshTokenMongo } from "../types/token-types"
+import { devicesMongo } from "../types/token-types"
 import { jwtService } from "../application/jwt-service"
+import { DevicesModelClass } from "../db/db-mongoos"
 
 
 
 export const tokensRepository = {
 
-    async addRefreshToken (newDeviceAndRefreshToken: refreshTokenMongo): Promise<boolean | null> {
-        try {const res = await deviceTokenCollections.insertOne({...newDeviceAndRefreshToken})
-        return res.acknowledged}
+    async addRefreshToken (newDeviceAndRefreshToken: devicesMongo): Promise<boolean | null> {
+        try {const res = await DevicesModelClass.insertMany({...newDeviceAndRefreshToken})
+        return true}
         catch (e) {return null}
-
     },
 
     
@@ -19,7 +18,7 @@ export const tokensRepository = {
 
     async getUserIdByDeviceId(deviceId: string): Promise <ObjectId | null> {
         
-        try {const res = await deviceTokenCollections.findOne({deviceId: deviceId});
+        try {const res = await DevicesModelClass.findOne({deviceId: deviceId}).lean();
             if (res === null) {return null}
             return res.userId
         }
@@ -28,7 +27,7 @@ export const tokensRepository = {
 
     async findTokenAndDeviceByissuedAt(issuedAt: string): Promise <true | null> {
         
-        try {const res = await deviceTokenCollections.findOne({issuedAt: issuedAt})
+        try {const res = await DevicesModelClass.findOne({issuedAt: issuedAt})
             if (res === null) {return null}
             return true
         }
@@ -36,7 +35,7 @@ export const tokensRepository = {
     },
 
     async deleteTokenAndDevice(issuedAt: string): Promise <true | null> {
-        try {const res = await deviceTokenCollections.deleteOne({issuedAt: issuedAt})
+        try {const res = await DevicesModelClass.deleteOne({issuedAt: issuedAt})
             if (res === null) {return null}
             return true
         }
@@ -44,13 +43,13 @@ export const tokensRepository = {
     },
 
     async deleteTokensAll () {
-        const deletResult = await deviceTokenCollections.deleteMany({})
+        const deletResult = await DevicesModelClass.deleteMany({})
         return true
     },
 
-    async getTokenAndDevice(userId: ObjectId): Promise <refreshTokenMongo[] | null> {
+    async getTokenAndDevice(userId: ObjectId): Promise <devicesMongo[] | null> {
         
-        try {const res = await deviceTokenCollections.find({userId: userId}).toArray();
+        try {const res = await DevicesModelClass.find({userId: userId}).lean();
             if (res === null) {return null}
             return res
         }
@@ -58,7 +57,7 @@ export const tokensRepository = {
     },
 
     async deleteDeviceId(deviceId: string): Promise<null | boolean > {
-        try {const res = await deviceTokenCollections.deleteOne({deviceId: deviceId});
+        try {const res = await DevicesModelClass.deleteOne({deviceId: deviceId});
             if (res === null) {return null}
             return res.acknowledged
         }
@@ -69,17 +68,17 @@ export const tokensRepository = {
 //добавить фильтр по userId
 
         try {
-            const checkUserIdByDeviceId = await deviceTokenCollections.find({userId: userId, deviceId: deviceId}).toArray()
+            const checkUserIdByDeviceId = await DevicesModelClass.find({userId: userId, deviceId: deviceId})
             if (checkUserIdByDeviceId.length === 0) {return null}
-            const res = await deviceTokenCollections.deleteMany({deviceId: {$ne:deviceId}});
+            const res = await DevicesModelClass.deleteMany({deviceId: {$ne:deviceId}});
             if (res === null) {return null}
             return res.acknowledged
         }
         catch (e) {return null}
     },
 
-    async findOneDeviceId(deviceId: string) :Promise<refreshTokenMongo | null>  {
-        try {const res = await deviceTokenCollections.findOne({deviceId: deviceId});
+    async findOneDeviceId(deviceId: string) :Promise<devicesMongo | null>  {
+        try {const res = await DevicesModelClass.findOne({deviceId: deviceId});
             if (res === null) {return null}
             return res
         }
