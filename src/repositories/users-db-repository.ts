@@ -143,7 +143,7 @@ export const userRepository = {
 
     async updatePassword(_id: ObjectId, salt: string, hash: string): Promise<boolean> {
       let result = await UsersModelClass.updateOne({_id}, {$set : {"accountData.salt": salt, "accountData.hash" : hash}})
-      return result.modifiedCount === 2
+      return result.modifiedCount === 1
     },
     async updateRecoveryCode(_id: ObjectId, recoveryCode: string): Promise<boolean> {
       let result = await UsersModelClass.updateOne({_id}, {$set : {"emailConfirmation.recoveryCode": recoveryCode}})
@@ -152,7 +152,9 @@ export const userRepository = {
     async findUserByRecoveryCode(recoveryCode: string): Promise<userMongoModel | null> {
       try {let user = await UsersModelClass.findOne({"emailConfirmation.recoveryCode": recoveryCode}).lean()
       return user}
-      catch (e) {return null}
+      catch (e) {
+        console.log('scDB')
+        return null}
     },
     /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
       try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})

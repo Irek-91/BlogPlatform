@@ -108,13 +108,15 @@ exports.authService = {
     newPassword(newPassword, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield users_db_repository_1.userRepository.findUserByRecoveryCode(recoveryCode);
-            if (result === null)
+            if (result === null) {
                 return false;
+            }
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(newPassword, passwordSalt);
             const resultUpdatePassword = yield users_db_repository_1.userRepository.updatePassword(result._id, passwordSalt, passwordHash);
-            if (resultUpdatePassword === false)
+            if (resultUpdatePassword === false) {
                 return false;
+            }
             return true;
         });
     }

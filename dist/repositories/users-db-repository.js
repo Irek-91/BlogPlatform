@@ -166,7 +166,7 @@ exports.userRepository = {
     updatePassword(_id, salt, hash) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "accountData.salt": salt, "accountData.hash": hash } });
-            return result.modifiedCount === 2;
+            return result.modifiedCount === 1;
         });
     },
     updateRecoveryCode(_id, recoveryCode) {
@@ -182,6 +182,7 @@ exports.userRepository = {
                 return user;
             }
             catch (e) {
+                console.log('scDB');
                 return null;
             }
         });
