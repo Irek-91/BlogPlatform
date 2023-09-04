@@ -91,12 +91,12 @@ export const authService = {
     async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
         
         let result = await userRepository.findUserByRecoveryCode(recoveryCode)
-        if (result === null) return false
+        if (result === null) {return false}
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
         const resultUpdatePassword = await userRepository.updatePassword(result._id, passwordSalt, passwordHash)
-        if (resultUpdatePassword === false) return false
+        if (resultUpdatePassword === false) {return false}
         return true
     }
 }
