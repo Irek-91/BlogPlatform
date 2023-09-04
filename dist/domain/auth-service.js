@@ -39,7 +39,8 @@ exports.authService = {
                         hours: 1,
                         minutes: 3
                     }),
-                    isConfirmed: false
+                    isConfirmed: false,
+                    recoveryCode: (0, uuid_1.v4)()
                 }
             };
             const creatresult = yield users_db_repository_1.userRepository.createUser(newUser);
@@ -98,30 +99,16 @@ exports.authService = {
             let user = yield users_service_1.usersService.findUserByEmail(email);
             if (user === null)
                 return true;
-            const confirmationCode = (0, uuid_1.v4)();
-            const expiritionDate = (0, add_1.default)(new Date(), {
-                hours: 1,
-                minutes: 2
-            });
-            yield users_db_repository_1.userRepository.updateCode(user._id, confirmationCode, expiritionDate);
-            yield email_adapter_1.emailAdapter.passwordRecovery(user.accountData.email, 'code', confirmationCode);
+            const recoveryCode = (0, uuid_1.v4)();
+            yield users_db_repository_1.userRepository.updateRecoveryCode(user._id, recoveryCode);
+            yield email_adapter_1.emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode);
             return true;
         });
     },
     newPassword(newPassword, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const date = new Date();
-            const expiritionDate = (0, add_1.default)(new Date(), {
-                hours: 1,
-                minutes: 2
-            });
-            let result = yield users_db_repository_1.userRepository.findUserByCode(recoveryCode);
+            let result = yield users_db_repository_1.userRepository.findUserByRecoveryCode(recoveryCode);
             if (result === null)
-                return false;
-            if ((new Date(result.emailConfirmation.expiritionDate)).getTime() < date.getTime())
-                return false;
-            const resultUpdateCode = yield users_db_repository_1.userRepository.updateCode(result._id, recoveryCode, expiritionDate);
-            if (resultUpdateCode === false)
                 return false;
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(newPassword, passwordSalt);

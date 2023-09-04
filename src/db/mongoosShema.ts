@@ -33,10 +33,12 @@ export const postsShema = new mongoose.Schema({
     createdAt: {type: String, required: true}
 })
 
+
 export const emailConfirmationShema = new mongoose.Schema ({
     confirmationCode: {type: String, required: true},
     expiritionDate: {type: String, required: true},
-    isConfirmed: {type: Boolean, required: true}
+    isConfirmed: {type: Boolean, required: true},
+    recoveryCode: {type :String, required: true}
 })
 
 export const usersShema = new mongoose.Schema({

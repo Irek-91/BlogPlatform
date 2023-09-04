@@ -145,8 +145,15 @@ export const userRepository = {
       let result = await UsersModelClass.updateOne({_id}, {$set : {"accountData.salt": salt, "accountData.hash" : hash}})
       return result.modifiedCount === 2
     },
-
-
+    async updateRecoveryCode(_id: ObjectId, recoveryCode: string): Promise<boolean> {
+      let result = await UsersModelClass.updateOne({_id}, {$set : {"emailConfirmation.recoveryCode": recoveryCode}})
+      return result.modifiedCount === 1
+    },
+    async findUserByRecoveryCode(recoveryCode: string): Promise<userMongoModel | null> {
+      try {let user = await UsersModelClass.findOne({"emailConfirmation.recoveryCode": recoveryCode}).lean()
+      return user}
+      catch (e) {return null}
+    },
     /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
       try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
       return result.matchedCount === 1}

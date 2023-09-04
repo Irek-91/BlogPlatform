@@ -169,6 +169,23 @@ exports.userRepository = {
             return result.modifiedCount === 2;
         });
     },
+    updateRecoveryCode(_id, recoveryCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.recoveryCode": recoveryCode } });
+            return result.modifiedCount === 1;
+        });
+    },
+    findUserByRecoveryCode(recoveryCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let user = yield db_mongoos_1.UsersModelClass.findOne({ "emailConfirmation.recoveryCode": recoveryCode }).lean();
+                return user;
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
     /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
       try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
       return result.matchedCount === 1}

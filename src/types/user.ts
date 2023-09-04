@@ -11,7 +11,8 @@ export type User = {
     emailConfirmation : {
         confirmationCode: string,
         expiritionDate: any,
-        isConfirmed: boolean
+        isConfirmed: boolean,
+        recoveryCode: string
     }
 }
 

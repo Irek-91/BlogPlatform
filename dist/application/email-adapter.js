@@ -33,7 +33,7 @@ exports.emailAdapter = {
             });
         });
     },
-    passwordRecovery(email, subject, code) {
+    passwordRecovery(email, subject, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
             let transporter = nodemailer_1.default.createTransport({
                 service: "gmail",
@@ -47,7 +47,7 @@ exports.emailAdapter = {
                 to: email,
                 subject: subject,
                 // text: message, // plain text body
-                html: `<h1>Password recovery</h1> <p>To finish password recovery please follow the link below:<a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery password</a> </p>`
+                html: `<h1>Password recovery</h1> <p>To finish password recovery please follow the link below:<a href='https://somesite.com/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a> </p>`
             });
         });
     }

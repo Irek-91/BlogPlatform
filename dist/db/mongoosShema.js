@@ -32,7 +32,8 @@ exports.accountDataShema = new mongoose_1.default.Schema({
 exports.emailConfirmationShema = new mongoose_1.default.Schema({
     confirmationCode: { type: String, required: true },
     expiritionDate: { type: String, required: true },
-    isConfirmed: { type: Boolean, required: true }
+    isConfirmed: { type: Boolean, required: true },
+    recoveryCode: { type: String, required: true }
 });
 exports.usersShema = new mongoose_1.default.Schema({
     _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },

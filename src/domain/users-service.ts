@@ -21,6 +21,7 @@ export const usersService = {
     const passwordSalt = await bcrypt.genSalt(10)
     const passwordHash = await this._generateHash(passwordUser, passwordSalt)
     const confirmationCode = uuidv4()
+    const recoveryCode = uuidv4()
 
     const expiritionDate = add(new Date(), {
                     hours: 1,
@@ -38,7 +39,8 @@ export const usersService = {
       emailConfirmation : {
         confirmationCode: confirmationCode,
         expiritionDate: expiritionDate.toISOString(),
-        isConfirmed: false
+        isConfirmed: false,
+        recoveryCode: recoveryCode
     }
     }
     return await userRepository.createUser(newUser)

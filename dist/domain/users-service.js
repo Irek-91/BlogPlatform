@@ -29,6 +29,7 @@ exports.usersService = {
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(passwordUser, passwordSalt);
             const confirmationCode = (0, uuid_1.v4)();
+            const recoveryCode = (0, uuid_1.v4)();
             const expiritionDate = (0, date_fns_1.add)(new Date(), {
                 hours: 1,
                 minutes: 3
@@ -44,7 +45,8 @@ exports.usersService = {
                 emailConfirmation: {
                     confirmationCode: confirmationCode,
                     expiritionDate: expiritionDate.toISOString(),
-                    isConfirmed: false
+                    isConfirmed: false,
+                    recoveryCode: recoveryCode
                 }
             };
             return yield users_db_repository_1.userRepository.createUser(newUser);

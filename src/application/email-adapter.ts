@@ -21,7 +21,7 @@ export const emailAdapter = {
         
     },
 
-    async passwordRecovery(email: string, subject: string, code: string) {
+    async passwordRecovery(email: string, subject: string, recoveryCode: string) {
         let transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -36,7 +36,7 @@ export const emailAdapter = {
             to: email, // list of receivers
             subject: subject, // Subject line
             // text: message, // plain text body
-            html: `<h1>Password recovery</h1> <p>To finish password recovery please follow the link below:<a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery password</a> </p>`
+            html: `<h1>Password recovery</h1> <p>To finish password recovery please follow the link below:<a href='https://somesite.com/password-recovery?recoveryCode=${recoveryCode}'>recovery password</a> </p>`
             
             })
         
