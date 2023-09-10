@@ -41,7 +41,10 @@ exports.commentsRepository = {
             return {
                 id: commentsInstance._id.toString(),
                 content: commentsInstance.content,
-                commentatorInfo: commentsInstance.commentatorInfo,
+                commentatorInfo: {
+                    userId: userId,
+                    userLogin: userLogin
+                },
                 createdAt: commentsInstance.createdAt,
                 likesInfo: {
                     likesCount: 0,
@@ -56,10 +59,14 @@ exports.commentsRepository = {
             try {
                 const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: new mongodb_1.ObjectId(commentId) });
                 if (comment !== null) {
+                    const userLogin = comment.commentatorInfo.userLogin;
                     const commentViewModel = {
                         id: comment._id.toString(),
                         content: comment.content,
-                        commentatorInfo: comment.commentatorInfo,
+                        commentatorInfo: {
+                            userId: userId,
+                            userLogin: userLogin
+                        },
                         createdAt: comment.createdAt,
                         likesInfo: {
                             likesCount: comment.likesCount,

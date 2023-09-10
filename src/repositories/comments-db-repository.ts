@@ -34,7 +34,10 @@ export const commentsRepository = {
     return {
       id: commentsInstance._id.toString(),
       content: commentsInstance.content,
-      commentatorInfo: commentsInstance.commentatorInfo,
+      commentatorInfo: {
+        userId: userId,
+        userLogin: userLogin
+      },
       createdAt: commentsInstance.createdAt,
       likesInfo: {
         likesCount: 0,
@@ -47,13 +50,16 @@ export const commentsRepository = {
   async findCommentById(commentId: string, userId: string): Promise<commentViewModel | null> {
     try {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
-
       if (comment !== null) {
+      const userLogin = comment.commentatorInfo.userLogin
 
         const commentViewModel: commentViewModel = {
           id: comment._id.toString(),
           content: comment.content,
-          commentatorInfo: comment.commentatorInfo,
+          commentatorInfo: {
+            userId: userId,
+            userLogin: userLogin
+          },
           createdAt: comment.createdAt,
           likesInfo: {
             likesCount: comment.likesCount,

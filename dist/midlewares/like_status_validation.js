@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.likeStatusValidation = void 0;
 const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const likeStatus = req.body.likeStatus;
-    if (likeStatus !== 'None' || likeStatus !== 'Like' || likeStatus !== 'Dislike') {
+    if (likeStatus != "None" || likeStatus != "Like" || likeStatus != "Dislike") {
         res.status(400).send({ errorsMessages: [{
                     message: 'error in likeStatus',
                     field: "likeStatus"
