@@ -40,7 +40,7 @@ class CommentsController {
     updateCommentId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.user) {
-                return res.sendStatus(404);
+                return res.sendStatus(401);
             }
             const commentsId = req.params.commentsId;
             const userId = req.user._id.toString();
@@ -60,7 +60,7 @@ class CommentsController {
     updateStatusByCommentId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.user) {
-                return res.sendStatus(404);
+                return res.sendStatus(401);
             }
             const commentId = req.params.commentsId;
             const userId = req.user._id.toString();
@@ -81,7 +81,7 @@ class CommentsController {
     deleteCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.user) {
-                return res.sendStatus(404);
+                return res.sendStatus(401);
             }
             const commentsId = req.params.commentsId;
             const userId = req.user._id.toString();

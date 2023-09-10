@@ -31,7 +31,7 @@ class CommentsController {
     }
 
     async updateCommentId (req: Request, res: Response) {
-        if (!req.user) { return res.sendStatus(404) }
+        if (!req.user) { return res.sendStatus(401) }
 
         const commentsId = req.params.commentsId
         const userId = req.user._id.toString()
@@ -49,7 +49,7 @@ class CommentsController {
     }
 
     async updateStatusByCommentId (req: Request, res: Response) {
-        if (!req.user) { return res.sendStatus(404) }
+        if (!req.user) { return res.sendStatus(401) }
         const commentId = req.params.commentsId
         const userId = req.user._id.toString()
         const likeStatus = req.body.likeStatus
@@ -62,7 +62,7 @@ class CommentsController {
     
 
     async deleteCommentById (req: Request, res: Response) {
-        if (!req.user) { return res.sendStatus(404) }
+        if (!req.user) { return res.sendStatus(401) }
 
         const commentsId = req.params.commentsId
         const userId = req.user._id.toString()
