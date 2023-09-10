@@ -84,7 +84,7 @@ const commentsControllerInstance = new CommentsController()
 commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
-commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation, inputValidationMiddleware,
+commentsRouter.put('/:commentsId/like-status', authMiddleware, inputValidationMiddleware,
                     commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance))
 
 
