@@ -56,7 +56,8 @@ class CommentsController {
         const resultCommentId = await this.commentsService.findCommentById(commentId, userId)
         if (!resultCommentId) {return res.sendStatus(404)}
         const resultUpdateLikeStatusCommen = await this.commentsService.updateLikeStatus(commentId, userId, likeStatus)
-        
+        if (resultUpdateLikeStatusCommen) {return res.sendStatus(204)}
+        else {res.sendStatus(404)}
     }
     
 

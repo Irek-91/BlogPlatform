@@ -70,6 +70,12 @@ class CommentsController {
                 return res.sendStatus(404);
             }
             const resultUpdateLikeStatusCommen = yield this.commentsService.updateLikeStatus(commentId, userId, likeStatus);
+            if (resultUpdateLikeStatusCommen) {
+                return res.sendStatus(204);
+            }
+            else {
+                res.sendStatus(404);
+            }
         });
     }
     deleteCommentById(req, res) {
