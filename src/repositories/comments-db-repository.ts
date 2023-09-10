@@ -17,6 +17,8 @@ export const commentsRepository = {
           userLogin: userLogin
       },
       createdAt:createdAt,
+      likesCount: 0,
+      dislikesCount: 0,
       likes: [{
         _id: new ObjectId(),
         userId: userId,

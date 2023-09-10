@@ -25,6 +25,8 @@ exports.commentsRepository = {
                     userLogin: userLogin
                 },
                 createdAt: createdAt,
+                likesCount: 0,
+                dislikesCount: 0,
                 likes: [{
                         _id: new mongodb_1.ObjectId(),
                         userId: userId,
