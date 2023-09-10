@@ -1,25 +1,18 @@
 import { settings } from './../settings';
 import jwt from 'jsonwebtoken'
-import { userMongoModel } from '../types/user'
 import { ObjectId } from 'mongodb';
-import { userRepository } from '../repositories/users-db-repository';
-import { tokensRepository } from '../repositories/tokens-db-repository';
-import { devicesMongo } from '../types/token-types';
 
 
 export const jwtService = {
     async createdJWTAccessToken (userId : ObjectId) {
-        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 10})
+        const accessToken = jwt.sign({userId : userId}, settings.JWT_SECRET, {expiresIn: 300})
         return accessToken
-        
     },
 
     async createJWTRefreshToken (userId: ObjectId, deviceId: string): Promise< string> {
         const refreshToken = jwt.sign({userId: userId, deviceId: deviceId}, settings.JWT_SECRET, {expiresIn: 20})
         return refreshToken
     },
-
-
 
     async getUserIdByToken (token: string) : Promise<ObjectId | null> {
         try {
@@ -62,7 +55,7 @@ export const jwtService = {
     async getIssueAttByRefreshToken (token: string) : Promise<string> {
         const result: any = jwt.decode(token)
         return (new Date ((result.iat)*1000)).toISOString()
-},
+    },
 
     async checkingTokenKey (token: string) {
         try {
@@ -73,6 +66,5 @@ export const jwtService = {
             return null
         }
     }
-
 
 }

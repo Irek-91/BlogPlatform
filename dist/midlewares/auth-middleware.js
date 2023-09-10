@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
-const jwt_service_1 = require("../application/jwt-service");
 const users_db_repository_1 = require("../repositories/users-db-repository");
+const jwt_service_1 = require("../application/jwt-service");
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers.authorization) {
         res.sendStatus(401);

@@ -33,16 +33,31 @@ export type userMongoModel = {
     emailConfirmation : {
         confirmationCode: string,
         expiritionDate: any,
-        isConfirmed: boolean
+        isConfirmed: boolean,
+        recoveryCode: string
     }
-    /*tokens : {
-        accessToken: string,
-        refreshToken: string
-    }*/
-
 } 
 
-//export type userCreatModel = Pick<User, 'login' | 'email' > & {password: string};
+export class UserMongoModel {
+    constructor(
+        public _id: ObjectId,
+        public accountData : {
+            login: string,
+            email: string,
+            salt: string,
+            hash: string,
+            createdAt: string
+        },
+        public emailConfirmation : {
+            confirmationCode: string,
+            expiritionDate: any,
+            isConfirmed: boolean,
+            recoveryCode: string
+        }
+    ) 
+    {}
+}
+
 
 export type userViewModel = {
     id: string,

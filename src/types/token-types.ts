@@ -15,6 +15,17 @@ export type devicesMongo = {
     userId: ObjectId
 }
 
+export class DevicesMongo {
+    constructor(public _id: ObjectId,
+        public expirationDate: string,
+        public deviceId: string,
+        public IP: string,
+        public issuedAt: string,
+        public deviceName: string,
+        public userId: ObjectId)
+    {}
+}
+
 
 
 export type DeviceViewModel = {

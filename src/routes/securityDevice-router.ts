@@ -1,18 +1,20 @@
 import { refreshToken } from './../types/token-types';
 import { Request, Response, Router } from "express";
 import { chekRefreshToken } from "../midlewares/chek-refreshToket";
-import { securityDeviceService } from '../domain/securityDevice_service';
 import { chekRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
+import { SecurityDeviceService } from '../domain/securityDevice_service';
 
 export const securityDeviceRouter = Router({});
 
-
-securityDeviceRouter.get('/devices',
-    chekRefreshToken,
-    async (req: Request, res: Response) => {
+class SecurityDeviceController {
+    private securityDeviceService : SecurityDeviceService
+    constructor () {
+        this.securityDeviceService = new SecurityDeviceService()
+    }
+    async getDeviceByToken (req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         const IP = req.ip
-        const resultGetDevice = await  securityDeviceService.getDeviceByToken(refreshToken, IP)
+        const resultGetDevice = await this.securityDeviceService.getDeviceByToken(refreshToken, IP)
 
         if (resultGetDevice) {
             res.status(200).send(resultGetDevice)
@@ -21,15 +23,9 @@ securityDeviceRouter.get('/devices',
             res.sendStatus(401)
         }
     }
-)
-
-securityDeviceRouter.delete('/devices',
-    chekRefreshToken,    
-    async (req: Request, res: Response) => {
+    async deleteAllDevicesExceptOne (req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
-        
-
-        const resultDelete = await securityDeviceService.deleteAllDevicesExceptOne(refreshToken)
+        const resultDelete = await this.securityDeviceService.deleteAllDevicesExceptOne(refreshToken)
         if (resultDelete) {
             res.sendStatus(204)
         }
@@ -37,18 +33,22 @@ securityDeviceRouter.delete('/devices',
             res.sendStatus(401)
         }
     }
-)
-
-
-securityDeviceRouter.delete('/devices/:deviceId',
-    chekRefreshTokenDeleteDevice,
-    async (req: Request, res: Response) => {
+    async deleteDeviceByUserId (req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         const deviceId = req.params.deviceId
-        const result = await securityDeviceService.getDeviceByUserId(refreshToken, deviceId)
+        const result = await this.securityDeviceService.deleteDeviceByUserId(refreshToken, deviceId)
     
         return res.sendStatus(result)
         
         
         
-})
+}
+}
+
+const securityDeviceControllerInstance = new SecurityDeviceController()
+securityDeviceRouter.get('/devices', chekRefreshToken, 
+                        securityDeviceControllerInstance.getDeviceByToken.bind(securityDeviceControllerInstance))
+securityDeviceRouter.delete('/devices', chekRefreshToken,
+                        securityDeviceControllerInstance.deleteAllDevicesExceptOne.bind(securityDeviceControllerInstance))
+securityDeviceRouter.delete('/devices/:deviceId',chekRefreshTokenDeleteDevice,
+                        securityDeviceControllerInstance.deleteDeviceByUserId.bind(securityDeviceControllerInstance))

@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb"
 import { devicesMongo } from "../types/token-types"
-import { jwtService } from "../application/jwt-service"
 import { DevicesModelClass } from "../db/db-mongoos"
 
 

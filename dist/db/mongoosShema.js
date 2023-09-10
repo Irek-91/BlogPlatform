@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IPAndURIShema = exports.DevicesModelClassShema = exports.commentsShema = exports.commentatorInfoShema = exports.userViewModelShema = exports.usersShema = exports.emailConfirmationShema = exports.accountDataShema = exports.postsShema = exports.blogsShema = void 0;
+exports.IPAndURIShema = exports.DevicesModelClassShema = exports.commentsShema = exports.likeInfoShema = exports.commentatorInfoShema = exports.userViewModelShema = exports.usersShema = exports.emailConfirmationShema = exports.accountDataShema = exports.postsShema = exports.blogsShema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 exports.blogsShema = new mongoose_1.default.Schema({
     _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
@@ -50,12 +50,22 @@ exports.commentatorInfoShema = new mongoose_1.default.Schema({
     userId: { type: String, required: true },
     userLogin: { type: String, required: true }
 });
+exports.likeInfoShema = new mongoose_1.default.Schema({
+    _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
+    userId: { type: String, required: true },
+    commentsId: { type: String, required: true },
+    status: { type: String, required: true },
+    createdAt: { type: String, required: true }
+});
 exports.commentsShema = new mongoose_1.default.Schema({
-    _id: { type: mongoose_1.default.Schema.Types.ObjectId },
+    _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
     postId: { type: String, required: true },
     content: { type: String, required: true },
     commentatorInfo: { type: exports.commentatorInfoShema, required: true },
-    createdAt: { type: String, required: true }
+    createdAt: { type: String, required: true },
+    likesCount: { type: Number, required: true },
+    dislikesCount: { type: Number, required: true },
+    likes: { type: [exports.likeInfoShema], required: true }
 });
 exports.DevicesModelClassShema = new mongoose_1.default.Schema({
     _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },

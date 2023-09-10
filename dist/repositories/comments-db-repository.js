@@ -13,21 +13,43 @@ exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
 exports.commentsRepository = {
-    createdCommentPostId(comment) {
+    createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
-            //const res = await CommentsModelClass.insertMany({ ...comment, _id: new ObjectId()})
-            const commentsInstance = new db_mongoos_1.CommentsModelClass(comment);
+            const newCommentId = new mongodb_1.ObjectId();
+            const newComment = {
+                _id: newCommentId,
+                postId: postId,
+                content: content,
+                commentatorInfo: {
+                    userId: userId,
+                    userLogin: userLogin
+                },
+                createdAt: createdAt,
+                likes: [{
+                        _id: new mongodb_1.ObjectId(),
+                        userId: userId,
+                        commentsId: (newCommentId).toString(),
+                        status: 'None',
+                        createdAt: (new Date()).toISOString()
+                    }]
+            };
+            const commentsInstance = new db_mongoos_1.CommentsModelClass(newComment);
             commentsInstance._id = new mongodb_1.ObjectId();
             yield commentsInstance.save();
             return {
                 id: commentsInstance._id.toString(),
                 content: commentsInstance.content,
                 commentatorInfo: commentsInstance.commentatorInfo,
-                createdAt: commentsInstance.createdAt
+                createdAt: commentsInstance.createdAt,
+                likesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None'
+                }
             };
         });
     },
-    findCommentById(commentId) {
+    findCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: new mongodb_1.ObjectId(commentId) });
@@ -36,7 +58,16 @@ exports.commentsRepository = {
                         id: comment._id.toString(),
                         content: comment.content,
                         commentatorInfo: comment.commentatorInfo,
-                        createdAt: comment.createdAt
+                        createdAt: comment.createdAt,
+                        likesInfo: {
+                            likesCount: comment.likesCount,
+                            dislikesCount: comment.dislikesCount,
+                            myStatus: comment.likes.filter((c) => {
+                                if (c.userId === userId) {
+                                    return c.status;
+                                }
+                            }).toString()
+                        }
                     };
                     return commentViewModel;
                 }
@@ -81,7 +112,7 @@ exports.commentsRepository = {
             }
         });
     },
-    findCommentsByPostId(postId, pagination) {
+    findCommentsByPostId(postId, userId, pagination) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const filter = { postId: postId };
@@ -97,7 +128,16 @@ exports.commentsRepository = {
                         id: c._id.toString(),
                         content: c.content,
                         commentatorInfo: c.commentatorInfo,
-                        createdAt: c.createdAt
+                        createdAt: c.createdAt,
+                        likesInfo: {
+                            likesCount: c.likesCount,
+                            dislikesCount: c.dislikesCount,
+                            myStatus: c.likes.filter((c) => {
+                                if (c.userId === userId) {
+                                    return c.status;
+                                }
+                            }).toString()
+                        }
                     };
                 });
                 return { pagesCount: pagesCount,
@@ -106,6 +146,80 @@ exports.commentsRepository = {
                     totalCount: totalCOunt,
                     items: commentsOutput
                 };
+            }
+            catch (e) {
+                return null;
+            }
+        });
+    },
+    updateLikeStatus(commentId, userId, likeStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: commentId });
+                if (!comment) {
+                    return false;
+                }
+                const like = comment.likes.find((c) => {
+                    c.userId === userId;
+                });
+                if (!like) {
+                    return false;
+                }
+                const index = comment.likes.indexOf(like);
+                if (like.status === likeStatus) {
+                    return true;
+                }
+                else {
+                    if (like.status === 'None' && likeStatus === 'Like') {
+                        comment.likesCount += 1;
+                        comment.likes.splice(index, 1);
+                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
+                            userId: userId,
+                            commentsId: commentId,
+                            createdAt: new Date().toISOString(),
+                            status: 'Like' });
+                        yield comment.save();
+                        return true;
+                    }
+                    else if (like.status === 'None' && likeStatus === 'Dislike') {
+                        comment.dislikesCount += 1;
+                        comment.likes.splice(index, 1);
+                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
+                            userId: userId,
+                            commentsId: commentId,
+                            createdAt: new Date().toISOString(),
+                            status: 'Dislike' });
+                        yield comment.save();
+                        return true;
+                    }
+                    else if (like.status === 'Like' && likeStatus === 'Dislike') {
+                        comment.likesCount -= 1;
+                        comment.dislikesCount += 1;
+                        comment.likes.splice(index, 1);
+                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
+                            userId: userId,
+                            commentsId: commentId,
+                            createdAt: new Date().toISOString(),
+                            status: 'Dislike' });
+                        yield comment.save();
+                        return true;
+                    }
+                    else if (like.status === 'Dislike' && likeStatus === 'Like') {
+                        comment.likesCount += 1;
+                        comment.dislikesCount -= 1;
+                        comment.likes.splice(index, 1);
+                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
+                            userId: userId,
+                            commentsId: commentId,
+                            createdAt: new Date().toISOString(),
+                            status: 'Like' });
+                        yield comment.save();
+                        return true;
+                    }
+                    else {
+                        return null;
+                    }
+                }
             }
             catch (e) {
                 return null;

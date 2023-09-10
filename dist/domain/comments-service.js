@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentsService = void 0;
+exports.CommentsService = void 0;
 const mongodb_1 = require("mongodb");
 const comments_db_repository_1 = require("../repositories/comments-db-repository");
 const users_db_repository_1 = require("../repositories/users-db-repository");
-exports.commentsService = {
+class CommentsService {
     createdCommentPostId(postId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             const createdAt = new Date().toISOString();
@@ -21,22 +21,14 @@ exports.commentsService = {
             if (!user) {
                 return null;
             }
-            const newComment = {
-                postId: postId,
-                content: content,
-                commentatorInfo: {
-                    userId: userId,
-                    userLogin: user.accountData.login,
-                },
-                createdAt: createdAt
-            };
-            const creatComment = yield comments_db_repository_1.commentsRepository.createdCommentPostId(newComment);
+            const userLogin = user.accountData.login;
+            const creatComment = yield comments_db_repository_1.commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt);
             return creatComment;
         });
-    },
-    findCommentById(id) {
+    }
+    findCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comment = yield comments_db_repository_1.commentsRepository.findCommentById(id);
+            const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentId, userId);
             if (comment === null) {
                 return null;
             }
@@ -44,11 +36,11 @@ exports.commentsService = {
                 return comment;
             }
         });
-    },
+    }
     updateContent(userId, commentsId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId);
+                const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId, userId);
                 if (comment.commentatorInfo.userId === userId) {
                     const result = yield comments_db_repository_1.commentsRepository.updateCommentId(commentsId, content);
                     return result;
@@ -61,11 +53,11 @@ exports.commentsService = {
                 return null;
             }
         });
-    },
+    }
     deleteCommentById(commentsId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const commentById = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId);
+                const commentById = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId, userId);
                 if (commentById === null) {
                     return null;
                 }
@@ -81,10 +73,17 @@ exports.commentsService = {
                 return null;
             }
         });
-    },
-    findCommentsByPostId(postId, pagination) {
+    }
+    findCommentsByPostId(postId, userId, pagination) {
         return __awaiter(this, void 0, void 0, function* () {
-            return comments_db_repository_1.commentsRepository.findCommentsByPostId(postId, pagination);
+            return comments_db_repository_1.commentsRepository.findCommentsByPostId(postId, userId, pagination);
         });
     }
-};
+    updateLikeStatus(commentId, userId, likeStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return comments_db_repository_1.commentsRepository.updateLikeStatus(commentId, userId, likeStatus);
+        });
+    }
+}
+exports.CommentsService = CommentsService;
+//export const commentsService = new CommentsService()

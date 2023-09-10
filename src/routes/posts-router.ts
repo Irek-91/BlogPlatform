@@ -2,123 +2,93 @@ import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { blogIdValidation, contentCommentValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { authMidleware } from "../midlewares/basicAuth";
-import { postsService } from "../domain/posts-service";
+import { PostsService } from "../domain/posts-service";
 import { getPaginationFromQuery } from "../midlewares/pagination";
 import { authMiddleware } from "../midlewares/auth-middleware";
-import { commentsService } from "../domain/comments-service";
+import { BlogsService } from "../domain/blogs-service";
+import { CommentsService } from "../domain/comments-service";
+import { jwtService } from "../application/jwt-service";
 
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', async (req: Request, res: Response) => {
-
-  const pagination = getPaginationFromQuery(req.query)
-
-  const posts = await postsService.findPost(pagination);
-  res.send(posts)
-})
-
-postsRouter.get('/:id', async (req: Request, res: Response) => {
-  let post = await postsService.getPostId(req.params.id)
-  if (post) {
-    res.send(post)
-  } else {
-    res.sendStatus(404)
+class PostsController {
+  private postsService : PostsService
+  private blogsService : BlogsService
+  private commentsService : CommentsService
+  constructor () {
+    this.postsService = new PostsService()
+    this.blogsService = new BlogsService()
+    this.commentsService = new CommentsService()
   }
-})
 
-postsRouter.delete('/:id',
-  authMidleware,
-  async (req: Request, res: Response) => {
-    let post = await postsService.deletePostId(req.params.id);
+  async getPosts (req: Request, res: Response) {
+
+    const pagination = getPaginationFromQuery(req.query)
+  
+    const posts = await this.postsService.findPost(pagination);
+    if (!posts) {
+      res.sendStatus(404)
+    } else {
+    res.send(posts)
+    }
+  }
+  async getPostId (req: Request, res: Response) {
+    let post = await this.postsService.getPostId(req.params.id)
     if (post) {
-      res.sendStatus(204)
+      res.send(post)
     } else {
       res.sendStatus(404)
     }
-  })
+  }
 
-postsRouter.post('/',
-  authMidleware,
-  titleValidation,
-  shortDescriptionValidation,
-  contentValidation,
-  blogIdValidation,
-  inputValidationMiddleware,
-
-  async (req: Request, res: Response) => {
-    const title = req.body.title;
-    const shortDescription = req.body.shortDescription;
-    const content = req.body.content;
-    const blogId = req.body.blogId;
-
-    let post = await postsService.createdPostId(title, shortDescription, content, blogId)
-    res.status(201).send(post)
-  })
-
-postsRouter.put('/:id',
-  authMidleware,
-  titleValidation,
-  shortDescriptionValidation,
-  contentValidation,
-  blogIdValidation,
-  inputValidationMiddleware,
-
-  async (req: Request, res: Response) => {
-    const id = req.params.id;
-    const title = req.body.title;
-    const shortDescription = req.body.shortDescription;
-    const content = req.body.content;
-    const blogId = req.body.blogId;
-
-
-    let postResult = await postsService.updatePostId(id, title, shortDescription, content, blogId)
-    if (postResult === true) {
-      res.sendStatus(204);
-    } else {
-      res.sendStatus(404);
+  async getCommentsBuPostId (req: Request, res: Response) {
+    const accessToken = req.cookies.accessToken
+    const userId = (jwtService.getUserIdByToken(accessToken)).toString()
+    if (userId === null) {
+        res.sendStatus(404)
     }
-  })
-
-
-postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
-
-  const pagination = getPaginationFromQuery(req.query)
-  const postId = req.params.postId
-  const resultPostId = await postsService.getPostId(postId)
-  if (resultPostId === false) {
-    res.sendStatus(404)
+    const pagination = getPaginationFromQuery(req.query)
+    const postId = req.params.postId
+    const resultPostId = await this.postsService.getPostId(postId)
+    if (resultPostId === false) {
+      res.sendStatus(404)
+    }
+    else {
+      const commentsPostId = await this.commentsService.findCommentsByPostId(postId, userId, pagination)
+        if (commentsPostId !== null) {
+          res.send(commentsPostId)
+        }
+        else {
+          res.sendStatus(404)
+        }
+    } 
   }
-  else if (resultPostId) {
 
-  const commentsPostId = await commentsService.findCommentsByPostId(postId, pagination)
+  async createdPostId (req: Request, res: Response) {
+    const title = req.body.title;
+    const shortDescription = req.body.shortDescription;
+    const content = req.body.content;
+    const blogId = req.body.blogId;
 
-  if (commentsPostId !== null) {
-    res.send(commentsPostId)
+    let post = await this.postsService.createdPostId(title, shortDescription, content, blogId)
+    if (!post) {
+      res.sendStatus(404)
+      return
+    }
+    res.status(201).send(post)
   }
-  else {
-    res.sendStatus(404)
-  }
-}
 
-})
-
-
-
-postsRouter.post('/:postId/comments',
-  authMiddleware,
-  contentCommentValidation,
-  inputValidationMiddleware,
-  async (req: Request, res: Response) => {
+  async createdCommentPostId (req: Request, res: Response) {
     if (!req.user) { return res.sendStatus(404) }
 
     const postId = req.params.postId
     const userId = req.user._id.toString()
     const content = req.body.content
-    const post = await postsService.getPostId(postId)
+    const post = await this.postsService.getPostId(postId)
 
     if (post === false) {return res.sendStatus(404)}
-    let comment = await commentsService.createdCommentPostId(postId, userId, content)
+    let comment = await this.commentsService.createdCommentPostId(postId, userId, content)
     if (comment === null) {
       res.sendStatus(404)
     }
@@ -126,4 +96,64 @@ postsRouter.post('/:postId/comments',
       res.status(201).send(comment)
     }
 
-  })
+  }
+
+  async updatePostId (req: Request, res: Response) {
+    const id = req.params.id;
+    const title = req.body.title;
+    const shortDescription = req.body.shortDescription;
+    const content = req.body.content;
+    const blogId = req.body.blogId;
+
+
+    let postResult = await this.postsService.updatePostId(id, title, shortDescription, content, blogId)
+    if (postResult === true) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(404);
+    }
+  }
+
+  async deletePostId (req: Request, res: Response) {
+    let post = await this.postsService.deletePostId(req.params.id);
+    if (post) {
+      res.sendStatus(204)
+    } else {
+      res.sendStatus(404)
+    }
+  }
+
+}
+
+const postsControllerInstance = new PostsController()
+
+postsRouter.get('/', postsControllerInstance.getPosts.bind(postsControllerInstance))
+postsRouter.get('/:id', postsControllerInstance.getPostId.bind(postsControllerInstance))
+postsRouter.get('/:postId/comments', postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
+postsRouter.post('/', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
+  inputValidationMiddleware,
+  postsControllerInstance.createdPostId.bind(postsControllerInstance)
+)
+postsRouter.post('/:postId/comments', authMiddleware, contentCommentValidation, inputValidationMiddleware,
+  postsControllerInstance.createdCommentPostId.bind(postsControllerInstance)
+)
+
+postsRouter.put('/:id', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
+  inputValidationMiddleware,
+  postsControllerInstance.updatePostId.bind(postsControllerInstance)
+)
+
+postsRouter.delete('/:id',
+  authMidleware,
+  postsControllerInstance.deletePostId.bind(postsControllerInstance)
+)
+
+
+
+
+
+
+
+
+
+

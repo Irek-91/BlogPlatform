@@ -9,30 +9,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsService = void 0;
+exports.BlogsService = void 0;
+const types_db_1 = require("../types/types-db");
 const blogs_db_repository_1 = require("../repositories/blogs-db-repository");
 const mongodb_1 = require("mongodb");
-exports.blogsService = {
+const db_mongoos_1 = require("../db/db-mongoos");
+class BlogsService {
     findBlogs(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield blogs_db_repository_1.blogsRepository.findBlogs(paginationQuery);
         });
-    },
+    }
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield blogs_db_repository_1.blogsRepository.getBlogId(id);
         });
-    },
+    }
     createBlog(name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newBlog = {
-                _id: new mongodb_1.ObjectId(),
+            const newBlog = new types_db_1.BlogMongoDB(new mongodb_1.ObjectId(), name, description, websiteUrl, new Date().toISOString(), false);
+            /*const newBlog2 = {
+                _id: new ObjectId(),
                 name: name,
                 description: description,
                 websiteUrl: websiteUrl,
-                createdAt: new Date().toISOString(),
+                createdAt: new Date ().toISOString(),
                 isMembership: false
-            };
+            }*/
+            const newBlogInstance = new db_mongoos_1.BlogsModelClass(newBlog);
             yield blogs_db_repository_1.blogsRepository.createBlog(newBlog);
             return {
                 id: newBlog._id.toString(),
@@ -43,20 +47,22 @@ exports.blogsService = {
                 isMembership: newBlog.isMembership
             };
         });
-    },
+    }
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield blogs_db_repository_1.blogsRepository.updateBlog(name, description, websiteUrl, id);
         });
-    },
+    }
     deleteBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield blogs_db_repository_1.blogsRepository.deleteBlogId(id);
         });
-    },
+    }
     deleteBlogAll() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield blogs_db_repository_1.blogsRepository.deleteBlogAll();
         });
     }
-};
+}
+exports.BlogsService = BlogsService;
+//export const blogsService = new BlogsService()

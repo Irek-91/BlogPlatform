@@ -15,48 +15,86 @@ const express_1 = require("express");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const comments_service_1 = require("../domain/comments-service");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
+const jwt_service_1 = require("../application/jwt-service");
+const like_status_validation_1 = require("../midlewares/like_status_validation");
 exports.commentsRouter = (0, express_1.Router)({});
-exports.commentsRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let commentId = yield comments_service_1.commentsService.findCommentById(req.params.id);
-    if (commentId === null) {
-        res.sendStatus(404);
+class CommentsController {
+    constructor() {
+        this.commentsService = new comments_service_1.CommentsService();
     }
-    else {
-        res.status(200).send(commentId);
+    findCommentById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const accessToken = req.cookies.accessToken;
+            const userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
+            if (userId === null) {
+                res.sendStatus(404);
+            }
+            let commentId = yield this.commentsService.findCommentById(req.params.id, userId);
+            if (commentId === null) {
+                res.sendStatus(404);
+            }
+            else {
+                res.status(200).send(commentId);
+            }
+        });
     }
-}));
-exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user) {
-        return res.sendStatus(404);
+    updateCommentId(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return res.sendStatus(404);
+            }
+            const commentsId = req.params.commentsId;
+            const userId = req.user._id.toString();
+            const content = req.body.content;
+            let resultContent = yield this.commentsService.updateContent(userId, commentsId, content);
+            if (resultContent === false) {
+                res.sendStatus(403);
+            }
+            else if (resultContent === true) {
+                res.sendStatus(204);
+            }
+            else {
+                res.sendStatus(404);
+            }
+        });
     }
-    const commentsId = req.params.commentsId;
-    const userId = req.user._id.toString();
-    const content = req.body.content;
-    let resultContent = yield comments_service_1.commentsService.updateContent(userId, commentsId, content);
-    if (resultContent === false) {
-        res.sendStatus(403);
+    updateStatusByCommentId(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return res.sendStatus(404);
+            }
+            const commentId = req.params.commentsId;
+            const userId = req.user._id.toString();
+            const likeStatus = req.body.likeStatus;
+            const resultCommentId = yield this.commentsService.findCommentById(commentId, userId);
+            if (!resultCommentId) {
+                return res.sendStatus(404);
+            }
+            const resultUpdateLikeStatusCommen = yield this.commentsService.updateLikeStatus(commentId, userId, likeStatus);
+        });
     }
-    else if (resultContent === true) {
-        res.sendStatus(204);
+    deleteCommentById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return res.sendStatus(404);
+            }
+            const commentsId = req.params.commentsId;
+            const userId = req.user._id.toString();
+            const result = yield this.commentsService.deleteCommentById(commentsId, userId);
+            if (result === false) {
+                res.sendStatus(403);
+            }
+            if (result === true) {
+                res.sendStatus(204);
+            }
+            if (result === null) {
+                res.sendStatus(404);
+            }
+        });
     }
-    else {
-        res.sendStatus(404);
-    }
-}));
-exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.user) {
-        return res.sendStatus(404);
-    }
-    const commentsId = req.params.commentsId;
-    const userId = req.user._id.toString();
-    const result = yield comments_service_1.commentsService.deleteCommentById(commentsId, userId);
-    if (result === false) {
-        res.sendStatus(403);
-    }
-    if (result === true) {
-        res.sendStatus(204);
-    }
-    if (result === null) {
-        res.sendStatus(404);
-    }
-}));
+}
+const commentsControllerInstance = new CommentsController();
+exports.commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
+exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateCommentId.bind(commentsControllerInstance));
+exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
+exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance));

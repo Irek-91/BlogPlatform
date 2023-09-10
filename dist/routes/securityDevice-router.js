@@ -12,33 +12,48 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.securityDeviceRouter = void 0;
 const express_1 = require("express");
 const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
-const securityDevice_service_1 = require("../domain/securityDevice_service");
 const chek_refreshToket_delete_1 = require("../midlewares/chek-refreshToket-delete");
+const securityDevice_service_1 = require("../domain/securityDevice_service");
 exports.securityDeviceRouter = (0, express_1.Router)({});
-exports.securityDeviceRouter.get('/devices', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.cookies.refreshToken;
-    const IP = req.ip;
-    const resultGetDevice = yield securityDevice_service_1.securityDeviceService.getDeviceByToken(refreshToken, IP);
-    if (resultGetDevice) {
-        res.status(200).send(resultGetDevice);
+class SecurityDeviceController {
+    constructor() {
+        this.securityDeviceService = new securityDevice_service_1.SecurityDeviceService();
     }
-    else {
-        res.sendStatus(401);
+    getDeviceByToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const refreshToken = req.cookies.refreshToken;
+            const IP = req.ip;
+            const resultGetDevice = yield this.securityDeviceService.getDeviceByToken(refreshToken, IP);
+            if (resultGetDevice) {
+                res.status(200).send(resultGetDevice);
+            }
+            else {
+                res.sendStatus(401);
+            }
+        });
     }
-}));
-exports.securityDeviceRouter.delete('/devices', chek_refreshToket_1.chekRefreshToken, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.cookies.refreshToken;
-    const resultDelete = yield securityDevice_service_1.securityDeviceService.deleteAllDevicesExceptOne(refreshToken);
-    if (resultDelete) {
-        res.sendStatus(204);
+    deleteAllDevicesExceptOne(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const refreshToken = req.cookies.refreshToken;
+            const resultDelete = yield this.securityDeviceService.deleteAllDevicesExceptOne(refreshToken);
+            if (resultDelete) {
+                res.sendStatus(204);
+            }
+            else {
+                res.sendStatus(401);
+            }
+        });
     }
-    else {
-        res.sendStatus(401);
+    deleteDeviceByUserId(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const refreshToken = req.cookies.refreshToken;
+            const deviceId = req.params.deviceId;
+            const result = yield this.securityDeviceService.deleteDeviceByUserId(refreshToken, deviceId);
+            return res.sendStatus(result);
+        });
     }
-}));
-exports.securityDeviceRouter.delete('/devices/:deviceId', chek_refreshToket_delete_1.chekRefreshTokenDeleteDevice, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.cookies.refreshToken;
-    const deviceId = req.params.deviceId;
-    const result = yield securityDevice_service_1.securityDeviceService.getDeviceByUserId(refreshToken, deviceId);
-    return res.sendStatus(result);
-}));
+}
+const securityDeviceControllerInstance = new SecurityDeviceController();
+exports.securityDeviceRouter.get('/devices', chek_refreshToket_1.chekRefreshToken, securityDeviceControllerInstance.getDeviceByToken.bind(securityDeviceControllerInstance));
+exports.securityDeviceRouter.delete('/devices', chek_refreshToket_1.chekRefreshToken, securityDeviceControllerInstance.deleteAllDevicesExceptOne.bind(securityDeviceControllerInstance));
+exports.securityDeviceRouter.delete('/devices/:deviceId', chek_refreshToket_delete_1.chekRefreshTokenDeleteDevice, securityDeviceControllerInstance.deleteDeviceByUserId.bind(securityDeviceControllerInstance));

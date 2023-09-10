@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.securityDeviceService = void 0;
-const jwt_service_1 = require("../application/jwt-service");
+exports.SecurityDeviceService = void 0;
 const tokens_db_repository_1 = require("../repositories/tokens-db-repository");
-exports.securityDeviceService = {
+const jwt_service_1 = require("../application/jwt-service");
+class SecurityDeviceService {
     getDeviceByToken(token, IP) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(token);
@@ -30,21 +30,15 @@ exports.securityDeviceService = {
             });
             return resultDeviceIdOutput;
         });
-    },
+    }
     deleteDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
             return result;
         });
-    },
-    getDeviceByUserId(refreshToken, deviceId) {
+    }
+    deleteDeviceByUserId(refreshToken, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            //const resultDeviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
-            //const userByDeviceId = await tokensRepository.getUserByDeviceId(resultDeviceId)
-            //const userByDeviceIdParams = await tokensRepository.getUserByDeviceId(deviceId)
-            //if (userByDeviceId === null || userByDeviceIdParams === null) {return null}
-            //if( resultDeviceId !== deviceId) {return false}
-            //return true
             const resultDeviceId = yield tokens_db_repository_1.tokensRepository.findOneDeviceId(deviceId);
             if (!resultDeviceId) {
                 return 404;
@@ -57,11 +51,8 @@ exports.securityDeviceService = {
                 const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
                 return 204;
             }
-            //get userByDeviceId
-            //if user not exist return {data: null, resultCode: ResultCodeEnum.NotFound}
-            //if user exist but device id fon uri param not include in user devices
         });
-    },
+    }
     deleteAllDevicesExceptOne(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             const deviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
@@ -70,19 +61,5 @@ exports.securityDeviceService = {
             return res;
         });
     }
-    /*async getDeviceByToken (token: string, IP:string): Promise<DeviceViewModel | null> {
-        const issuedAt = await jwtService.getIssuedAttByRefreshToken(token)
-        if (issuedAt=== null) {return null}
-        const result = await tokensRepository.getTokenAndDevice(issuedAt)
-        if (result=== null) {return null}
-
-        const resultDeviceId: DeviceViewModel = {
-            ip: result.IP,
-            title: 'string',
-            lastActiveDate: issuedAt,
-            deviceId: result.deviceId
-        }
-        return resultDeviceId
-
-    }*/
-};
+}
+exports.SecurityDeviceService = SecurityDeviceService;

@@ -59,12 +59,25 @@ export const commentatorInfoShema =  new mongoose.Schema({
     userLogin: {type: String, required: true}
 })
 
+export const likeInfoShema = new mongoose.Schema({
+    _id: {type: mongoose.Schema.Types.ObjectId, required: true},
+    userId: {type: String, required: true},
+    commentsId: {type: String, required: true},
+    status: {type: String, required: true},
+    createdAt:{type: String, required: true}
+})
+
+
+
 export const commentsShema = new mongoose.Schema({
-    _id: {type: mongoose.Schema.Types.ObjectId},
+    _id: {type: mongoose.Schema.Types.ObjectId, required: true},
     postId: {type: String, required: true},
     content: {type: String, required: true},
     commentatorInfo: {type: commentatorInfoShema, required: true},
-    createdAt:{type: String, required: true}
+    createdAt:{type: String, required: true},
+    likesCount: {type: Number, required: true},
+    dislikesCount: {type: Number, required: true},
+    likes:{type: [likeInfoShema], required: true}
 })
 
 

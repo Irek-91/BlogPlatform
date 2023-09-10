@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokensService = void 0;
+exports.TokensService = void 0;
+const token_types_1 = require("./../types/token-types");
 const tokens_db_repository_1 = require("../repositories/tokens-db-repository");
-const jwt_service_1 = require("../application/jwt-service");
 const mongodb_1 = require("mongodb");
-exports.tokensService = {
+const jwt_service_1 = require("../application/jwt-service");
+class TokensService {
     findTokenAndDevice(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(token);
@@ -25,28 +26,20 @@ exports.tokensService = {
                 return null;
             }
         });
-    },
+    }
     addDeviceIdRefreshToken(userId, deviceId, IP, deviceName) {
         return __awaiter(this, void 0, void 0, function* () {
             const refreshToken = yield jwt_service_1.jwtService.createJWTRefreshToken(userId, deviceId);
             const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(refreshToken);
             const expirationDate = yield jwt_service_1.jwtService.getExpiresAttByRefreshToken(refreshToken);
-            const newDeviceAndRefreshToken = {
-                _id: new mongodb_1.ObjectId(),
-                issuedAt,
-                expirationDate,
-                deviceId,
-                IP: IP,
-                deviceName,
-                userId
-            };
+            const newDeviceAndRefreshToken = new token_types_1.DevicesMongo(new mongodb_1.ObjectId(), issuedAt, expirationDate, deviceId, IP, deviceName, userId);
             const addTokenUser = yield tokens_db_repository_1.tokensRepository.addRefreshToken(newDeviceAndRefreshToken);
             if (addTokenUser !== true) {
                 return null;
             }
             return refreshToken;
         });
-    },
+    }
     updateAccessToken(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
@@ -56,7 +49,7 @@ exports.tokensService = {
             const newAccessToken = yield jwt_service_1.jwtService.createdJWTAccessToken(userId);
             return newAccessToken;
         });
-    },
+    }
     updateDevicesModelClass(refreshToken, IP, deviceName) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
@@ -75,7 +68,7 @@ exports.tokensService = {
             if (resultDelete === null) {
                 return null;
             }
-            const result = yield exports.tokensService.addDeviceIdRefreshToken(userId, deviceId, IP, deviceName);
+            const result = yield this.addDeviceIdRefreshToken(userId, deviceId, IP, deviceName);
             if (result) {
                 return result;
             }
@@ -83,7 +76,7 @@ exports.tokensService = {
                 return null;
             }
         });
-    },
+    }
     deleteDeviceIdRefreshToken(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             const issuedAt = yield jwt_service_1.jwtService.getIssuedAttByRefreshToken(refreshToken);
@@ -97,4 +90,5 @@ exports.tokensService = {
             return true;
         });
     }
-};
+}
+exports.TokensService = TokensService;

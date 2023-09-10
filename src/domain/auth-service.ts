@@ -3,12 +3,18 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add'
 import { userRepository } from '../repositories/users-db-repository';
-import { usersService } from './users-service';
 import { emailAdapter } from '../application/email-adapter';
+import { UsersService } from './users-service';
 
 
 
-export const authService = {
+
+export class AuthService {
+    private usersService: UsersService
+    constructor() {
+        this.usersService = new UsersService()
+    }
+
     async creatUser (login: string, password: string, email: string): Promise<userViewModel | null> {
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10)
@@ -43,15 +49,15 @@ export const authService = {
             return null
         }
         return creatresult
-    },
+    }
 
     async _generateHash(password: string, salt: string) {
         const hash = await bcrypt.hash(password, salt)
         return hash;
-    },
+    }
 
     async confirmationCode (code: string) : Promise<boolean> {
-        let user = await usersService.findUserByCode(code)
+        let user = await this.usersService.findUserByCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed === true) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
@@ -59,10 +65,10 @@ export const authService = {
         
         let result = await userRepository.updateConfirmation(user._id)
         return result
-    },
+    }
 
     async resendingEmail(email: string) : Promise<null | boolean> {
-        let user = await usersService.findUserByEmail(email)
+        let user = await this.usersService.findUserByEmail(email)
         if (user === null) return false
         if (user.emailConfirmation.isConfirmed === true) return false
       
@@ -74,18 +80,18 @@ export const authService = {
                 await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
                 await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
                 return true
-    },
+    }
 
 
     async passwordRecovery(email: string) : Promise<true>{
-        let user = await usersService.findUserByEmail(email)
+        let user = await this.usersService.findUserByEmail(email)
         if (user === null) return true
             
             const recoveryCode = uuidv4();
             await userRepository.updateRecoveryCode(user._id, recoveryCode)
             await emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode)
         return true
-    },
+    }
 
 
     async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
