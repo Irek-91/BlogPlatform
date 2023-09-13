@@ -17,7 +17,6 @@ const comments_service_1 = require("../domain/comments-service");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const jwt_service_1 = require("../application/jwt-service");
 const like_status_validation_1 = require("../midlewares/like_status_validation");
-const console_1 = require("console");
 exports.commentsRouter = (0, express_1.Router)({});
 class CommentsController {
     constructor() {
@@ -26,9 +25,8 @@ class CommentsController {
     findCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const accessToken = req.cookies.accessToken;
-            const userId = yield jwt_service_1.jwtService.getUserIdByAccessToken(accessToken);
+            const userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
             if (userId === null) {
-                (0, console_1.log)(userId);
                 return res.sendStatus(404);
             }
             let commentId = yield this.commentsService.findCommentById(req.params.id, userId);

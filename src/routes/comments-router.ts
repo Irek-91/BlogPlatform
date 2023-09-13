@@ -16,10 +16,9 @@ class CommentsController {
         this.commentsService = new CommentsService()
     }
     async findCommentById (req: Request, res: Response) {
-        const accessToken = req.cookies.accessToken
-        const userId = await jwtService.getUserIdByAccessToken(accessToken)
+    const accessToken = req.cookies.accessToken
+    const userId = (jwtService.getUserIdByToken(accessToken)).toString()
         if (userId === null) {
-            log(userId)
             return res.sendStatus(404)
         }
         let commentId = await this.commentsService.findCommentById(req.params.id, userId)
