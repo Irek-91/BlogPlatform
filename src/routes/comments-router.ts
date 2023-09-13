@@ -7,6 +7,7 @@ import { inputValidationMiddleware } from "../midlewares/input-validation-middle
 import { jwtService } from '../application/jwt-service';
 import { likeStatusValidation, likeStatusValidation1 } from '../midlewares/like_status_validation';
 import { log } from 'console';
+import { ObjectId } from 'mongodb';
 
 export const commentsRouter = Router({})
 
@@ -17,11 +18,7 @@ class CommentsController {
     }
     async findCommentById (req: Request, res: Response) {
     const accessToken = req.cookies.accessToken
-    let userId = (jwtService.getUserIdByToken(accessToken)).toString()
-        if (userId === null) {
-           userId = 'notAuthorized'
-        }
-        let commentId = await this.commentsService.findCommentById(req.params.id, userId)
+    let commentId = await this.commentsService.findCommentById(req.params.id, accessToken)
         if (commentId === null) {
             return res.sendStatus(404)
         }

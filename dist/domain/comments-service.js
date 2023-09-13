@@ -26,8 +26,12 @@ class CommentsService {
             return creatComment;
         });
     }
-    findCommentById(commentId, userId) {
+    findCommentById(commentId, accessToken) {
         return __awaiter(this, void 0, void 0, function* () {
+            let userId = '';
+            if (!accessToken) {
+                userId = 'pusto';
+            }
             const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentId, userId);
             if (comment === null) {
                 return null;

@@ -15,7 +15,6 @@ const express_1 = require("express");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const comments_service_1 = require("../domain/comments-service");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
-const jwt_service_1 = require("../application/jwt-service");
 const like_status_validation_1 = require("../midlewares/like_status_validation");
 exports.commentsRouter = (0, express_1.Router)({});
 class CommentsController {
@@ -25,11 +24,7 @@ class CommentsController {
     findCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const accessToken = req.cookies.accessToken;
-            let userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
-            if (userId === null) {
-                userId = 'notAuthorized';
-            }
-            let commentId = yield this.commentsService.findCommentById(req.params.id, userId);
+            let commentId = yield this.commentsService.findCommentById(req.params.id, accessToken);
             if (commentId === null) {
                 return res.sendStatus(404);
             }

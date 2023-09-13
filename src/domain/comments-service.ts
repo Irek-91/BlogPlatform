@@ -19,8 +19,11 @@ export class CommentsService {
         const creatComment = await commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt)
         return creatComment
     }
-
-    async findCommentById(commentId: string, userId: string): Promise<commentViewModel | null> {
+    async findCommentById(commentId: string, accessToken: string| null): Promise<commentViewModel | null> {
+        let userId = ''
+        if (!accessToken) {
+            userId = 'pusto'
+        }
         const comment = await commentsRepository.findCommentById(commentId, userId)
         if (comment === null) {
             return null

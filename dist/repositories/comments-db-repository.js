@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
+const console_1 = require("console");
 exports.commentsRepository = {
     createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,12 +64,16 @@ exports.commentsRepository = {
                     return null;
                 }
                 let myStatusLike = 'None';
-                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: commentId });
+                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
                 if (like) {
                     myStatusLike = like.status;
                 }
+                else {
+                    myStatusLike = 'None';
+                }
+                (0, console_1.log)(like);
                 const likeCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Like' });
-                const dislikesCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislikes' });
+                const dislikesCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislike' });
                 const commentViewModel = {
                     id: comment._id.toString(),
                     content: comment.content,
@@ -131,7 +136,14 @@ exports.commentsRepository = {
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const like = yield db_mongoos_1.LikesModelClass.find({ userId: userId }).lean();
+                let myStatus = 'None';
                 const commentsOutput = comments.map((c) => {
+                    if (c.commentatorInfo.userId !== userId) {
+                        myStatus = 'None';
+                    }
+                    else {
+                        myStatus = 'Like';
+                    }
                     return {
                         id: c._id.toString(),
                         content: c.content,
@@ -140,12 +152,7 @@ exports.commentsRepository = {
                         likesInfo: {
                             likesCount: c.likesCount,
                             dislikesCount: c.dislikesCount,
-                            myStatus: (like.filter((like) => { if (like.commentsId === (c._id).toString() && like.userId === userId) {
-                                return like.status;
-                            }
-                            else {
-                                return 'None';
-                            } })).toString()
+                            myStatus: myStatus
                         }
                     };
                 });

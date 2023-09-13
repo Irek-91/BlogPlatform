@@ -61,13 +61,15 @@ export const commentsRepository = {
       let myStatusLike = 'None'
 
     
-      const like = await LikesModelClass.findOne({userId: userId, commentsId: commentId})
+      const like = await LikesModelClass.findOne({userId: userId})
       if (like) {
         myStatusLike = like.status
+      } else {
+        myStatusLike = 'None'
       }
+      log(like)
       const likeCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Like'})
-      const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislikes'})
-
+      const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislike'})
       const commentViewModel: commentViewModel = {
           id: comment._id.toString(),
           content: comment.content,
@@ -85,7 +87,7 @@ export const commentsRepository = {
       return null }
   },
 
-  
+
   async updateCommentId(commentsId: string, content: string): Promise<true | null> {
     try {
       const post = await CommentsModelClass.updateOne({ _id: new ObjectId(commentsId) }, { $set: { content } })
@@ -123,8 +125,11 @@ export const commentsRepository = {
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
     const like = await LikesModelClass.find({userId: userId}).lean()
+    let myStatus = 'None'
     const commentsOutput : commentViewModel[] = comments.map((c) => {
-      
+      if (c.commentatorInfo.userId !== userId) {myStatus = 'None'}
+      else {
+        myStatus = 'Like'}
       return {
         id: c._id.toString(),
         content: c.content,
@@ -133,7 +138,7 @@ export const commentsRepository = {
         likesInfo: {
           likesCount: c.likesCount,
           dislikesCount: c.dislikesCount,
-          myStatus: (like.filter((like)=> { if (like.commentsId === (c._id).toString() && like.userId === userId) {return like.status} else {return 'None'}})).toString()
+          myStatus: myStatus
         }
       }
     }

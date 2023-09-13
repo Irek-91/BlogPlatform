@@ -25,7 +25,7 @@ exports.jwtService = {
     },
     createJWTRefreshToken(userId, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 20 });
+            const refreshToken = jsonwebtoken_1.default.sign({ userId: userId, deviceId: deviceId }, settings_1.settings.JWT_SECRET, { expiresIn: 200 });
             return refreshToken;
         });
     },
@@ -88,13 +88,8 @@ exports.jwtService = {
     },
     getUserIdByAccessToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = jsonwebtoken_1.default.decode(token);
-                return result.userId;
-            }
-            catch (e) {
-                return null;
-            }
+            const result = jsonwebtoken_1.default.decode(token);
+            return result.userId;
         });
     }
 };
