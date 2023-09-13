@@ -58,14 +58,15 @@ export const commentsRepository = {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
       if (!comment) {
         return null}
-      let myStatusLike = ''
+      let myStatusLike = 'None'
 
-      const like = await LikesModelClass.findOne({userId: userId})
-      if (!like) {
-        myStatusLike = 'None'
-      } else {
+    
+      const like = await LikesModelClass.findOne({userId: userId, commentsId: commentId})
+      if (like) {
         myStatusLike = like.status
       }
+      const likeCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Like'})
+      const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislikes'})
 
       const commentViewModel: commentViewModel = {
           id: comment._id.toString(),
@@ -73,8 +74,8 @@ export const commentsRepository = {
           commentatorInfo: comment.commentatorInfo,
           createdAt: comment.createdAt,
           likesInfo: {
-            likesCount: comment.likesCount,
-            dislikesCount: comment.dislikesCount,
+            likesCount: likeCount,
+            dislikesCount: dislikesCount,
             myStatus: myStatusLike
           }
         }
@@ -131,7 +132,7 @@ export const commentsRepository = {
         likesInfo: {
           likesCount: c.likesCount,
           dislikesCount: c.dislikesCount,
-          myStatus: (like.filter((like)=> { if (like.commentsId === (c._id).toString()) {return like.status} else {return 'None'}})).join()
+          myStatus: (like.filter((like)=> { if (like.commentsId === (c._id).toString() && like.userId === userId) {return like.status} else {return 'None'}})).toString()
         }
       }
     }
@@ -150,44 +151,12 @@ export const commentsRepository = {
     try{ 
     const comment = await CommentsModelClass.findOne({_id: new ObjectId(commentId)})
     if (!comment) {return null}
-    const like = await LikesModelClass.findOne({commentsId: commentId})
-    if (!like) {
-      const newLike: likeInfoShema = {
-        _id: new ObjectId(),
-        userId: userId,
-        commentsId: commentId,
-        status: likeStatus,
-        createdAt: new Date().toISOString()
-    }
-    const newLikeInstance = new LikesModelClass(newLike)
-    await newLikeInstance.save()
-    if (likeStatus === 'Like') {
-      comment!.likesCount += 1
-      await comment!.save()
-    } else {
-      comment!.dislikesCount += 1
-      await comment!.save()
-    }
+    await LikesModelClass.updateOne(
+      {commentsId: commentId, userId},
+      {$set: {status: likeStatus, createdAt: new Date().toISOString()}},
+      {upsert: true}
+    )
     return true
-    }
-    else {
-      if (like.status === likeStatus) {return true}
-
-      like.status = likeStatus
-      await like.save()
-      if (likeStatus === 'Like') {
-        comment!.likesCount += 1
-        comment!.dislikesCount -= 1
-        await comment!.save()
-      } else {
-        comment!.dislikesCount += 1
-        comment!.likesCount -= 1
-
-        await comment!.save()
-      }
-      return true
-    }
-
     
   } catch (e) {return null}
   },

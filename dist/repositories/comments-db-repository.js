@@ -62,22 +62,21 @@ exports.commentsRepository = {
                 if (!comment) {
                     return null;
                 }
-                let myStatusLike = '';
-                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
-                if (!like) {
-                    myStatusLike = 'None';
-                }
-                else {
+                let myStatusLike = 'None';
+                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: commentId });
+                if (like) {
                     myStatusLike = like.status;
                 }
+                const likeCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Like' });
+                const dislikesCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislikes' });
                 const commentViewModel = {
                     id: comment._id.toString(),
                     content: comment.content,
                     commentatorInfo: comment.commentatorInfo,
                     createdAt: comment.createdAt,
                     likesInfo: {
-                        likesCount: comment.likesCount,
-                        dislikesCount: comment.dislikesCount,
+                        likesCount: likeCount,
+                        dislikesCount: dislikesCount,
                         myStatus: myStatusLike
                     }
                 };
@@ -141,12 +140,12 @@ exports.commentsRepository = {
                         likesInfo: {
                             likesCount: c.likesCount,
                             dislikesCount: c.dislikesCount,
-                            myStatus: (like.filter((like) => { if (like.commentsId === (c._id).toString()) {
+                            myStatus: (like.filter((like) => { if (like.commentsId === (c._id).toString() && like.userId === userId) {
                                 return like.status;
                             }
                             else {
                                 return 'None';
-                            } })).join()
+                            } })).toString()
                         }
                     };
                 });
@@ -169,45 +168,8 @@ exports.commentsRepository = {
                 if (!comment) {
                     return null;
                 }
-                const like = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: commentId });
-                if (!like) {
-                    const newLike = {
-                        _id: new mongodb_1.ObjectId(),
-                        userId: userId,
-                        commentsId: commentId,
-                        status: likeStatus,
-                        createdAt: new Date().toISOString()
-                    };
-                    const newLikeInstance = new db_mongoos_1.LikesModelClass(newLike);
-                    yield newLikeInstance.save();
-                    if (likeStatus === 'Like') {
-                        comment.likesCount += 1;
-                        yield comment.save();
-                    }
-                    else {
-                        comment.dislikesCount += 1;
-                        yield comment.save();
-                    }
-                    return true;
-                }
-                else {
-                    if (like.status === likeStatus) {
-                        return true;
-                    }
-                    like.status = likeStatus;
-                    yield like.save();
-                    if (likeStatus === 'Like') {
-                        comment.likesCount += 1;
-                        comment.dislikesCount -= 1;
-                        yield comment.save();
-                    }
-                    else {
-                        comment.dislikesCount += 1;
-                        comment.likesCount -= 1;
-                        yield comment.save();
-                    }
-                    return true;
-                }
+                yield db_mongoos_1.LikesModelClass.updateOne({ commentsId: commentId, userId }, { $set: { status: likeStatus, createdAt: new Date().toISOString() } }, { upsert: true });
+                return true;
             }
             catch (e) {
                 return null;

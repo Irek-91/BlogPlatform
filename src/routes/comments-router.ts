@@ -17,9 +17,9 @@ class CommentsController {
     }
     async findCommentById (req: Request, res: Response) {
     const accessToken = req.cookies.accessToken
-    const userId = (jwtService.getUserIdByToken(accessToken)).toString()
+    let userId = (jwtService.getUserIdByToken(accessToken)).toString()
         if (userId === null) {
-            return res.sendStatus(404)
+           userId = 'notAuthorized'
         }
         let commentId = await this.commentsService.findCommentById(req.params.id, userId)
         if (commentId === null) {
@@ -86,7 +86,7 @@ const commentsControllerInstance = new CommentsController()
 commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
-commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation, inputValidationMiddleware,
+commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware,
                     commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance))
 
 

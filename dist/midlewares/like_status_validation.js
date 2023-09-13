@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeStatusValidation1 = exports.likeStatusValidation = void 0;
+exports.likeStatusValidation1 = exports.LikeStatusValues = exports.LikeStatusEnum = exports.likeStatusValidation = void 0;
 const express_validator_1 = require("express-validator");
 const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const likeStatus = req.body.likeStatus;
@@ -25,6 +25,19 @@ const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 
     }
 });
 exports.likeStatusValidation = likeStatusValidation;
-exports.likeStatusValidation1 = (0, express_validator_1.body)('likeStatus').trim().notEmpty().
-    matches(/'Like'|'None'|'Dislike'/).
+var LikeStatusEnum;
+(function (LikeStatusEnum) {
+    LikeStatusEnum["Like"] = "Like";
+    LikeStatusEnum["Dislike"] = "Dislike";
+    LikeStatusEnum["None"] = "None";
+})(LikeStatusEnum || (exports.LikeStatusEnum = LikeStatusEnum = {}));
+exports.LikeStatusValues = Object.values(LikeStatusEnum);
+exports.likeStatusValidation1 = (0, express_validator_1.body)('likeStatus').isString().trim().notEmpty().
+    // matches(/'Like'|'None'|'Dislike'/).
+    custom((val) => {
+    if (!exports.LikeStatusValues.includes(val)) {
+        throw new Error('invalid input data');
+    }
+    return true;
+}).
     withMessage('error in likeStatus');

@@ -16,6 +16,21 @@ export const likeStatusValidation = async (req: Request, res: Response, next: Ne
     next()
   }
 }
-export const likeStatusValidation1 = body('likeStatus').trim().notEmpty().
-                                            matches(/'Like'|'None'|'Dislike'/).
+
+export enum LikeStatusEnum {
+  Like= 'Like',
+  Dislike= 'Dislike',
+  None= 'None'
+}
+
+export const LikeStatusValues = Object.values(LikeStatusEnum)
+
+export const likeStatusValidation1 = body('likeStatus').isString().trim().notEmpty().
+                                            // matches(/'Like'|'None'|'Dislike'/).
+                                            custom((val) => {
+                                                if(!LikeStatusValues.includes(val)){
+                                                  throw new Error('invalid input data')
+                                                }
+                                                return true
+                                            }).
                                             withMessage('error in likeStatus')
