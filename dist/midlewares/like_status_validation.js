@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeStatusValidation = void 0;
+exports.likeStatusValidation1 = exports.likeStatusValidation = void 0;
+const express_validator_1 = require("express-validator");
 const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const likeStatus = req.body.likeStatus;
-    if (typeof likeStatus !== 'string' || likeStatus !== ('Like' || 'None' || 'Dislike')) {
+    if (typeof likeStatus !== 'string' || likeStatus !== ('Dislike' || 'None' || 'Like')) {
         res.status(400).send({ errorsMessages: [{
                     message: 'error in likeStatus',
                     field: "likeStatus"
@@ -24,3 +25,6 @@ const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 
     }
 });
 exports.likeStatusValidation = likeStatusValidation;
+exports.likeStatusValidation1 = (0, express_validator_1.body)('likeStatus').trim().notEmpty().
+    matches(/'Like'|'None'|'Dislike'/).
+    withMessage('error in likeStatus');

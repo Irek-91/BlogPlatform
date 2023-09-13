@@ -4,6 +4,8 @@ import { commentsRepository } from "../repositories/comments-db-repository";
 import { userRepository } from "../repositories/users-db-repository";
 import { commentViewModel } from "../types/comments";
 import { paginatorComments } from "../types/types_paginator";
+import { jwtService } from '../application/jwt-service';
+import { log } from 'console';
 
 export class CommentsService {
     async createdCommentPostId(postId: string, userId: string, content: string): Promise<commentViewModel | null> {

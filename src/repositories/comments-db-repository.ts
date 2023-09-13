@@ -58,11 +58,16 @@ export const commentsRepository = {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
       if (!comment) {
         return null}
+      let myStatusLike = ''
+
       const like = await LikesModelClass.findOne({userId: userId})
       if (!like) {
-        return null}
+        myStatusLike = 'None'
+      } else {
+        myStatusLike = like.status
+      }
 
-        const commentViewModel: commentViewModel = {
+      const commentViewModel: commentViewModel = {
           id: comment._id.toString(),
           content: comment.content,
           commentatorInfo: comment.commentatorInfo,
@@ -70,7 +75,7 @@ export const commentsRepository = {
           likesInfo: {
             likesCount: comment.likesCount,
             dislikesCount: comment.dislikesCount,
-            myStatus: like.status
+            myStatus: myStatusLike
           }
         }
         return commentViewModel
@@ -115,7 +120,7 @@ export const commentsRepository = {
                                               
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
-    const like = await LikesModelClass.find({userId: userId})
+    const like = await LikesModelClass.find({userId: userId}).lean()
     const commentsOutput : commentViewModel[] = comments.map((c) => {
       
       return {
@@ -143,6 +148,8 @@ export const commentsRepository = {
 
   async updateLikeStatus(commentId:string, userId:string, likeStatus:string): Promise<boolean | null> {
     try{ 
+    const comment = await CommentsModelClass.findOne({_id: new ObjectId(commentId)})
+    if (!comment) {return null}
     const like = await LikesModelClass.findOne({commentsId: commentId})
     if (!like) {
       const newLike: likeInfoShema = {
@@ -151,14 +158,33 @@ export const commentsRepository = {
         commentsId: commentId,
         status: likeStatus,
         createdAt: new Date().toISOString()
-      }
+    }
     const newLikeInstance = new LikesModelClass(newLike)
     await newLikeInstance.save()
+    if (likeStatus === 'Like') {
+      comment!.likesCount += 1
+      await comment!.save()
+    } else {
+      comment!.dislikesCount += 1
+      await comment!.save()
+    }
     return true
     }
     else {
+      if (like.status === likeStatus) {return true}
+
       like.status = likeStatus
       await like.save()
+      if (likeStatus === 'Like') {
+        comment!.likesCount += 1
+        comment!.dislikesCount -= 1
+        await comment!.save()
+      } else {
+        comment!.dislikesCount += 1
+        comment!.likesCount -= 1
+
+        await comment!.save()
+      }
       return true
     }
 

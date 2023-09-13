@@ -5,7 +5,8 @@ import { authMiddleware } from "../midlewares/auth-middleware";
 import { CommentsService} from "../domain/comments-service";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { jwtService } from '../application/jwt-service';
-import { likeStatusValidation } from '../midlewares/like_status_validation';
+import { likeStatusValidation, likeStatusValidation1 } from '../midlewares/like_status_validation';
+import { log } from 'console';
 
 export const commentsRouter = Router({})
 
@@ -16,15 +17,16 @@ class CommentsController {
     }
     async findCommentById (req: Request, res: Response) {
         const accessToken = req.cookies.accessToken
-        const userId = (jwtService.getUserIdByToken(accessToken)).toString()
+        const userId = await jwtService.getUserIdByAccessToken(accessToken)
         if (userId === null) {
-            res.sendStatus(404)
+            log(userId)
+            return res.sendStatus(404)
         }
-
         let commentId = await this.commentsService.findCommentById(req.params.id, userId)
         if (commentId === null) {
-            res.sendStatus(404)
+            return res.sendStatus(404)
         }
+
         else {
             res.status(200).send(commentId)
         }
@@ -53,9 +55,7 @@ class CommentsController {
         const commentId = req.params.commentsId
         const userId = req.user._id.toString()
         const likeStatus = req.body.likeStatus
-        const resultCommentId = await this.commentsService.findCommentById(commentId, userId)
-        if (!resultCommentId) {
-            return res.sendStatus(404)}
+        
         const resultUpdateLikeStatusCommen = await this.commentsService.updateLikeStatus(commentId, userId, likeStatus)
         if (resultUpdateLikeStatusCommen) {
             return res.sendStatus(204)}

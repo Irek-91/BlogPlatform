@@ -65,6 +65,14 @@ export const jwtService = {
         catch (e) {
             return null
         }
+    },
+    async getUserIdByAccessToken (token: string) : Promise<string | null> {
+        try {
+            const result: any = jwt.decode(token)
+            return result.userId
+        } 
+        catch (e) {
+            return null
+        }
     }
-
 }

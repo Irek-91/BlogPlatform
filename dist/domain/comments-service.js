@@ -13,6 +13,7 @@ exports.CommentsService = void 0;
 const mongodb_1 = require("mongodb");
 const comments_db_repository_1 = require("../repositories/comments-db-repository");
 const users_db_repository_1 = require("../repositories/users-db-repository");
+const console_1 = require("console");
 class CommentsService {
     createdCommentPostId(postId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -30,6 +31,7 @@ class CommentsService {
         return __awaiter(this, void 0, void 0, function* () {
             const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentId, userId);
             if (comment === null) {
+                (0, console_1.log)('tut');
                 return null;
             }
             else {

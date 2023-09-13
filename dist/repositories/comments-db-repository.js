@@ -62,9 +62,13 @@ exports.commentsRepository = {
                 if (!comment) {
                     return null;
                 }
+                let myStatusLike = '';
                 const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
                 if (!like) {
-                    return null;
+                    myStatusLike = 'None';
+                }
+                else {
+                    myStatusLike = like.status;
                 }
                 const commentViewModel = {
                     id: comment._id.toString(),
@@ -74,7 +78,7 @@ exports.commentsRepository = {
                     likesInfo: {
                         likesCount: comment.likesCount,
                         dislikesCount: comment.dislikesCount,
-                        myStatus: like.status
+                        myStatus: myStatusLike
                     }
                 };
                 return commentViewModel;
@@ -127,7 +131,7 @@ exports.commentsRepository = {
                     lean();
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
-                const like = yield db_mongoos_1.LikesModelClass.find({ userId: userId });
+                const like = yield db_mongoos_1.LikesModelClass.find({ userId: userId }).lean();
                 const commentsOutput = comments.map((c) => {
                     return {
                         id: c._id.toString(),
@@ -161,6 +165,10 @@ exports.commentsRepository = {
     updateLikeStatus(commentId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: new mongodb_1.ObjectId(commentId) });
+                if (!comment) {
+                    return null;
+                }
                 const like = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: commentId });
                 if (!like) {
                     const newLike = {
@@ -172,11 +180,32 @@ exports.commentsRepository = {
                     };
                     const newLikeInstance = new db_mongoos_1.LikesModelClass(newLike);
                     yield newLikeInstance.save();
+                    if (likeStatus === 'Like') {
+                        comment.likesCount += 1;
+                        yield comment.save();
+                    }
+                    else {
+                        comment.dislikesCount += 1;
+                        yield comment.save();
+                    }
                     return true;
                 }
                 else {
+                    if (like.status === likeStatus) {
+                        return true;
+                    }
                     like.status = likeStatus;
                     yield like.save();
+                    if (likeStatus === 'Like') {
+                        comment.likesCount += 1;
+                        comment.dislikesCount -= 1;
+                        yield comment.save();
+                    }
+                    else {
+                        comment.dislikesCount += 1;
+                        comment.likesCount -= 1;
+                        yield comment.save();
+                    }
                     return true;
                 }
             }

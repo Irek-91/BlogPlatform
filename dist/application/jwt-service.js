@@ -85,5 +85,16 @@ exports.jwtService = {
                 return null;
             }
         });
+    },
+    getUserIdByAccessToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = jsonwebtoken_1.default.decode(token);
+                return result.userId;
+            }
+            catch (e) {
+                return null;
+            }
+        });
     }
 };
