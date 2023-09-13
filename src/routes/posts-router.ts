@@ -8,6 +8,7 @@ import { authMiddleware } from "../midlewares/auth-middleware";
 import { BlogsService } from "../domain/blogs-service";
 import { CommentsService } from "../domain/comments-service";
 import { jwtService } from "../application/jwt-service";
+import { log } from "console";
 
 
 export const postsRouter = Router({});

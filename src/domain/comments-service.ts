@@ -64,11 +64,6 @@ export class CommentsService {
     async updateLikeStatus(commentId: string, userId:string, likeStatus:string): Promise<Boolean | null> {
         return commentsRepository.updateLikeStatus(commentId, userId, likeStatus)
     }
-
-
-
-
-
 }
 
 //export const commentsService = new CommentsService()

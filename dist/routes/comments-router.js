@@ -16,6 +16,7 @@ const auth_middleware_1 = require("../midlewares/auth-middleware");
 const comments_service_1 = require("../domain/comments-service");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const jwt_service_1 = require("../application/jwt-service");
+const like_status_validation_1 = require("../midlewares/like_status_validation");
 exports.commentsRouter = (0, express_1.Router)({});
 class CommentsController {
     constructor() {
@@ -101,5 +102,5 @@ class CommentsController {
 const commentsControllerInstance = new CommentsController();
 exports.commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateCommentId.bind(commentsControllerInstance));
-exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
+exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance));

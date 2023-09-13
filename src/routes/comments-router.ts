@@ -54,13 +54,15 @@ class CommentsController {
         const userId = req.user._id.toString()
         const likeStatus = req.body.likeStatus
         const resultCommentId = await this.commentsService.findCommentById(commentId, userId)
-        if (!resultCommentId) {return res.sendStatus(404)}
+        if (!resultCommentId) {
+            return res.sendStatus(404)}
         const resultUpdateLikeStatusCommen = await this.commentsService.updateLikeStatus(commentId, userId, likeStatus)
-        if (resultUpdateLikeStatusCommen) {return res.sendStatus(204)}
-        else {res.sendStatus(404)}
+        if (resultUpdateLikeStatusCommen) {
+            return res.sendStatus(204)}
+        else {
+            res.sendStatus(404)}
     }
     
-
     async deleteCommentById (req: Request, res: Response) {
         if (!req.user) { return res.sendStatus(401) }
 
@@ -85,7 +87,7 @@ const commentsControllerInstance = new CommentsController()
 commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
-commentsRouter.put('/:commentsId/like-status', authMiddleware, inputValidationMiddleware,
+commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance))
 
 

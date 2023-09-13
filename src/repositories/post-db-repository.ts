@@ -94,20 +94,17 @@ export const postRepository = {
     
         
     async createdPostId(newPost:postInput): Promise<postOutput> {     
-        //const res = await PostsModelClass.insertMany({...newPost, _id: new ObjectId()});
         const postInstance = new PostsModelClass(newPost)
-        postInstance._id = new ObjectId()
-        /*postInstance.title = newPost.title
-        postInstance.shortDescription = newPost.shortDescription
-        postInstance.content = newPost.content
-        postInstance.blogId = newPost.blogId
-        postInstance.blogName = newPost.blogName
-        postInstance.createdAt = newPost.createdAt
-        */
+        
         await postInstance.save()
         return {
             id: postInstance._id.toString(),
-            ...newPost
+            title: postInstance.title,
+            shortDescription: postInstance.shortDescription,
+            content: postInstance.content,
+            blogId: postInstance.blogId,
+            blogName: postInstance.blogName,
+            createdAt: postInstance.createdAt
         }
     },
 

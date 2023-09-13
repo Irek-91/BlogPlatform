@@ -19,7 +19,7 @@ const mongodb_1 = require("mongodb");
 exports.jwtService = {
     createdJWTAccessToken(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 300 });
+            const accessToken = jsonwebtoken_1.default.sign({ userId: userId }, settings_1.settings.JWT_SECRET, { expiresIn: 600 });
             return accessToken;
         });
     },

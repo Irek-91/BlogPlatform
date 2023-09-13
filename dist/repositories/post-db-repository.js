@@ -111,18 +111,17 @@ exports.postRepository = {
     },
     createdPostId(newPost) {
         return __awaiter(this, void 0, void 0, function* () {
-            //const res = await PostsModelClass.insertMany({...newPost, _id: new ObjectId()});
             const postInstance = new db_mongoos_1.PostsModelClass(newPost);
-            postInstance._id = new mongodb_1.ObjectId();
-            /*postInstance.title = newPost.title
-            postInstance.shortDescription = newPost.shortDescription
-            postInstance.content = newPost.content
-            postInstance.blogId = newPost.blogId
-            postInstance.blogName = newPost.blogName
-            postInstance.createdAt = newPost.createdAt
-            */
             yield postInstance.save();
-            return Object.assign({ id: postInstance._id.toString() }, newPost);
+            return {
+                id: postInstance._id.toString(),
+                title: postInstance.title,
+                shortDescription: postInstance.shortDescription,
+                content: postInstance.content,
+                blogId: postInstance.blogId,
+                blogName: postInstance.blogName,
+                createdAt: postInstance.createdAt
+            };
         });
     },
     updatePostId(id, title, shortDescription, content, blogId) {

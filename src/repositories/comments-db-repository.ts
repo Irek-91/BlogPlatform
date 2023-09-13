@@ -1,13 +1,15 @@
-import { CommentMongoModel, commentViewModel } from './../types/comments';
+import { CommentMongoModel, commentViewModel, likeInfoShema } from './../types/comments';
 import { ObjectId } from "mongodb"
 import { commentInputModel } from "../types/comments"
 import { QueryPaginationType } from '../midlewares/pagination';
 import { paginatorComments } from '../types/types_paginator';
-import { CommentsModelClass } from '../db/db-mongoos';
+import { CommentsModelClass, LikesModelClass } from '../db/db-mongoos';
+import { log } from 'console';
 
 export const commentsRepository = {
   async createdCommentPostId(postId: string, content:string, userId:string, userLogin:string, createdAt:string): Promise<commentViewModel> {
     const newCommentId = new ObjectId()
+
     const newComment: CommentMongoModel = {
       _id: newCommentId,
       postId: postId,
@@ -19,17 +21,21 @@ export const commentsRepository = {
       createdAt:createdAt,
       likesCount: 0,
       dislikesCount: 0,
-      likes: [{
-        _id: new ObjectId(),
-        userId: userId,
-        commentsId: (newCommentId).toString(),
-        status: 'None',
-        createdAt: (new Date()).toISOString()
-      }]
     }
+    const newLike: likeInfoShema = {
+      _id: new ObjectId(),
+      userId: userId,
+      commentsId: newCommentId.toString(),
+      status: 'None',
+      createdAt: new Date().toISOString()
+
+    }
+    
     const commentsInstance = new CommentsModelClass(newComment)
-    commentsInstance._id = new ObjectId()
+    const newLikeInstance = new LikesModelClass(newLike)
     await commentsInstance.save()
+    await newLikeInstance.save()
+
 
     return {
       id: commentsInstance._id.toString(),
@@ -50,30 +56,27 @@ export const commentsRepository = {
   async findCommentById(commentId: string, userId: string): Promise<commentViewModel | null> {
     try {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
-      if (comment !== null) {
-      const userLogin = comment.commentatorInfo.userLogin
+      if (!comment) {
+        return null}
+      const like = await LikesModelClass.findOne({userId: userId})
+      if (!like) {
+        return null}
 
         const commentViewModel: commentViewModel = {
           id: comment._id.toString(),
           content: comment.content,
-          commentatorInfo: {
-            userId: userId,
-            userLogin: userLogin
-          },
+          commentatorInfo: comment.commentatorInfo,
           createdAt: comment.createdAt,
           likesInfo: {
             likesCount: comment.likesCount,
             dislikesCount: comment.dislikesCount,
-            myStatus: comment.likes.filter((c) => {
-                if (c.userId === userId) {return c.status}
-            }).toString()
+            myStatus: like.status
           }
         }
         return commentViewModel
-      }
-      else { return null }
     }
-    catch (e) {return null }
+    catch (e) {
+      return null }
   },
 
   async updateCommentId(commentsId: string, content: string): Promise<true | null> {
@@ -112,7 +115,9 @@ export const commentsRepository = {
                                               
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
+    const like = await LikesModelClass.find({userId: userId})
     const commentsOutput : commentViewModel[] = comments.map((c) => {
+      
       return {
         id: c._id.toString(),
         content: c.content,
@@ -121,13 +126,12 @@ export const commentsRepository = {
         likesInfo: {
           likesCount: c.likesCount,
           dislikesCount: c.dislikesCount,
-          myStatus: c.likes.filter((c) => {
-              if (c.userId === userId) {return c.status}
-          }).toString()
+          myStatus: (like.filter((like)=> { if (like.commentsId === (c._id).toString()) {return like.status} else {return 'None'}})).join()
         }
       }
     }
     )
+
     return {pagesCount: pagesCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
@@ -138,72 +142,34 @@ export const commentsRepository = {
   },
 
   async updateLikeStatus(commentId:string, userId:string, likeStatus:string): Promise<boolean | null> {
-    try{
-    const comment = await CommentsModelClass.findOne({_id: commentId})
-    if (!comment) {return false}
-    
-    const like = comment.likes.find((c) => {
-      c.userId === userId
-    })
-    
-    if (!like) {return false} 
-    const index = comment.likes.indexOf(like)
-
-    if (like.status === likeStatus) {return true}
-    else {
-        if (like.status === 'None' &&  likeStatus ==='Like') {
-            comment.likesCount += 1
-            comment.likes.splice(index, 1)                 
-            comment.likes.push({_id: new ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Like'})
-            await comment.save()
-            return true
-        }
-        else if (like.status === 'None' && likeStatus ==='Dislike') {
-                comment.dislikesCount += 1
-                comment.likes.splice(index, 1)                 
-                comment.likes.push({_id: new ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Dislike'})
-              await comment.save()
-              return true
-        }
-        else if (like.status === 'Like' && likeStatus ==='Dislike') {
-                comment.likesCount -= 1
-                comment.dislikesCount += 1
-                comment.likes.splice(index, 1)                 
-                comment.likes.push({_id: new ObjectId(),
-                          userId: userId,
-                          commentsId: commentId,
-                          createdAt: new Date().toISOString(),
-                          status: 'Dislike'})
-              await comment.save()
-              return true
-        }
-        else if (like.status === 'Dislike' && likeStatus ==='Like') {
-              comment.likesCount += 1
-              comment.dislikesCount -= 1
-              comment.likes.splice(index, 1)                 
-              comment.likes.push({_id: new ObjectId(),
-                          userId: userId,
-                          commentsId: commentId,
-                          createdAt: new Date().toISOString(),
-                          status: 'Like'})
-        await comment.save()
-        return true
-        }
-        else {return null}
+    try{ 
+    const like = await LikesModelClass.findOne({commentsId: commentId})
+    if (!like) {
+      const newLike: likeInfoShema = {
+        _id: new ObjectId(),
+        userId: userId,
+        commentsId: commentId,
+        status: likeStatus,
+        createdAt: new Date().toISOString()
+      }
+    const newLikeInstance = new LikesModelClass(newLike)
+    await newLikeInstance.save()
+    return true
     }
+    else {
+      like.status = likeStatus
+      await like.save()
+      return true
+    }
+
+    
   } catch (e) {return null}
   },
 
   async deleteCommentsAll() : Promise<boolean> {
     const deletResult = await CommentsModelClass.deleteMany({})
+    const deletResult1 = await LikesModelClass.deleteMany({})
     return true
   }
 }
+

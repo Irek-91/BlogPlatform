@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { IPAndURIShema, blogsShema, commentsShema, DevicesModelClassShema, postsShema, usersShema } from './mongoosShema';
+import { IPAndURIShema, blogsShema, commentsShema, DevicesModelClassShema, postsShema, usersShema, likeInfoShema } from './mongoosShema';
 dotenv.config()
 
 let dbName = 'BlogPlatform'
@@ -16,6 +16,7 @@ export const BlogsModelClass = mongoose.model('blogs', blogsShema)
 export const PostsModelClass = mongoose.model('posts', postsShema)
 export const UsersModelClass = mongoose.model('users', usersShema)
 export const CommentsModelClass = mongoose.model('comments', commentsShema)
+export const LikesModelClass = mongoose.model('likes', likeInfoShema)
 export const DevicesModelClass = mongoose.model('DevicesModelClass', DevicesModelClassShema)
 export const IPAndURIModelClass = mongoose.model('IPAndURIShema', IPAndURIShema)
 

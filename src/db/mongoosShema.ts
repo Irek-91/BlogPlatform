@@ -57,7 +57,7 @@ export const userViewModelShema = new mongoose.Schema({
 export const commentatorInfoShema =  new mongoose.Schema({
     userId: {type: String, required: true},
     userLogin: {type: String, required: true}
-})
+}, {_id: false})
 
 export const likeInfoShema = new mongoose.Schema({
     _id: {type: mongoose.Schema.Types.ObjectId, required: true},
@@ -77,7 +77,7 @@ export const commentsShema = new mongoose.Schema({
     createdAt:{type: String, required: true},
     likesCount: {type: Number, required: true},
     dislikesCount: {type: Number, required: true},
-    likes:{type: [likeInfoShema], required: true}
+    //likes:{type: [likeInfoShema], required: true}
 })
 
 

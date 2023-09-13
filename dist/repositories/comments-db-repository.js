@@ -27,17 +27,18 @@ exports.commentsRepository = {
                 createdAt: createdAt,
                 likesCount: 0,
                 dislikesCount: 0,
-                likes: [{
-                        _id: new mongodb_1.ObjectId(),
-                        userId: userId,
-                        commentsId: (newCommentId).toString(),
-                        status: 'None',
-                        createdAt: (new Date()).toISOString()
-                    }]
+            };
+            const newLike = {
+                _id: new mongodb_1.ObjectId(),
+                userId: userId,
+                commentsId: newCommentId.toString(),
+                status: 'None',
+                createdAt: new Date().toISOString()
             };
             const commentsInstance = new db_mongoos_1.CommentsModelClass(newComment);
-            commentsInstance._id = new mongodb_1.ObjectId();
+            const newLikeInstance = new db_mongoos_1.LikesModelClass(newLike);
             yield commentsInstance.save();
+            yield newLikeInstance.save();
             return {
                 id: commentsInstance._id.toString(),
                 content: commentsInstance.content,
@@ -58,31 +59,25 @@ exports.commentsRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: new mongodb_1.ObjectId(commentId) });
-                if (comment !== null) {
-                    const userLogin = comment.commentatorInfo.userLogin;
-                    const commentViewModel = {
-                        id: comment._id.toString(),
-                        content: comment.content,
-                        commentatorInfo: {
-                            userId: userId,
-                            userLogin: userLogin
-                        },
-                        createdAt: comment.createdAt,
-                        likesInfo: {
-                            likesCount: comment.likesCount,
-                            dislikesCount: comment.dislikesCount,
-                            myStatus: comment.likes.filter((c) => {
-                                if (c.userId === userId) {
-                                    return c.status;
-                                }
-                            }).toString()
-                        }
-                    };
-                    return commentViewModel;
-                }
-                else {
+                if (!comment) {
                     return null;
                 }
+                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
+                if (!like) {
+                    return null;
+                }
+                const commentViewModel = {
+                    id: comment._id.toString(),
+                    content: comment.content,
+                    commentatorInfo: comment.commentatorInfo,
+                    createdAt: comment.createdAt,
+                    likesInfo: {
+                        likesCount: comment.likesCount,
+                        dislikesCount: comment.dislikesCount,
+                        myStatus: like.status
+                    }
+                };
+                return commentViewModel;
             }
             catch (e) {
                 return null;
@@ -132,6 +127,7 @@ exports.commentsRepository = {
                     lean();
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
+                const like = yield db_mongoos_1.LikesModelClass.find({ userId: userId });
                 const commentsOutput = comments.map((c) => {
                     return {
                         id: c._id.toString(),
@@ -141,11 +137,12 @@ exports.commentsRepository = {
                         likesInfo: {
                             likesCount: c.likesCount,
                             dislikesCount: c.dislikesCount,
-                            myStatus: c.likes.filter((c) => {
-                                if (c.userId === userId) {
-                                    return c.status;
-                                }
-                            }).toString()
+                            myStatus: (like.filter((like) => { if (like.commentsId === (c._id).toString()) {
+                                return like.status;
+                            }
+                            else {
+                                return 'None';
+                            } })).join()
                         }
                     };
                 });
@@ -164,70 +161,23 @@ exports.commentsRepository = {
     updateLikeStatus(commentId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const comment = yield db_mongoos_1.CommentsModelClass.findOne({ _id: commentId });
-                if (!comment) {
-                    return false;
-                }
-                const like = comment.likes.find((c) => {
-                    c.userId === userId;
-                });
+                const like = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: commentId });
                 if (!like) {
-                    return false;
-                }
-                const index = comment.likes.indexOf(like);
-                if (like.status === likeStatus) {
+                    const newLike = {
+                        _id: new mongodb_1.ObjectId(),
+                        userId: userId,
+                        commentsId: commentId,
+                        status: likeStatus,
+                        createdAt: new Date().toISOString()
+                    };
+                    const newLikeInstance = new db_mongoos_1.LikesModelClass(newLike);
+                    yield newLikeInstance.save();
                     return true;
                 }
                 else {
-                    if (like.status === 'None' && likeStatus === 'Like') {
-                        comment.likesCount += 1;
-                        comment.likes.splice(index, 1);
-                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Like' });
-                        yield comment.save();
-                        return true;
-                    }
-                    else if (like.status === 'None' && likeStatus === 'Dislike') {
-                        comment.dislikesCount += 1;
-                        comment.likes.splice(index, 1);
-                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Dislike' });
-                        yield comment.save();
-                        return true;
-                    }
-                    else if (like.status === 'Like' && likeStatus === 'Dislike') {
-                        comment.likesCount -= 1;
-                        comment.dislikesCount += 1;
-                        comment.likes.splice(index, 1);
-                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Dislike' });
-                        yield comment.save();
-                        return true;
-                    }
-                    else if (like.status === 'Dislike' && likeStatus === 'Like') {
-                        comment.likesCount += 1;
-                        comment.dislikesCount -= 1;
-                        comment.likes.splice(index, 1);
-                        comment.likes.push({ _id: new mongodb_1.ObjectId(),
-                            userId: userId,
-                            commentsId: commentId,
-                            createdAt: new Date().toISOString(),
-                            status: 'Like' });
-                        yield comment.save();
-                        return true;
-                    }
-                    else {
-                        return null;
-                    }
+                    like.status = likeStatus;
+                    yield like.save();
+                    return true;
                 }
             }
             catch (e) {
@@ -238,6 +188,7 @@ exports.commentsRepository = {
     deleteCommentsAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongoos_1.CommentsModelClass.deleteMany({});
+            const deletResult1 = yield db_mongoos_1.LikesModelClass.deleteMany({});
             return true;
         });
     }

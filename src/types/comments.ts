@@ -46,7 +46,7 @@ export type commentViewModel = {
     public createdAt:string,
     public likesCount: number,
     public dislikesCount: number,
-    public likes: likeInfoShema[]
+    //public likes: likeInfoShema[]
     )
     {}
   }

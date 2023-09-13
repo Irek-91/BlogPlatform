@@ -49,7 +49,7 @@ exports.userViewModelShema = new mongoose_1.default.Schema({
 exports.commentatorInfoShema = new mongoose_1.default.Schema({
     userId: { type: String, required: true },
     userLogin: { type: String, required: true }
-});
+}, { _id: false });
 exports.likeInfoShema = new mongoose_1.default.Schema({
     _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
     userId: { type: String, required: true },
@@ -65,7 +65,7 @@ exports.commentsShema = new mongoose_1.default.Schema({
     createdAt: { type: String, required: true },
     likesCount: { type: Number, required: true },
     dislikesCount: { type: Number, required: true },
-    likes: { type: [exports.likeInfoShema], required: true }
+    //likes:{type: [likeInfoShema], required: true}
 });
 exports.DevicesModelClassShema = new mongoose_1.default.Schema({
     _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
