@@ -60,7 +60,6 @@ export const commentsRepository = {
         return null}
       let myStatusLike = ''
 
-    
       const like = await LikesModelClass.findOne({userId: userId, commentsId: commentId})
       if (like) {
         myStatusLike = like.status

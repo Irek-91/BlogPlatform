@@ -17,8 +17,10 @@ class CommentsController {
         this.commentsService = new CommentsService()
     }
     async findCommentById (req: Request, res: Response) {
-    const accessToken = req.cookies.accessToken
-    let commentId = await this.commentsService.findCommentById(req.params.id, accessToken)
+    if (!req.user) { return res.sendStatus(401) }
+    const userId = req.user._id.toString()
+
+    let commentId = await this.commentsService.findCommentById(req.params.id,  userId)
         if (commentId === null) {
             return res.sendStatus(404)
         }
@@ -80,7 +82,7 @@ class CommentsController {
 }
 const commentsControllerInstance = new CommentsController()
 
-commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
+commentsRouter.get('/:id',authMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware,

@@ -13,7 +13,6 @@ exports.CommentsService = void 0;
 const mongodb_1 = require("mongodb");
 const comments_db_repository_1 = require("../repositories/comments-db-repository");
 const users_db_repository_1 = require("../repositories/users-db-repository");
-const jwt_service_1 = require("../application/jwt-service");
 class CommentsService {
     createdCommentPostId(postId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -27,15 +26,8 @@ class CommentsService {
             return creatComment;
         });
     }
-    findCommentById(commentId, accessToken) {
+    findCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let userId = '';
-            if (!accessToken) {
-                userId = 'pusto';
-            }
-            else {
-                userId = (yield jwt_service_1.jwtService.getUserIdByAccessToken(accessToken)).toString();
-            }
             const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentId, userId);
             if (comment === null) {
                 return null;

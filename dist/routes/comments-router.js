@@ -23,8 +23,11 @@ class CommentsController {
     }
     findCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = req.cookies.accessToken;
-            let commentId = yield this.commentsService.findCommentById(req.params.id, accessToken);
+            if (!req.user) {
+                return res.sendStatus(401);
+            }
+            const userId = req.user._id.toString();
+            let commentId = yield this.commentsService.findCommentById(req.params.id, userId);
             if (commentId === null) {
                 return res.sendStatus(404);
             }
@@ -91,7 +94,7 @@ class CommentsController {
     }
 }
 const commentsControllerInstance = new CommentsController();
-exports.commentsRouter.get('/:id', commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
+exports.commentsRouter.get('/:id', auth_middleware_1.authMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation1, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance));
