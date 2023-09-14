@@ -47,6 +47,9 @@ class AuthController {
                 res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
                 res.status(200).send({ accessToken });
             }
+            else {
+                res.sendStatus(401);
+            }
         });
     }
     generateNewPairOfAccessAndRefreshTokens(req, res) {

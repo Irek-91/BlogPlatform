@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-const console_1 = require("console");
 exports.commentsRepository = {
     createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -63,7 +62,7 @@ exports.commentsRepository = {
                 if (!comment) {
                     return null;
                 }
-                let myStatusLike = 'None';
+                let myStatusLike = '';
                 const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
                 if (like) {
                     myStatusLike = like.status;
@@ -71,7 +70,6 @@ exports.commentsRepository = {
                 else {
                     myStatusLike = 'None';
                 }
-                (0, console_1.log)(like);
                 const likeCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Like' });
                 const dislikesCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislike' });
                 const commentViewModel = {
@@ -135,16 +133,17 @@ exports.commentsRepository = {
                     lean();
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
-                const like = yield db_mongoos_1.LikesModelClass.find({ userId: userId }).lean();
-                let myStatus = 'None';
-                const commentsOutput = comments.map((c) => {
-                    if (c.commentatorInfo.userId !== userId) {
+                const items = [];
+                comments.map((c) => __awaiter(this, void 0, void 0, function* () {
+                    let myStatus = 'None';
+                    const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: c._id });
+                    if (!like) {
                         myStatus = 'None';
                     }
                     else {
-                        myStatus = 'Like';
+                        myStatus = like.status;
                     }
-                    return {
+                    items.push({
                         id: c._id.toString(),
                         content: c.content,
                         commentatorInfo: c.commentatorInfo,
@@ -154,13 +153,13 @@ exports.commentsRepository = {
                             dislikesCount: c.dislikesCount,
                             myStatus: myStatus
                         }
-                    };
-                });
+                    });
+                }));
                 return { pagesCount: pagesCount,
                     page: pagination.pageNumber,
                     pageSize: pagination.pageSize,
                     totalCount: totalCOunt,
-                    items: commentsOutput
+                    items: items
                 };
             }
             catch (e) {

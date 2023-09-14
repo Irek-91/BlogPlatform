@@ -58,7 +58,7 @@ export const commentsRepository = {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
       if (!comment) {
         return null}
-      let myStatusLike = 'None'
+      let myStatusLike = ''
 
     
       const like = await LikesModelClass.findOne({userId: userId})
@@ -67,7 +67,7 @@ export const commentsRepository = {
       } else {
         myStatusLike = 'None'
       }
-      log(like)
+
       const likeCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Like'})
       const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislike'})
       const commentViewModel: commentViewModel = {
@@ -124,13 +124,19 @@ export const commentsRepository = {
                                               
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
-    const like = await LikesModelClass.find({userId: userId}).lean()
-    let myStatus = 'None'
-    const commentsOutput : commentViewModel[] = comments.map((c) => {
-      if (c.commentatorInfo.userId !== userId) {myStatus = 'None'}
+
+    const items: commentViewModel[] = []
+   
+    comments.map(async (c) => {
+      let myStatus = 'None'
+
+      const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
+
+      if (!like) {myStatus = 'None'}
       else {
-        myStatus = 'Like'}
-      return {
+        myStatus = like.status}
+
+      items.push( {
         id: c._id.toString(),
         content: c.content,
         commentatorInfo: c.commentatorInfo,
@@ -140,15 +146,14 @@ export const commentsRepository = {
           dislikesCount: c.dislikesCount,
           myStatus: myStatus
         }
-      }
+      })
     }
     )
-
     return {pagesCount: pagesCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
       totalCount: totalCOunt,
-      items : commentsOutput
+      items: items
     }                                        
   } catch (e) {return null}
   },

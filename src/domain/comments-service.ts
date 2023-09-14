@@ -23,7 +23,10 @@ export class CommentsService {
         let userId = ''
         if (!accessToken) {
             userId = 'pusto'
+        } else {
+            userId = (await jwtService.getUserIdByAccessToken(accessToken))!.toString()
         }
+
         const comment = await commentsRepository.findCommentById(commentId, userId)
         if (comment === null) {
             return null

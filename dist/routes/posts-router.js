@@ -53,9 +53,9 @@ class PostsController {
     getCommentsBuPostId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const accessToken = req.cookies.accessToken;
-            const userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
+            let userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
             if (userId === null) {
-                res.sendStatus(404);
+                userId = 'pusto';
             }
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
             const postId = req.params.postId;
