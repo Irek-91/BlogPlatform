@@ -16,6 +16,7 @@ const auth_middleware_1 = require("../midlewares/auth-middleware");
 const comments_service_1 = require("../domain/comments-service");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const like_status_validation_1 = require("../midlewares/like_status_validation");
+const get_comments_middleware_1 = require("../midlewares/get-comments-middleware ");
 exports.commentsRouter = (0, express_1.Router)({});
 class CommentsController {
     constructor() {
@@ -23,10 +24,13 @@ class CommentsController {
     }
     findCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            let userId = '';
             if (!req.user) {
-                return res.sendStatus(401);
+                userId = 'pusto';
             }
-            const userId = req.user._id.toString();
+            else {
+                userId = req.user._id.toString();
+            }
             let commentId = yield this.commentsService.findCommentById(req.params.id, userId);
             if (commentId === null) {
                 return res.sendStatus(404);
@@ -94,7 +98,7 @@ class CommentsController {
     }
 }
 const commentsControllerInstance = new CommentsController();
-exports.commentsRouter.get('/:id', auth_middleware_1.authMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
+exports.commentsRouter.get('/:id', get_comments_middleware_1.getCommentsMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation1, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance));

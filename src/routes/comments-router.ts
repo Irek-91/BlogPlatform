@@ -8,6 +8,7 @@ import { jwtService } from '../application/jwt-service';
 import { likeStatusValidation, likeStatusValidation1 } from '../midlewares/like_status_validation';
 import { log } from 'console';
 import { ObjectId } from 'mongodb';
+import { getCommentsMiddleware } from '../midlewares/get-comments-middleware ';
 
 export const commentsRouter = Router({})
 
@@ -17,8 +18,11 @@ class CommentsController {
         this.commentsService = new CommentsService()
     }
     async findCommentById (req: Request, res: Response) {
-    if (!req.user) { return res.sendStatus(401) }
-    const userId = req.user._id.toString()
+    let userId = ''
+    if (!req.user) { userId = 'pusto' }
+    else {
+    userId = req.user._id.toString()
+    }
 
     let commentId = await this.commentsService.findCommentById(req.params.id,  userId)
         if (commentId === null) {
@@ -82,7 +86,7 @@ class CommentsController {
 }
 const commentsControllerInstance = new CommentsController()
 
-commentsRouter.get('/:id',authMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
+commentsRouter.get('/:id',getCommentsMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware,
