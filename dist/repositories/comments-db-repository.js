@@ -63,7 +63,7 @@ exports.commentsRepository = {
                     return null;
                 }
                 let myStatusLike = '';
-                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId });
+                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: commentId });
                 if (like) {
                     myStatusLike = like.status;
                 }
@@ -134,7 +134,7 @@ exports.commentsRepository = {
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const items = [];
-                comments.map((c) => __awaiter(this, void 0, void 0, function* () {
+                comments.forEach((c) => __awaiter(this, void 0, void 0, function* () {
                     let myStatus = 'None';
                     const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: c._id });
                     if (!like) {

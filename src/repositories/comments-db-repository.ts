@@ -61,13 +61,12 @@ export const commentsRepository = {
       let myStatusLike = ''
 
     
-      const like = await LikesModelClass.findOne({userId: userId})
+      const like = await LikesModelClass.findOne({userId: userId, commentsId: commentId})
       if (like) {
         myStatusLike = like.status
       } else {
         myStatusLike = 'None'
       }
-
       const likeCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Like'})
       const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislike'})
       const commentViewModel: commentViewModel = {
@@ -127,7 +126,7 @@ export const commentsRepository = {
 
     const items: commentViewModel[] = []
    
-    comments.map(async (c) => {
+    comments.forEach(async (c) => {
       let myStatus = 'None'
 
       const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
