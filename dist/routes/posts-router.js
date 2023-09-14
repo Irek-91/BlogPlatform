@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsRouter = void 0;
+const get_comments_middleware_1 = require("./../midlewares/get-comments-middleware ");
 const express_1 = require("express");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const post_validation_1 = require("../midlewares/post-validation");
@@ -19,7 +20,6 @@ const pagination_1 = require("../midlewares/pagination");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const blogs_service_1 = require("../domain/blogs-service");
 const comments_service_1 = require("../domain/comments-service");
-const jwt_service_1 = require("../application/jwt-service");
 exports.postsRouter = (0, express_1.Router)({});
 class PostsController {
     constructor() {
@@ -52,10 +52,12 @@ class PostsController {
     }
     getCommentsBuPostId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accessToken = req.cookies.accessToken;
-            let userId = (jwt_service_1.jwtService.getUserIdByToken(accessToken)).toString();
-            if (userId === null) {
+            let userId = '';
+            if (!req.user) {
                 userId = 'pusto';
+            }
+            else {
+                userId = req.user._id.toString();
             }
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
             const postId = req.params.postId;
@@ -140,7 +142,7 @@ class PostsController {
 const postsControllerInstance = new PostsController();
 exports.postsRouter.get('/', postsControllerInstance.getPosts.bind(postsControllerInstance));
 exports.postsRouter.get('/:id', postsControllerInstance.getPostId.bind(postsControllerInstance));
-exports.postsRouter.get('/:postId/comments', postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance));
+exports.postsRouter.get('/:postId/comments', get_comments_middleware_1.getCommentsMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance));
 exports.postsRouter.post('/', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, post_validation_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.createdPostId.bind(postsControllerInstance));
 exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.createdCommentPostId.bind(postsControllerInstance));
 exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, post_validation_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.updatePostId.bind(postsControllerInstance));

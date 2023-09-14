@@ -1,3 +1,4 @@
+import { getCommentsMiddleware } from './../midlewares/get-comments-middleware ';
 import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { blogIdValidation, contentCommentValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
@@ -44,10 +45,10 @@ class PostsController {
   }
 
   async getCommentsBuPostId (req: Request, res: Response) {
-    const accessToken = req.cookies.accessToken
-    let userId = (jwtService.getUserIdByToken(accessToken)).toString()
-    if (userId === null) {
-      userId = 'pusto'
+    let userId = ''
+    if (!req.user) { userId = 'pusto' }
+    else {
+    userId = req.user._id.toString()
     }
     const pagination = getPaginationFromQuery(req.query)
     const postId = req.params.postId
@@ -130,7 +131,7 @@ const postsControllerInstance = new PostsController()
 
 postsRouter.get('/', postsControllerInstance.getPosts.bind(postsControllerInstance))
 postsRouter.get('/:id', postsControllerInstance.getPostId.bind(postsControllerInstance))
-postsRouter.get('/:postId/comments', postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
+postsRouter.get('/:postId/comments', getCommentsMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
 postsRouter.post('/', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
   inputValidationMiddleware,
   postsControllerInstance.createdPostId.bind(postsControllerInstance)
