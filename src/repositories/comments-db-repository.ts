@@ -21,6 +21,8 @@ export const commentsRepository = {
       createdAt: createdAt,
       likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
     }
+
+    log(newComment, 'nc')
     
     const commentsInstance = new CommentsModelClass(newComment)
     await commentsInstance.save()

@@ -2,6 +2,7 @@ import { postOutput, blogOutput, blogMongoDB } from './../types/types-db';
 import { ObjectId} from 'mongodb'
 import mongoose, {Types} from 'mongoose'
 import { paginatorPost } from '../types/types_paginator';
+import { CommentMongoModel } from '../types/comments';
 
 
 
@@ -69,14 +70,17 @@ export const likeInfoShema = new mongoose.Schema({
 
 
 
-export const commentsShema = new mongoose.Schema({
+export const commentsShema = new mongoose.Schema<CommentMongoModel>({
     _id: {type: mongoose.Schema.Types.ObjectId, required: true},
     postId: {type: String, required: true},
     content: {type: String, required: true},
     commentatorInfo: {type: commentatorInfoShema, required: true},
     createdAt:{type: String, required: true},
-    likesCount: {type: Number, required: true},
-    dislikesCount: {type: Number, required: true},
+    likesInfo: { 
+        likesCount: Number,
+        dislikesCount: Number,
+        myStatus: String
+      }
     //likes:{type: [likeInfoShema], required: true}
 })
 

@@ -63,8 +63,11 @@ exports.commentsShema = new mongoose_1.default.Schema({
     content: { type: String, required: true },
     commentatorInfo: { type: exports.commentatorInfoShema, required: true },
     createdAt: { type: String, required: true },
-    likesCount: { type: Number, required: true },
-    dislikesCount: { type: Number, required: true },
+    likesInfo: {
+        likesCount: Number,
+        dislikesCount: Number,
+        myStatus: String
+    }
     //likes:{type: [likeInfoShema], required: true}
 });
 exports.DevicesModelClassShema = new mongoose_1.default.Schema({

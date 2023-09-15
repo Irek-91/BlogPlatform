@@ -28,6 +28,7 @@ exports.commentsRepository = {
                 createdAt: createdAt,
                 likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
             };
+            (0, console_1.log)(newComment, 'nc');
             const commentsInstance = new db_mongoos_1.CommentsModelClass(newComment);
             yield commentsInstance.save();
             return {
