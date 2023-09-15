@@ -26,20 +26,10 @@ exports.commentsRepository = {
                     userLogin: userLogin
                 },
                 createdAt: createdAt,
-                likesCount: 0,
-                dislikesCount: 0,
-            };
-            const newLike = {
-                _id: new mongodb_1.ObjectId(),
-                userId: userId,
-                commentsId: newCommentId.toString(),
-                status: 'None',
-                createdAt: new Date().toISOString()
+                likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
             };
             const commentsInstance = new db_mongoos_1.CommentsModelClass(newComment);
-            const newLikeInstance = new db_mongoos_1.LikesModelClass(newLike);
             yield commentsInstance.save();
-            yield newLikeInstance.save();
             return {
                 id: commentsInstance._id.toString(),
                 content: commentsInstance.content,
@@ -143,48 +133,19 @@ exports.commentsRepository = {
                             myStatus = status.status;
                         }
                     }
+                    const commentsId = c._id.toString();
                     return {
-                        id: c._id.toString(),
+                        id: commentsId,
                         content: c.content,
                         commentatorInfo: c.commentatorInfo,
                         createdAt: c.createdAt,
                         likesInfo: {
-                            likesCount: c.likesCount,
-                            dislikesCount: c.dislikesCount,
+                            likesCount: yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId, status: 'Like' }),
+                            dislikesCount: yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId, status: 'Dislike' }),
                             myStatus: myStatus
                         }
                     };
                 })));
-                // let items: commentViewModel[] = []
-                // comments.forEach(async (c) => {
-                //   let myStatus = 'None'
-                //   const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
-                //   if (!like) {myStatus = 'None'}
-                //   else {
-                //     myStatus = like.status}
-                // items.push( {
-                //   id: c._id.toString(),
-                //   content: c.content,
-                //   commentatorInfo: c.commentatorInfo,
-                //   createdAt: c.createdAt,
-                //   likesInfo: {
-                //     likesCount: c.likesCount,
-                //     dislikesCount: c.dislikesCount,
-                //     myStatus: myStatus
-                //   }
-                // })
-                // }
-                // )
-                /*await CommentsModelClass.aggregate([{
-                  $lookup: {
-                    from: 'likes',
-                    localField: 'commentatorInfo.userId',
-                    foreignField: 'userId',
-                    as: 'items',
-                  }
-                }])
-                */
-                (0, console_1.log)(mappedComments);
                 return { pagesCount: pagesCount,
                     page: pagination.pageNumber,
                     pageSize: pagination.pageSize,

@@ -59,7 +59,7 @@ export class CommentsService {
         } catch (e) { return null }
     }
 
-    async findCommentsByPostId(postId: string, userId: string, pagination: QueryPaginationType): Promise<paginatorComments | null> {
+    async findCommentsByPostId(postId: string, userId: string | null, pagination: QueryPaginationType): Promise<paginatorComments | null> {
         return commentsRepository.findCommentsByPostId(postId, userId, pagination)
     }
 

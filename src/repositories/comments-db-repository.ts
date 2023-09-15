@@ -18,23 +18,12 @@ export const commentsRepository = {
           userId: userId,
           userLogin: userLogin
       },
-      createdAt:createdAt,
-      likesCount: 0,
-      dislikesCount: 0,
-    }
-    const newLike: likeInfoShema = {
-      _id: new ObjectId(),
-      userId: userId,
-      commentsId: newCommentId.toString(),
-      status: 'None',
-      createdAt: new Date().toISOString()
-
+      createdAt: createdAt,
+      likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
     }
     
     const commentsInstance = new CommentsModelClass(newComment)
-    const newLikeInstance = new LikesModelClass(newLike)
     await commentsInstance.save()
-    await newLikeInstance.save()
 
 
     return {
@@ -131,52 +120,19 @@ export const commentsRepository = {
           myStatus = status.status
         }
       }
+      const commentsId = c._id.toString()
       return {
-        id: c._id.toString(),
+        id: commentsId,
         content: c.content,
         commentatorInfo: c.commentatorInfo,
         createdAt: c.createdAt,
         likesInfo: {
-          likesCount: c.likesCount,
-          dislikesCount: c.dislikesCount,
+          likesCount: await LikesModelClass.countDocuments({commentsId, status: 'Like'}),
+          dislikesCount: await LikesModelClass.countDocuments({commentsId, status: 'Dislike'}),
           myStatus: myStatus
       }
     }}))
-    
-    // let items: commentViewModel[] = []
    
-    // comments.forEach(async (c) => {
-    //   let myStatus = 'None'
-
-    //   const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
-
-    //   if (!like) {myStatus = 'None'}
-    //   else {
-    //     myStatus = like.status}
-      
-      // items.push( {
-      //   id: c._id.toString(),
-      //   content: c.content,
-      //   commentatorInfo: c.commentatorInfo,
-      //   createdAt: c.createdAt,
-      //   likesInfo: {
-      //     likesCount: c.likesCount,
-      //     dislikesCount: c.dislikesCount,
-      //     myStatus: myStatus
-      //   }
-      // })
-    // }
-    // )
-    /*await CommentsModelClass.aggregate([{
-      $lookup: {
-        from: 'likes',
-        localField: 'commentatorInfo.userId',
-        foreignField: 'userId',
-        as: 'items',
-      }
-    }])
-    */
-    log(mappedComments)
     return {pagesCount: pagesCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
