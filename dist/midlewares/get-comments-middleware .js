@@ -8,30 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCommentsMiddleware = void 0;
-const users_db_repository_1 = require("../repositories/users-db-repository");
-const jwt_service_1 = require("../application/jwt-service");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const getCommentsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.headers.authorization) {
-        next();
-    }
-    else {
-        const token = req.headers.authorization.split(' ')[1];
-        const userId = yield jwt_service_1.jwtService.getUserIdByToken(token);
-        if (userId !== null) {
-            const result = yield users_db_repository_1.userRepository.findUserById(userId);
-            if (result === false) {
-                return;
-            }
-            else {
-                req.user = result;
-                next();
-            }
-        }
-        else {
-            next();
-        }
-    }
+    if (!req.headers.authorization)
+        return next();
+    const token = req.headers.authorization.split(' ')[1];
+    const payload = jsonwebtoken_1.default.decode(token);
+    req.userId = payload.userId ? payload.userId : null;
+    return next();
 });
 exports.getCommentsMiddleware = getCommentsMiddleware;

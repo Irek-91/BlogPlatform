@@ -52,10 +52,7 @@ class PostsController {
     }
     getCommentsBuPostId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let userId = null;
-            if (req.user) {
-                userId = req.user._id.toString();
-            }
+            const { userId } = req;
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
             const postId = req.params.postId;
             const resultPostId = yield this.postsService.getPostId(postId);

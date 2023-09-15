@@ -45,10 +45,7 @@ class PostsController {
   }
 
   async getCommentsBuPostId (req: Request, res: Response) {
-    let userId = null
-    if (req.user) {
-     userId = req.user._id.toString()
-    }
+    const {userId} = req
     const pagination = getPaginationFromQuery(req.query)
     const postId = req.params.postId
     const resultPostId = await this.postsService.getPostId(postId)
