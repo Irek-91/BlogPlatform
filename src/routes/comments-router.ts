@@ -18,11 +18,7 @@ class CommentsController {
         this.commentsService = new CommentsService()
     }
     async findCommentById (req: Request, res: Response) {
-    let userId = ''
-    if (!req.user) { userId = 'pusto' }
-    else {
-    userId = req.user._id.toString()
-    }
+        const {userId} = req
 
     let commentId = await this.commentsService.findCommentById(req.params.id,  userId)
         if (commentId === null) {

@@ -24,13 +24,7 @@ class CommentsController {
     }
     findCommentById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let userId = '';
-            if (!req.user) {
-                userId = 'pusto';
-            }
-            else {
-                userId = req.user._id.toString();
-            }
+            const { userId } = req;
             let commentId = yield this.commentsService.findCommentById(req.params.id, userId);
             if (commentId === null) {
                 return res.sendStatus(404);

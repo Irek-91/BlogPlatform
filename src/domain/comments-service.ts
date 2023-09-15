@@ -19,8 +19,8 @@ export class CommentsService {
         const creatComment = await commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt)
         return creatComment
     }
-    
-    async findCommentById(commentId: string, userId: string): Promise<commentViewModel | null> {
+
+    async findCommentById(commentId: string, userId: string | null): Promise<commentViewModel | null> {
 
         const comment = await commentsRepository.findCommentById(commentId, userId)
         if (comment === null) {
