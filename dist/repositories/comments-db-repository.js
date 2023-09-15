@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
+const console_1 = require("console");
 exports.commentsRepository = {
     createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -131,19 +132,18 @@ exports.commentsRepository = {
                     skip(pagination.skip).
                     limit(pagination.pageSize).
                     lean();
+                (0, console_1.log)(comments);
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
-                const items = [];
-                comments.forEach((c) => __awaiter(this, void 0, void 0, function* () {
+                const mappedComments = yield Promise.all(comments.map((c) => __awaiter(this, void 0, void 0, function* () {
                     let myStatus = 'None';
-                    const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: c._id });
-                    if (!like) {
-                        myStatus = 'None';
+                    if (userId) {
+                        const status = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: (c._id).toString() });
+                        if (status) {
+                            myStatus = status.status;
+                        }
                     }
-                    else {
-                        myStatus = like.status;
-                    }
-                    items.push({
+                    return {
                         id: c._id.toString(),
                         content: c.content,
                         commentatorInfo: c.commentatorInfo,
@@ -153,13 +153,43 @@ exports.commentsRepository = {
                             dislikesCount: c.dislikesCount,
                             myStatus: myStatus
                         }
-                    });
-                }));
+                    };
+                })));
+                // let items: commentViewModel[] = []
+                // comments.forEach(async (c) => {
+                //   let myStatus = 'None'
+                //   const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
+                //   if (!like) {myStatus = 'None'}
+                //   else {
+                //     myStatus = like.status}
+                // items.push( {
+                //   id: c._id.toString(),
+                //   content: c.content,
+                //   commentatorInfo: c.commentatorInfo,
+                //   createdAt: c.createdAt,
+                //   likesInfo: {
+                //     likesCount: c.likesCount,
+                //     dislikesCount: c.dislikesCount,
+                //     myStatus: myStatus
+                //   }
+                // })
+                // }
+                // )
+                /*await CommentsModelClass.aggregate([{
+                  $lookup: {
+                    from: 'likes',
+                    localField: 'commentatorInfo.userId',
+                    foreignField: 'userId',
+                    as: 'items',
+                  }
+                }])
+                */
+                (0, console_1.log)(mappedComments);
                 return { pagesCount: pagesCount,
                     page: pagination.pageNumber,
                     pageSize: pagination.pageSize,
                     totalCount: totalCOunt,
-                    items: items
+                    items: mappedComments
                 };
             }
             catch (e) {

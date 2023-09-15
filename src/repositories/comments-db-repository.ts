@@ -111,7 +111,7 @@ export const commentsRepository = {
     } catch (e) { return null }
   },
 
-  async findCommentsByPostId(postId: string, userId: string, pagination: QueryPaginationType): Promise<paginatorComments | null> {
+  async findCommentsByPostId(postId: string, userId: string | null, pagination: QueryPaginationType): Promise<paginatorComments | null> {
     try{
     const filter = {postId: postId}
     const comments = await CommentsModelClass.find(filter).
@@ -119,22 +119,19 @@ export const commentsRepository = {
                                               skip(pagination.skip).
                                               limit(pagination.pageSize).
                                               lean()
-                                              
+    log(comments)
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
 
-    const items: commentViewModel[] = []
-   
-    comments.forEach(async (c) => {
+    const mappedComments: commentViewModel[] = await Promise.all(comments.map(async c => {
       let myStatus = 'None'
-
-      const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
-
-      if (!like) {myStatus = 'None'}
-      else {
-        myStatus = like.status}
-
-      items.push( {
+      if(userId){
+        const status = await LikesModelClass.findOne({commentsId: (c._id).toString()})
+        if(status) {
+          myStatus = status.status
+        }
+      }
+      return {
         id: c._id.toString(),
         content: c.content,
         commentatorInfo: c.commentatorInfo,
@@ -143,15 +140,48 @@ export const commentsRepository = {
           likesCount: c.likesCount,
           dislikesCount: c.dislikesCount,
           myStatus: myStatus
-        }
-      })
-    }
-    )
+      }
+    }}))
+    
+    // let items: commentViewModel[] = []
+   
+    // comments.forEach(async (c) => {
+    //   let myStatus = 'None'
+
+    //   const like = await LikesModelClass.findOne({userId: userId, commentsId: c._id})
+
+    //   if (!like) {myStatus = 'None'}
+    //   else {
+    //     myStatus = like.status}
+      
+      // items.push( {
+      //   id: c._id.toString(),
+      //   content: c.content,
+      //   commentatorInfo: c.commentatorInfo,
+      //   createdAt: c.createdAt,
+      //   likesInfo: {
+      //     likesCount: c.likesCount,
+      //     dislikesCount: c.dislikesCount,
+      //     myStatus: myStatus
+      //   }
+      // })
+    // }
+    // )
+    /*await CommentsModelClass.aggregate([{
+      $lookup: {
+        from: 'likes',
+        localField: 'commentatorInfo.userId',
+        foreignField: 'userId',
+        as: 'items',
+      }
+    }])
+    */
+    log(mappedComments)
     return {pagesCount: pagesCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
       totalCount: totalCOunt,
-      items: items
+      items: mappedComments
     }                                        
   } catch (e) {return null}
   },
