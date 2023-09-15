@@ -28,7 +28,6 @@ exports.commentsRepository = {
                 createdAt: createdAt,
                 likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
             };
-            (0, console_1.log)(newComment, 'nc');
             const commentsInstance = new db_mongoos_1.CommentsModelClass(newComment);
             yield commentsInstance.save();
             return {
@@ -54,13 +53,12 @@ exports.commentsRepository = {
                 if (!comment) {
                     return null;
                 }
-                let myStatusLike = '';
-                const like = yield db_mongoos_1.LikesModelClass.findOne({ userId: userId, commentsId: commentId });
-                if (like) {
-                    myStatusLike = like.status;
-                }
-                else {
-                    myStatusLike = 'None';
+                let myStatus = 'None';
+                if (userId) {
+                    const status = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: commentId, userId });
+                    if (status) {
+                        myStatus = status.status;
+                    }
                 }
                 const likeCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Like' });
                 const dislikesCount = yield db_mongoos_1.LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislike' });
@@ -72,7 +70,7 @@ exports.commentsRepository = {
                     likesInfo: {
                         likesCount: likeCount,
                         dislikesCount: dislikesCount,
-                        myStatus: myStatusLike
+                        myStatus
                     }
                 };
                 return commentViewModel;
@@ -128,13 +126,13 @@ exports.commentsRepository = {
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const mappedComments = yield Promise.all(comments.map((c) => __awaiter(this, void 0, void 0, function* () {
                     let myStatus = 'None';
+                    const commentsId = c._id.toString();
                     if (userId) {
-                        const status = yield db_mongoos_1.LikesModelClass.findOne({ commentsId: (c._id).toString() });
+                        const status = yield db_mongoos_1.LikesModelClass.findOne({ commentsId, userId });
                         if (status) {
                             myStatus = status.status;
                         }
                     }
-                    const commentsId = c._id.toString();
                     return {
                         id: commentsId,
                         content: c.content,

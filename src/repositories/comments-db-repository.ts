@@ -22,7 +22,6 @@ export const commentsRepository = {
       likesInfo: { likesCount: 0, dislikesCount: 0, myStatus: 'None' }
     }
 
-    log(newComment, 'nc')
     
     const commentsInstance = new CommentsModelClass(newComment)
     await commentsInstance.save()
@@ -44,18 +43,19 @@ export const commentsRepository = {
     }
   },
 
-  async findCommentById(commentId: string, userId: string): Promise<commentViewModel | null> {
+  async findCommentById(commentId: string, userId: string | null): Promise<commentViewModel | null> {
     try {
       const comment = await CommentsModelClass.findOne({ _id: new ObjectId(commentId) })
       if (!comment) {
         return null}
-      let myStatusLike = ''
 
-      const like = await LikesModelClass.findOne({userId: userId, commentsId: commentId})
-      if (like) {
-        myStatusLike = like.status
-      } else {
-        myStatusLike = 'None'
+      let myStatus = 'None'
+
+      if(userId){
+        const status = await LikesModelClass.findOne({commentsId: commentId, userId})
+        if(status) {
+          myStatus = status.status
+        }
       }
       const likeCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Like'})
       const dislikesCount = await LikesModelClass.countDocuments({commentsId:commentId, status: 'Dislike'})
@@ -67,7 +67,7 @@ export const commentsRepository = {
           likesInfo: {
             likesCount: likeCount,
             dislikesCount: dislikesCount,
-            myStatus: myStatusLike
+            myStatus
           }
         }
         return commentViewModel
@@ -116,13 +116,14 @@ export const commentsRepository = {
 
     const mappedComments: commentViewModel[] = await Promise.all(comments.map(async c => {
       let myStatus = 'None'
+      const commentsId = c._id.toString()
+
       if(userId){
-        const status = await LikesModelClass.findOne({commentsId: (c._id).toString()})
+        const status = await LikesModelClass.findOne({commentsId, userId})
         if(status) {
           myStatus = status.status
         }
       }
-      const commentsId = c._id.toString()
       return {
         id: commentsId,
         content: c.content,
