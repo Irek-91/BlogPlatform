@@ -122,7 +122,7 @@ exports.postRepository = {
                         myStatus = userStatus.status;
                     }
                 }
-                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: id, status: 'Like' }, ['addedAt', 'userId', 'login'])
+                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: id, status: 'Like' })
                     .sort({ createdAt: -1 }).skip(3).lean();
                 const newestLikesMaped = newestLikes.map((like) => {
                     return {
@@ -143,7 +143,7 @@ exports.postRepository = {
                         likesCount: post.extendedLikesInfo.likesCount,
                         dislikesCount: post.extendedLikesInfo.dislikesCount,
                         myStatus: myStatus,
-                        newestLikes: newestLikes
+                        newestLikes: newestLikesMaped
                     }
                 };
             }

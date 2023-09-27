@@ -7,7 +7,6 @@ import { blogsRepository } from './blogs-db-repository';
 import { PostMongoDb, postOutput } from '../types/types-posts';
 import { log } from 'console';
 
-
 export const postRepository = {
     
     async findPost(paginationQuery: QueryPaginationType, userId: string | null) : Promise<paginatorPost> {
