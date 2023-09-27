@@ -1,4 +1,4 @@
-import { getCommentsMiddleware } from './../midlewares/get-comments-middleware ';
+import { getUserMiddleware } from './../midlewares/get-comments-middleware ';
 import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { blogIdValidation, contentCommentValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
@@ -8,8 +8,7 @@ import { getPaginationFromQuery } from "../midlewares/pagination";
 import { authMiddleware } from "../midlewares/auth-middleware";
 import { BlogsService } from "../domain/blogs-service";
 import { CommentsService } from "../domain/comments-service";
-import { jwtService } from "../application/jwt-service";
-import { log } from "console";
+import { likeStatusValidation1 } from '../midlewares/like_status_validation';
 
 
 export const postsRouter = Router({});
@@ -27,8 +26,9 @@ class PostsController {
   async getPosts (req: Request, res: Response) {
 
     const pagination = getPaginationFromQuery(req.query)
-  
-    const posts = await this.postsService.findPost(pagination);
+    const {userId} = req
+
+    const posts = await this.postsService.findPost(pagination, userId);
     if (!posts) {
       res.sendStatus(404)
     } else {
@@ -36,19 +36,21 @@ class PostsController {
     }
   }
   async getPostId (req: Request, res: Response) {
-    let post = await this.postsService.getPostId(req.params.id)
+    const {userId} = req
+
+    let post = await this.postsService.getPostId(req.params.id, userId)
     if (post) {
       res.send(post)
     } else {
       res.sendStatus(404)
     }
   }
-
+  
   async getCommentsBuPostId (req: Request, res: Response) {
     const {userId} = req
     const pagination = getPaginationFromQuery(req.query)
     const postId = req.params.postId
-    const resultPostId = await this.postsService.getPostId(postId)
+    const resultPostId = await this.postsService.getPostId(postId, userId)
     if (resultPostId === false) {
       res.sendStatus(404)
     }
@@ -69,7 +71,7 @@ class PostsController {
     const content = req.body.content;
     const blogId = req.body.blogId;
 
-    let post = await this.postsService.createdPostId(title, shortDescription, content, blogId)
+    let post = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId)
     if (!post) {
       res.sendStatus(404)
       return
@@ -83,7 +85,7 @@ class PostsController {
     const postId = req.params.postId
     const userId = req.user._id.toString()
     const content = req.body.content
-    const post = await this.postsService.getPostId(postId)
+    const post = await this.postsService.getPostId(postId, userId)
 
     if (post === false) {return res.sendStatus(404)}
     let comment = await this.commentsService.createdCommentPostId(postId, userId, content)
@@ -112,6 +114,18 @@ class PostsController {
     }
   }
 
+  async updateLikeStatusPostId (req: Request, res: Response) {
+    if (!req.user) { return res.sendStatus(404)}
+    const postId = req.params.postId;
+    const userId = req.user!._id.toString()
+    const likeStatus = req.body.likeStatus
+    const resultUpdateLikeStatusPost = await this.postsService.updateLikeStatusPostId(postId, userId, likeStatus)
+    if (resultUpdateLikeStatusPost) {
+        return res.sendStatus(204)}
+    else {
+        res.sendStatus(404)}
+  }
+
   async deletePostId (req: Request, res: Response) {
     let post = await this.postsService.deletePostId(req.params.id);
     if (post) {
@@ -120,18 +134,18 @@ class PostsController {
       res.sendStatus(404)
     }
   }
-
 }
 
 const postsControllerInstance = new PostsController()
 
-postsRouter.get('/', postsControllerInstance.getPosts.bind(postsControllerInstance))
-postsRouter.get('/:id', postsControllerInstance.getPostId.bind(postsControllerInstance))
-postsRouter.get('/:postId/comments', getCommentsMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
+postsRouter.get('/', getUserMiddleware, postsControllerInstance.getPosts.bind(postsControllerInstance))
+postsRouter.get('/:id', getUserMiddleware, postsControllerInstance.getPostId.bind(postsControllerInstance))
+postsRouter.get('/:postId/comments', getUserMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
 postsRouter.post('/', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
   inputValidationMiddleware,
   postsControllerInstance.createdPostId.bind(postsControllerInstance)
 )
+
 postsRouter.post('/:postId/comments', authMiddleware, contentCommentValidation, inputValidationMiddleware,
   postsControllerInstance.createdCommentPostId.bind(postsControllerInstance)
 )
@@ -140,6 +154,8 @@ postsRouter.put('/:id', authMidleware, titleValidation, shortDescriptionValidati
   inputValidationMiddleware,
   postsControllerInstance.updatePostId.bind(postsControllerInstance)
 )
+
+postsRouter.put('/:postId/like-status', authMiddleware, likeStatusValidation1, postsControllerInstance.updateLikeStatusPostId.bind(postsControllerInstance))
 
 postsRouter.delete('/:id',
   authMidleware,

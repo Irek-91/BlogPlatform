@@ -1,17 +1,18 @@
-
-import { app } from './../src/index';
 import request from 'supertest'
 import { createBlog } from './helpers/blogs-tests-helpers';
-import { blogInput,  } from '../src/types/types-db';
+import { app } from '../src';
+import { blogInput } from '../src/types/types-blogs';
 
 
 describe ('tests for blogs', () => {
-     
+
     beforeAll(async () => {
         await request(app).delete('/testing/all-data')
     })
+    
 
     describe('create blog tests', () => {
+        
         it('should return 401 status code', async () => {
             const model: blogInput = {
                 name: 'name',
@@ -69,7 +70,7 @@ describe ('tests for blogs', () => {
             // expect(firstRes.body).toEqual(errors)
 
             const modelThree: blogInput = {
-                name: 'name',
+                name: 'name3',
                 description: 'description',
                 websiteUrl: 'https://samurai.it-incubator.com',
             }
@@ -84,6 +85,7 @@ describe ('tests for blogs', () => {
                 websiteUrl: 'https://samurai.it-incubator.com',
             }
             const res = await createBlog('admin', 'qwerty', model)
+
             expect(res.status).toBe(201)
             expect(res.body ).toEqual({
                 id: expect.any(String),
@@ -97,12 +99,35 @@ describe ('tests for blogs', () => {
             expect.setState({blog: res.body})
         })
 
-        it('should return 200 status code and crated blog', async () => {
+        it('should return 200 status code and created blog', async () => {
             const {blog} = expect.getState()
-
             const res = await request(app).get(`/blogs/${blog.id}`)
             expect(res.status).toBe(200)
             expect(res.body).toEqual(blog)
         })
-    })  
+
+        
+        it('обновление блога',async () => {
+            const {blog} = expect.getState()
+            const data: blogInput = {
+                name: "UpdateBlog",
+                description: "string",
+                websiteUrl: 'https://samurai.it-incubator.com',
+            }
+            const res = await request(app).put(`/blogs/${blog.id}`)
+                                          .set({Authorization: 'Basic YWRtaW46cXdlcnR5'})
+                                          .send(data)
+                                          .expect(204)
+            const result = await request(app).get(`/blogs/${blog.id}`)
+            expect(result.body).toEqual({
+                id: blog.id,
+                name: data.name,
+                description: data.description,
+                websiteUrl: data.websiteUrl,
+                createdAt: expect.any(String),
+                isMembership: false})
+            })
+        
+    })
+   
 })

@@ -26,6 +26,16 @@ export type commentViewModel = {
     createdAt:string
   }
 
+  export type commentInputModel = {
+    postId: string,
+    content: string,
+    commentatorInfo: {
+        userId: string,
+        userLogin: string
+    },
+    createdAt:string
+  }
+  
   export type likeInfoShema = {
     _id: ObjectId,
     userId: string,
@@ -33,6 +43,7 @@ export type commentViewModel = {
     status: string,
     createdAt: string
 }
+
 
   export class CommentMongoModel {
     constructor(
@@ -49,17 +60,8 @@ export type commentViewModel = {
       dislikesCount: number,
       myStatus: string
     }
-    //public likes: likeInfoShema[]
     )
     {}
   }
 
-  export type commentInputModel = {
-    postId: string,
-    content: string,
-    commentatorInfo: {
-        userId: string,
-        userLogin: string
-    },
-    createdAt:string
-  }
+ 

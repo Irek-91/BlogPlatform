@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommentsMiddleware = void 0;
+exports.getUserMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const getCommentsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers.authorization)
         return next();
     const token = req.headers.authorization.split(' ')[1];
@@ -22,4 +22,4 @@ const getCommentsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void
     req.userId = payload.userId ? payload.userId : null;
     return next();
 });
-exports.getCommentsMiddleware = getCommentsMiddleware;
+exports.getUserMiddleware = getUserMiddleware;

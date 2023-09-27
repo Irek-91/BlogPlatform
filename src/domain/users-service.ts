@@ -1,7 +1,7 @@
 import { paginatorUser } from './../types/types_paginator';
 import { QueryPaginationTypeUser } from "../midlewares/pagination-users"
 import { userRepository } from "../repositories/users-db-repository"
-import { UserMongoModel, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
+import { UserMongoModel, userInputModel, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
 import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb';
 import { add } from 'date-fns';
@@ -107,6 +107,7 @@ export class UsersService {
     return user
   }
 
+  
 }
 
 //export const usersService = new UsersService()

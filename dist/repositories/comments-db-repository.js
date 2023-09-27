@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.commentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-const console_1 = require("console");
 exports.commentsRepository = {
     createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -121,7 +120,6 @@ exports.commentsRepository = {
                     skip(pagination.skip).
                     limit(pagination.pageSize).
                     lean();
-                (0, console_1.log)(comments);
                 const totalCOunt = yield db_mongoos_1.CommentsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCOunt / pagination.pageSize);
                 const mappedComments = yield Promise.all(comments.map((c) => __awaiter(this, void 0, void 0, function* () {

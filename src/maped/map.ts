@@ -1,4 +1,4 @@
-import {postsCollectionsType } from "../types/types-db"
+import {postsCollectionsType } from "../types/types-posts"
 
 export const postsOutput = (posts :postsCollectionsType) => {
     return posts.map((b) => {

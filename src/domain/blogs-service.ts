@@ -1,9 +1,8 @@
-import { blogType } from "../types/types";
-import { BlogMongoDB, PostMongoDb, blogInput, blogMongoDB, blogOutput, blogsCollectionsType } from "../types/types-db";
 import { blogsRepository } from "../repositories/blogs-db-repository";
 import { QueryPaginationType } from '../midlewares/pagination';
 import { ObjectId } from "mongodb";
 import { BlogsModelClass } from "../db/db-mongoos";
+import { BlogMongoDB, blogOutput } from "../types/types-blogs";
 
 
 

@@ -1,5 +1,6 @@
 import { commentViewModel } from "./comments"
-import { blogOutput, postOutput } from "./types-db"
+import { blogOutput } from "./types-blogs"
+import { postOutput } from "./types-posts"
 import { userViewModel } from "./user"
 
 export type paginatorBlog = {

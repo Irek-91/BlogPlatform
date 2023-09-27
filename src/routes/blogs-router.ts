@@ -18,11 +18,13 @@ class BlogsController {
       this.blogsService = new BlogsService();
       this.postsService = new PostsService()
     }
+    
     async getBlogs (req: Request, res: Response) {
       const pagination = getPaginationFromQuery(req.query)
       const foundBlogs = await this.blogsService.findBlogs(pagination);
       res.send(foundBlogs)
     }
+
     async getBlogId (req: Request, res: Response) {
       let BlogId = await this.blogsService.getBlogId(req.params.id)
       if (BlogId) {
@@ -56,6 +58,7 @@ class BlogsController {
         res.sendStatus(404)
       }
     }
+
     async updateBlogId (req: Request, res: Response) {
       const id = req.params.id;
       const name = req.body.name;
@@ -68,6 +71,7 @@ class BlogsController {
           res.sendStatus(204);
         }
       }
+
       async createBlog (req: Request, res: Response) {
         const nameBlog = req.body.name;
         const description = req.body.description;
@@ -90,8 +94,6 @@ class BlogsController {
         res.sendStatus(404)
         }
       }
-
-
 }
 
 const blogsControllerInstance = new BlogsController()

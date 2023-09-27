@@ -92,7 +92,7 @@ class CommentsController {
     }
 }
 const commentsControllerInstance = new CommentsController();
-exports.commentsRouter.get('/:id', get_comments_middleware_1.getCommentsMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
+exports.commentsRouter.get('/:id', get_comments_middleware_1.getUserMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.put('/:commentsId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation1, input_validation_middleware_1.inputValidationMiddleware, commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance));
 exports.commentsRouter.delete('/:commentsId', auth_middleware_1.authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance));

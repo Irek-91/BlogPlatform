@@ -1,10 +1,5 @@
 import {MongoClient, ServerApiVersion, ObjectId} from 'mongodb'
 import dotenv from 'dotenv'
-import { userMongoModel } from '../types/user';
-import { blogMongoDB, postMongoDb } from '../types/types-db';
-import { commentMongoModel, commentViewModel } from '../types/comments';
-import { devicesMongo } from '../types/token-types';
-import { arrayIPAndURL } from '../types/arrayIPAndURI';
 dotenv.config()
 
 const mongoUri = process.env.MONGO_URL;

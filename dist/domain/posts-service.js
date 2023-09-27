@@ -10,14 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostsService = void 0;
-const types_db_1 = require("./../types/types-db");
-const blogs_db_repository_1 = require("./../repositories/blogs-db-repository");
 const post_db_repository_1 = require("../repositories/post-db-repository");
-const mongodb_1 = require("mongodb");
 class PostsService {
-    findPost(paginationQuery) {
+    findPost(paginationQuery, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return post_db_repository_1.postRepository.findPost(paginationQuery);
+            return post_db_repository_1.postRepository.findPost(paginationQuery, userId);
         });
     }
     findPostsBlogId(paginationQuery, blogId) {
@@ -25,9 +22,9 @@ class PostsService {
             return post_db_repository_1.postRepository.findPostsBlogId(paginationQuery, blogId);
         });
     }
-    getPostId(id) {
+    getPostId(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return post_db_repository_1.postRepository.getPostId(id);
+            return post_db_repository_1.postRepository.getPostId(id, userId);
         });
     }
     deletePostId(id) {
@@ -35,33 +32,20 @@ class PostsService {
             return yield post_db_repository_1.postRepository.deletePostId(id);
         });
     }
-    createdPostId(title, shortDescription, content, blogId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
-            if (!blog) {
-                return false;
-            }
-            const createdAt = new Date().toISOString();
-            const newPost = new types_db_1.PostMongoDb(new mongodb_1.ObjectId(), title, shortDescription, content, blogId, blog.name, createdAt);
-            const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
-            return creatPost;
-        });
-    }
     createdPostBlogId(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
-            if (blog === false) {
-                return false;
-            }
-            const createdAt = new Date().toISOString();
-            const newPost = new types_db_1.PostMongoDb(new mongodb_1.ObjectId(), title, shortDescription, content, blogId, blog.name, createdAt);
-            const creatPost = yield post_db_repository_1.postRepository.createdPostId(newPost);
+            const creatPost = yield post_db_repository_1.postRepository.createdPostId(title, shortDescription, content, blogId);
             return creatPost;
         });
     }
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield post_db_repository_1.postRepository.updatePostId(id, title, shortDescription, content, blogId);
+        });
+    }
+    updateLikeStatusPostId(postId, userId, likeStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield post_db_repository_1.postRepository.updateLikeStatusPostId(postId, userId, likeStatus);
         });
     }
     deletePostAll() {

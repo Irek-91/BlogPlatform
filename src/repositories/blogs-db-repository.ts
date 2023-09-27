@@ -1,9 +1,10 @@
-import { blogInput, blogMongoDB, blogOutput,  } from './../types/types-db';
-import { blogType } from "../types/types";
+import { blogMongoDB } from './../types/types-blogs';
 import { ObjectId } from "mongodb";
 import { paginatorBlog } from '../types/types_paginator';
 import { QueryPaginationType } from '../midlewares/pagination';
 import { BlogsModelClass } from '../db/db-mongoos';
+import { blogOutput } from "../types/types-blogs";
+import { log } from 'console';
 
 
 
@@ -38,7 +39,7 @@ export const blogsRepository = {
     },
 
   
-    async getBlogId(id: string): Promise<blogType | false> {
+    async getBlogId(id: string): Promise<blogOutput | false> {
         try {
           const blog = await BlogsModelClass.findOne({_id: new ObjectId(id)}).lean()
         if (!blog) return false

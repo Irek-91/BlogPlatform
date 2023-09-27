@@ -12,8 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
+const blogs_db_repository_1 = require("./blogs-db-repository");
 exports.postRepository = {
-    findPost(paginationQuery) {
+    findPost(paginationQuery, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const posts = yield db_mongoos_1.PostsModelClass.find({}).
                 sort([[paginationQuery.sortBy, paginationQuery.sortDirection]]).
@@ -21,7 +22,22 @@ exports.postRepository = {
                 limit(paginationQuery.pageSize);
             const totalCount = yield db_mongoos_1.PostsModelClass.countDocuments();
             const pagesCount = Math.ceil(totalCount / paginationQuery.pageSize);
-            const postsOutput = posts.map((b) => {
+            const postsOutput = yield Promise.all(posts.map((b) => __awaiter(this, void 0, void 0, function* () {
+                let myStatus = 'None';
+                if (userId) {
+                    const status = yield db_mongoos_1.LikesPostsClass.findOne({ userId, postId: b._id.toString() });
+                    if (status) {
+                        myStatus = status.status;
+                    }
+                }
+                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: 1 }).skip(3).lean();
+                const newestLikesMaped = newestLikes.map((like) => {
+                    return {
+                        addedAt: like.createdAt,
+                        userId: like.userId,
+                        login: like.login
+                    };
+                });
                 return {
                     id: b._id.toString(),
                     title: b.title,
@@ -30,8 +46,14 @@ exports.postRepository = {
                     blogId: b.blogId,
                     blogName: b.blogName,
                     createdAt: b.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: 0,
+                        dislikesCount: 0,
+                        myStatus: myStatus,
+                        newestLikes: newestLikesMaped
+                    }
                 };
-            });
+            })));
             return { pagesCount: pagesCount,
                 page: paginationQuery.pageNumber,
                 pageSize: paginationQuery.pageSize,
@@ -61,6 +83,16 @@ exports.postRepository = {
                         blogId: b.blogId,
                         blogName: b.blogName,
                         createdAt: b.createdAt,
+                        extendedLikesInfo: {
+                            likesCount: 0,
+                            dislikesCount: 0,
+                            myStatus: 'None',
+                            newestLikes: [{
+                                    addedAt: b.createdAt,
+                                    userId: 'string',
+                                    login: 'string'
+                                }]
+                        }
                     };
                 });
                 return { pagesCount: pagesCount,
@@ -75,24 +107,45 @@ exports.postRepository = {
             }
         });
     },
-    getPostId(id) {
+    getPostId(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let post = yield db_mongoos_1.PostsModelClass.findOne({ _id: new mongodb_1.ObjectId(id) });
                 if (!post) {
                     return false;
                 }
-                else {
-                    return {
-                        id: post._id.toString(),
-                        title: post.title,
-                        shortDescription: post.shortDescription,
-                        content: post.content,
-                        blogId: post.blogId,
-                        blogName: post.blogName,
-                        createdAt: post.createdAt,
-                    };
+                let myStatus = 'None';
+                if (userId) {
+                    const user = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(userId) });
+                    const userStatus = yield db_mongoos_1.LikesPostsClass.findOne({ _id: id, userId: userId });
+                    if (userStatus) {
+                        myStatus = userStatus.status;
+                    }
                 }
+                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: id, status: 'Like' }, ['addedAt', 'userId', 'login'])
+                    .sort({ createdAt: -1 }).skip(3).lean();
+                const newestLikesMaped = newestLikes.map((like) => {
+                    return {
+                        addedAt: like.createdAt,
+                        userId: like.userId,
+                        login: like.login
+                    };
+                });
+                return {
+                    id: post._id.toString(),
+                    title: post.title,
+                    shortDescription: post.shortDescription,
+                    content: post.content,
+                    blogId: post.blogId,
+                    blogName: post.blogName,
+                    createdAt: post.createdAt,
+                    extendedLikesInfo: {
+                        likesCount: post.extendedLikesInfo.likesCount,
+                        dislikesCount: post.extendedLikesInfo.dislikesCount,
+                        myStatus: myStatus,
+                        newestLikes: newestLikes
+                    }
+                };
             }
             catch (e) {
                 return false;
@@ -109,8 +162,33 @@ exports.postRepository = {
             return true;
         });
     },
-    createdPostId(newPost) {
+    createdPostId(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
+            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
+            if (!blog) {
+                return false;
+            }
+            const newPostId = new mongodb_1.ObjectId();
+            const createdAt = new Date().toISOString();
+            const newPost = {
+                _id: newPostId,
+                title: title,
+                shortDescription: shortDescription,
+                content: content,
+                blogId: blog.id,
+                blogName: blog.name,
+                createdAt: createdAt,
+                extendedLikesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                    newestLikes: [{
+                            addedAt: createdAt,
+                            userId: 'string',
+                            login: 'string'
+                        }]
+                }
+            };
             const postInstance = new db_mongoos_1.PostsModelClass(newPost);
             yield postInstance.save();
             return {
@@ -120,7 +198,17 @@ exports.postRepository = {
                 content: postInstance.content,
                 blogId: postInstance.blogId,
                 blogName: postInstance.blogName,
-                createdAt: postInstance.createdAt
+                createdAt: postInstance.createdAt,
+                extendedLikesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: 'None',
+                    newestLikes: [{
+                            addedAt: createdAt,
+                            userId: 'string',
+                            login: 'string'
+                        }]
+                }
             };
         });
     },
@@ -135,6 +223,25 @@ exports.postRepository = {
             postInstance.content = content;
             postInstance.save();
             return true;
+        });
+    },
+    updateLikeStatusPostId(postId, userId, likeStatus) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const login = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(userId) });
+                const likeInstance = new db_mongoos_1.LikesPostsClass();
+                likeInstance._id = new mongodb_1.ObjectId();
+                likeInstance.userId = userId;
+                likeInstance.createdAt = (new Date()).toISOString();
+                likeInstance.login = login.accountData.login;
+                likeInstance.postId = postId;
+                likeInstance.status = likeStatus;
+                likeInstance.save();
+                return true;
+            }
+            catch (e) {
+                return null;
+            }
         });
     },
     deletePostAll() {

@@ -110,7 +110,6 @@ export const commentsRepository = {
                                               skip(pagination.skip).
                                               limit(pagination.pageSize).
                                               lean()
-    log(comments)
     const totalCOunt = await CommentsModelClass.countDocuments(filter)
     const pagesCount = Math.ceil(totalCOunt/pagination.pageSize)
 

@@ -8,7 +8,7 @@ import { jwtService } from '../application/jwt-service';
 import { likeStatusValidation, likeStatusValidation1 } from '../midlewares/like_status_validation';
 import { log } from 'console';
 import { ObjectId } from 'mongodb';
-import { getCommentsMiddleware } from '../midlewares/get-comments-middleware ';
+import { getUserMiddleware } from '../midlewares/get-comments-middleware ';
 
 export const commentsRouter = Router({})
 
@@ -82,7 +82,7 @@ class CommentsController {
 }
 const commentsControllerInstance = new CommentsController()
 
-commentsRouter.get('/:id',getCommentsMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
+commentsRouter.get('/:id',getUserMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
                     commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
 commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware,

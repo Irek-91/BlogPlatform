@@ -20,6 +20,7 @@ const pagination_1 = require("../midlewares/pagination");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const blogs_service_1 = require("../domain/blogs-service");
 const comments_service_1 = require("../domain/comments-service");
+const like_status_validation_1 = require("../midlewares/like_status_validation");
 exports.postsRouter = (0, express_1.Router)({});
 class PostsController {
     constructor() {
@@ -30,7 +31,8 @@ class PostsController {
     getPosts(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
-            const posts = yield this.postsService.findPost(pagination);
+            const { userId } = req;
+            const posts = yield this.postsService.findPost(pagination, userId);
             if (!posts) {
                 res.sendStatus(404);
             }
@@ -41,7 +43,8 @@ class PostsController {
     }
     getPostId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            let post = yield this.postsService.getPostId(req.params.id);
+            const { userId } = req;
+            let post = yield this.postsService.getPostId(req.params.id, userId);
             if (post) {
                 res.send(post);
             }
@@ -55,7 +58,7 @@ class PostsController {
             const { userId } = req;
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
             const postId = req.params.postId;
-            const resultPostId = yield this.postsService.getPostId(postId);
+            const resultPostId = yield this.postsService.getPostId(postId, userId);
             if (resultPostId === false) {
                 res.sendStatus(404);
             }
@@ -76,7 +79,7 @@ class PostsController {
             const shortDescription = req.body.shortDescription;
             const content = req.body.content;
             const blogId = req.body.blogId;
-            let post = yield this.postsService.createdPostId(title, shortDescription, content, blogId);
+            let post = yield this.postsService.createdPostBlogId(title, shortDescription, content, blogId);
             if (!post) {
                 res.sendStatus(404);
                 return;
@@ -92,7 +95,7 @@ class PostsController {
             const postId = req.params.postId;
             const userId = req.user._id.toString();
             const content = req.body.content;
-            const post = yield this.postsService.getPostId(postId);
+            const post = yield this.postsService.getPostId(postId, userId);
             if (post === false) {
                 return res.sendStatus(404);
             }
@@ -121,6 +124,23 @@ class PostsController {
             }
         });
     }
+    updateLikeStatusPostId(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return res.sendStatus(404);
+            }
+            const postId = req.params.postId;
+            const userId = req.user._id.toString();
+            const likeStatus = req.body.likeStatus;
+            const resultUpdateLikeStatusPost = yield this.postsService.updateLikeStatusPostId(postId, userId, likeStatus);
+            if (resultUpdateLikeStatusPost) {
+                return res.sendStatus(204);
+            }
+            else {
+                res.sendStatus(404);
+            }
+        });
+    }
     deletePostId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             let post = yield this.postsService.deletePostId(req.params.id);
@@ -134,10 +154,11 @@ class PostsController {
     }
 }
 const postsControllerInstance = new PostsController();
-exports.postsRouter.get('/', postsControllerInstance.getPosts.bind(postsControllerInstance));
-exports.postsRouter.get('/:id', postsControllerInstance.getPostId.bind(postsControllerInstance));
-exports.postsRouter.get('/:postId/comments', get_comments_middleware_1.getCommentsMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance));
+exports.postsRouter.get('/', get_comments_middleware_1.getUserMiddleware, postsControllerInstance.getPosts.bind(postsControllerInstance));
+exports.postsRouter.get('/:id', get_comments_middleware_1.getUserMiddleware, postsControllerInstance.getPostId.bind(postsControllerInstance));
+exports.postsRouter.get('/:postId/comments', get_comments_middleware_1.getUserMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance));
 exports.postsRouter.post('/', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, post_validation_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.createdPostId.bind(postsControllerInstance));
 exports.postsRouter.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validation_1.contentCommentValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.createdCommentPostId.bind(postsControllerInstance));
 exports.postsRouter.put('/:id', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, post_validation_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, postsControllerInstance.updatePostId.bind(postsControllerInstance));
+exports.postsRouter.put('/:postId/like-status', auth_middleware_1.authMiddleware, like_status_validation_1.likeStatusValidation1, postsControllerInstance.updateLikeStatusPostId.bind(postsControllerInstance));
 exports.postsRouter.delete('/:id', basicAuth_1.authMidleware, postsControllerInstance.deletePostId.bind(postsControllerInstance));

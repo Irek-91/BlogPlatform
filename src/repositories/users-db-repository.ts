@@ -1,6 +1,6 @@
 import { log } from 'console';
 import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { User, userMeViewModel, userMongoModel, userViewModel, } from '../types/user';
+import { User, userMongoModel, userViewModel, } from '../types/user';
 import { Filter, ObjectId } from "mongodb";
 import { UsersModelClass } from '../db/db-mongoos';
 
@@ -94,7 +94,6 @@ export const userRepository = {
           return user
         }
     },
-
 
     async deleteUserAll() : Promise<boolean> {
       const deletResult = await UsersModelClass.deleteMany({})
