@@ -143,7 +143,8 @@ exports.commentsRepository = {
                         }
                     };
                 })));
-                return { pagesCount: pagesCount,
+                return {
+                    pagesCount: pagesCount,
                     page: pagination.pageNumber,
                     pageSize: pagination.pageSize,
                     totalCount: totalCOunt,

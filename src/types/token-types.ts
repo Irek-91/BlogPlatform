@@ -22,14 +22,13 @@ export class DevicesMongo {
         public IP: string,
         public issuedAt: string,
         public deviceName: string,
-        public userId: ObjectId)
-    {}
+        public userId: ObjectId) { }
 }
 
 
 
 export type DeviceViewModel = {
-    ip : string,
+    ip: string,
     title: string,
     lastActiveDate: string,
     deviceId: string

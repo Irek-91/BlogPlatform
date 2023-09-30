@@ -5,12 +5,12 @@ export type blogsCollectionsType = blogOutput[];
 
 
 export const blogsShema = new mongoose.Schema({
-  _id: {type: mongoose.Schema.Types.ObjectId, required: true},
-  name: {type: String, required: true},
-  description: {type: String, required: true},
-  websiteUrl: {type: String, required: true},
-  createdAt: {type: String, required: true},
-  isMembership: {type: Boolean, required: true}
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  websiteUrl: { type: String, required: true },
+  createdAt: { type: String, required: true },
+  isMembership: { type: Boolean, required: true }
 })
 
 export class BlogMongoDB {
@@ -20,32 +20,31 @@ export class BlogMongoDB {
     public description: string,
     public websiteUrl: string,
     public createdAt: string,
-    public isMembership: boolean) 
-    {}
+    public isMembership: boolean) { }
 }
 
 export type blogMongoDB = {
-    _id: ObjectId,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-  }
+  _id: ObjectId,
+  name: string,
+  description: string,
+  websiteUrl: string,
+  createdAt: string,
+  isMembership: boolean
+}
 
 export type blogOutput = {
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: string,
-    isMembership: boolean
-  }
+  id: string,
+  name: string,
+  description: string,
+  websiteUrl: string,
+  createdAt: string,
+  isMembership: boolean
+}
 
 export type blogInput = {
-    name: string,
-    description: string,
-    websiteUrl: string,
-  }
+  name: string,
+  description: string,
+  websiteUrl: string,
+}
 
 

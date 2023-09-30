@@ -22,20 +22,24 @@ export class UsersService {
     const recoveryCode = uuidv4()
     const isConfirmed = false
     const expiritionDate = (add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                })).toISOString()
+      hours: 1,
+      minutes: 3
+    })).toISOString()
 
-    const newUser = new UserMongoModel(new ObjectId(), 
-                                        {login: loginUser,
-                                        email: emailUser,
-                                        salt: passwordSalt, 
-                                        hash: passwordHash,
-                                        createdAt},
-                                        {confirmationCode,
-                                        expiritionDate,
-                                        isConfirmed,
-                                        recoveryCode}) 
+    const newUser = new UserMongoModel(new ObjectId(),
+      {
+        login: loginUser,
+        email: emailUser,
+        salt: passwordSalt,
+        hash: passwordHash,
+        createdAt
+      },
+      {
+        confirmationCode,
+        expiritionDate,
+        isConfirmed,
+        recoveryCode
+      })
     /*User = {
       accountData : {
         login: loginUser,
@@ -84,7 +88,7 @@ export class UsersService {
   }
 
   async findByUserId(userId: ObjectId): Promise<userMeViewModel | false> {
-    
+
     const result = await userRepository.findUserById(userId)
     if (result) {
       const resultUserViewModel = {
@@ -92,22 +96,22 @@ export class UsersService {
         login: result.accountData.login,
         userId: result._id
       }
-    return resultUserViewModel
+      return resultUserViewModel
     }
     return false
   }
 
-  async findUserByCode(code: string) : Promise<userMongoModel | null> {
+  async findUserByCode(code: string): Promise<userMongoModel | null> {
     let user = await userRepository.findUserByCode(code)
     return user
   }
 
-  async findUserByEmail(email: string) : Promise<userMongoModel | null> {
+  async findUserByEmail(email: string): Promise<userMongoModel | null> {
     let user = await userRepository.findUserByEmail(email)
     return user
   }
 
-  
+
 }
 
 //export const usersService = new UsersService()

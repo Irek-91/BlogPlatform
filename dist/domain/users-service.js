@@ -37,14 +37,18 @@ class UsersService {
                 hours: 1,
                 minutes: 3
             })).toISOString();
-            const newUser = new user_1.UserMongoModel(new mongodb_1.ObjectId(), { login: loginUser,
+            const newUser = new user_1.UserMongoModel(new mongodb_1.ObjectId(), {
+                login: loginUser,
                 email: emailUser,
                 salt: passwordSalt,
                 hash: passwordHash,
-                createdAt }, { confirmationCode,
+                createdAt
+            }, {
+                confirmationCode,
                 expiritionDate,
                 isConfirmed,
-                recoveryCode });
+                recoveryCode
+            });
             /*User = {
               accountData : {
                 login: loginUser,

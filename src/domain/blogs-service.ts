@@ -7,24 +7,24 @@ import { BlogMongoDB, blogOutput } from "../types/types-blogs";
 
 
 export class BlogsService {
-    
-    
-    async findBlogs(paginationQuery : QueryPaginationType) {
-      return await blogsRepository.findBlogs(paginationQuery)
+
+
+    async findBlogs(paginationQuery: QueryPaginationType) {
+        return await blogsRepository.findBlogs(paginationQuery)
     }
 
-    async getBlogId(id: string): Promise<blogOutput | boolean>  {
+    async getBlogId(id: string): Promise<blogOutput | boolean> {
         return await blogsRepository.getBlogId(id)
     }
 
-    async createBlog(name: string, description: string, websiteUrl:string ): Promise<blogOutput> {
-        const newBlog = new BlogMongoDB (new ObjectId(),
-                                        name, 
-                                        description,
-                                        websiteUrl,
-                                        new Date ().toISOString(),
-                                        false)
-        
+    async createBlog(name: string, description: string, websiteUrl: string): Promise<blogOutput> {
+        const newBlog = new BlogMongoDB(new ObjectId(),
+            name,
+            description,
+            websiteUrl,
+            new Date().toISOString(),
+            false)
+
         /*const newBlog2 = {
             _id: new ObjectId(),
             name: name,
@@ -41,23 +41,23 @@ export class BlogsService {
             id: newBlog._id.toString(),
             name: newBlog.name,
             description: newBlog.description,
-            websiteUrl:newBlog. websiteUrl,
+            websiteUrl: newBlog.websiteUrl,
             createdAt: newBlog.createdAt,
             isMembership: newBlog.isMembership
         }
     }
-    
-    async updateBlog(name: string, description: string, websiteUrl: string, id: string) : Promise<boolean> {
+
+    async updateBlog(name: string, description: string, websiteUrl: string, id: string): Promise<boolean> {
         return await blogsRepository.updateBlog(name, description, websiteUrl, id)
     }
 
-    async deleteBlogId(id: string) : Promise<boolean> {
+    async deleteBlogId(id: string): Promise<boolean> {
         return await blogsRepository.deleteBlogId(id)
     }
-    
-    async deleteBlogAll() : Promise<boolean> {
-      return await blogsRepository.deleteBlogAll()
+
+    async deleteBlogAll(): Promise<boolean> {
+        return await blogsRepository.deleteBlogAll()
     }
-  }
+}
 
 //export const blogsService = new BlogsService()

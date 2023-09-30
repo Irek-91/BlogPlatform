@@ -48,8 +48,9 @@ export class CommentsService {
 
         try {
             const commentById = await commentsRepository.findCommentById(commentsId, userId)
-            if (commentById === null) { 
-                return null }
+            if (commentById === null) {
+                return null
+            }
             if (commentById.commentatorInfo.userId === userId) {
                 const result = await commentsRepository.deletCommentById(commentsId)
                 return result
@@ -64,7 +65,7 @@ export class CommentsService {
         return commentsRepository.findCommentsByPostId(postId, userId, pagination)
     }
 
-    async updateLikeStatus(commentId: string, userId:string, likeStatus:string): Promise<Boolean | null> {
+    async updateLikeStatus(commentId: string, userId: string, likeStatus: string): Promise<Boolean | null> {
         return commentsRepository.updateLikeStatus(commentId, userId, likeStatus)
     }
 }

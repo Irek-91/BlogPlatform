@@ -1,5 +1,5 @@
 export type arrayIPAndURL = {
-    IP:string, 
-    URL:string,
-    date:string
+    IP: string,
+    URL: string,
+    date: string
 }

@@ -1,6 +1,6 @@
-import {postsCollectionsType } from "../types/types-posts"
+import { postsCollectionsType } from "../types/types-posts"
 
-export const postsOutput = (posts :postsCollectionsType) => {
+export const postsOutput = (posts: postsCollectionsType) => {
     return posts.map((b) => {
         return {
             title: b.title,
@@ -10,6 +10,6 @@ export const postsOutput = (posts :postsCollectionsType) => {
             blogName: b.blogName,
             createdAt: b.createdAt,
         }
-        }
+    }
     )
 }

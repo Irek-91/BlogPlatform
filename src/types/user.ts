@@ -2,14 +2,14 @@ import { ObjectId, WithId } from "mongodb"
 import mongoose from "mongoose"
 
 export type User = {
-    accountData : {
+    accountData: {
         login: string,
         email: string,
         salt: string,
         hash: string,
         createdAt: string
     },
-    emailConfirmation : {
+    emailConfirmation: {
         confirmationCode: string,
         expiritionDate: any,
         isConfirmed: boolean,
@@ -24,62 +24,61 @@ export type UserEncodePassword = {
 
 export type userMongoModel = {
     _id: ObjectId,
-    accountData : {
+    accountData: {
         login: string,
         email: string,
         salt: string,
         hash: string,
         createdAt: string
     },
-    emailConfirmation : {
+    emailConfirmation: {
         confirmationCode: string,
         expiritionDate: any,
         isConfirmed: boolean,
         recoveryCode: string
     }
-} 
+}
 
 export class UserMongoModel {
     constructor(
         public _id: ObjectId,
-        public accountData : {
+        public accountData: {
             login: string,
             email: string,
             salt: string,
             hash: string,
             createdAt: string
         },
-        public emailConfirmation : {
+        public emailConfirmation: {
             confirmationCode: string,
             expiritionDate: any,
             isConfirmed: boolean,
             recoveryCode: string
         }
-    ) 
-    {}
+    ) { }
 }
 
 
-export const accountDataShema = new mongoose.Schema ({
-    login: {type: String, required: true},
-    email: {type: String, required: true},
-    salt: {type: String, required: true},
-    hash: {type: String, required: true},
-    createdAt: {type: String, required: true}
+export const accountDataShema = new mongoose.Schema({
+    login: { type: String, required: true },
+    email: { type: String, required: true },
+    salt: { type: String, required: true },
+    hash: { type: String, required: true },
+    createdAt: { type: String, required: true }
 })
 
 
-export const emailConfirmationShema = new mongoose.Schema ({
-    confirmationCode: {type: String, required: true},
-    expiritionDate: {type: String, required: true},
-    isConfirmed: {type: Boolean, required: true},
-    recoveryCode: {type :String, required: true}
+export const emailConfirmationShema = new mongoose.Schema({
+    confirmationCode: { type: String, required: true },
+    expiritionDate: { type: String, required: true },
+    isConfirmed: { type: Boolean, required: true },
+    recoveryCode: { type: String, required: true }
 })
 
 export const usersShema = new mongoose.Schema({
-    _id: {type: mongoose.Schema.Types.ObjectId, required: true},
-    accountData : {type: accountDataShema, required: true},
-    emailConfirmation : {type: emailConfirmationShema, required: true}
+    _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    accountData: { type: accountDataShema, required: true },
+    emailConfirmation: { type: emailConfirmationShema, required: true }
 })
 
 export type userViewModel = {

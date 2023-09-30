@@ -54,7 +54,8 @@ exports.postRepository = {
                     }
                 };
             })));
-            return { pagesCount: pagesCount,
+            return {
+                pagesCount: pagesCount,
                 page: paginationQuery.pageNumber,
                 pageSize: paginationQuery.pageSize,
                 totalCount: totalCount,
@@ -95,7 +96,8 @@ exports.postRepository = {
                         }
                     };
                 });
-                return { pagesCount: pagesCount,
+                return {
+                    pagesCount: pagesCount,
                     page: paginationQuery.pageNumber,
                     pageSize: paginationQuery.pageSize,
                     totalCount: totalCount,

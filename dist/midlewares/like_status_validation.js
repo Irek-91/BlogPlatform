@@ -14,7 +14,8 @@ const express_validator_1 = require("express-validator");
 const likeStatusValidation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const likeStatus = req.body.likeStatus;
     if (typeof likeStatus !== 'string' || likeStatus !== ('Dislike' || 'None' || 'Like')) {
-        res.status(400).send({ errorsMessages: [{
+        res.status(400).send({
+            errorsMessages: [{
                     message: 'error in likeStatus',
                     field: "likeStatus"
                 }]

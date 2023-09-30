@@ -1,67 +1,65 @@
 import { ObjectId } from "mongodb"
 
 export type commentViewModel = {
-    id: string,
-    content: string,
-    commentatorInfo: {
-        userId: string,
-        userLogin: string
-    },
-    createdAt:string,
-    likesInfo : {
-      likesCount: number,
-      dislikesCount: number,
-      myStatus: string
-    }
-  }
-
-  export type commentMongoModel = {
-    _id: ObjectId,
-    postId: string,
-    content: string,
-    commentatorInfo: {
-        userId: string,
-        userLogin: string
-    },
-    createdAt:string
-  }
-
-  export type commentInputModel = {
-    postId: string,
-    content: string,
-    commentatorInfo: {
-        userId: string,
-        userLogin: string
-    },
-    createdAt:string
-  }
-  
-  export type likeInfoShema = {
-    _id: ObjectId,
+  id: string,
+  content: string,
+  commentatorInfo: {
     userId: string,
-    commentsId: string,
-    status: string,
-    createdAt: string
+    userLogin: string
+  },
+  createdAt: string,
+  likesInfo: {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: string
+  }
+}
+
+export type commentMongoModel = {
+  _id: ObjectId,
+  postId: string,
+  content: string,
+  commentatorInfo: {
+    userId: string,
+    userLogin: string
+  },
+  createdAt: string
+}
+
+export type commentInputModel = {
+  postId: string,
+  content: string,
+  commentatorInfo: {
+    userId: string,
+    userLogin: string
+  },
+  createdAt: string
+}
+
+export type likeInfoShema = {
+  _id: ObjectId,
+  userId: string,
+  commentsId: string,
+  status: string,
+  createdAt: string
 }
 
 
-  export class CommentMongoModel {
-    constructor(
+export class CommentMongoModel {
+  constructor(
     public _id: ObjectId,
     public postId: string,
     public content: string,
     public commentatorInfo: {
-        userId: string,
-        userLogin: string
+      userId: string,
+      userLogin: string
     },
-    public createdAt:string,
-    public likesInfo: { 
+    public createdAt: string,
+    public likesInfo: {
       likesCount: number,
       dislikesCount: number,
       myStatus: string
     }
-    )
-    {}
-  }
+  ) { }
+}
 
- 

@@ -15,7 +15,7 @@ export class AuthService {
         this.usersService = new UsersService()
     }
 
-    async creatUser (login: string, password: string, email: string): Promise<userViewModel | null> {
+    async creatUser(login: string, password: string, email: string): Promise<userViewModel | null> {
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -42,7 +42,7 @@ export class AuthService {
         const creatresult = await userRepository.createUser(newUser)
         try {
             await emailAdapter.sendEmail(newUser.accountData.email, 'code', newUser.emailConfirmation.confirmationCode)
-        } catch(e) {
+        } catch (e) {
             //const idNewUser = await userRepository.findByLoginOrEmailL(newUser.accountData.email)
             //if (idNewUser) {
             //const deleteNewUser = await userRepository.deleteUserId(idNewUser._id.toString())}
@@ -56,53 +56,53 @@ export class AuthService {
         return hash;
     }
 
-    async confirmationCode (code: string) : Promise<boolean> {
+    async confirmationCode(code: string): Promise<boolean> {
         let user = await this.usersService.findUserByCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed === true) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
-        if (user.emailConfirmation.expiritionDate < new Date ()) return false
-        
+        if (user.emailConfirmation.expiritionDate < new Date()) return false
+
         let result = await userRepository.updateConfirmation(user._id)
         return result
     }
 
-    async resendingEmail(email: string) : Promise<null | boolean> {
+    async resendingEmail(email: string): Promise<null | boolean> {
         let user = await this.usersService.findUserByEmail(email)
         if (user === null) return false
         if (user.emailConfirmation.isConfirmed === true) return false
-      
-                const confirmationCode = uuidv4();
-                const expiritionDate = add(new Date(), {
-                    hours: 1,
-                    minutes: 2
-                    })
-                await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
-                await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
-                return true
+
+        const confirmationCode = uuidv4();
+        const expiritionDate = add(new Date(), {
+            hours: 1,
+            minutes: 2
+        })
+        await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
+        await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
+        return true
     }
 
 
-    async passwordRecovery(email: string) : Promise<true>{
+    async passwordRecovery(email: string): Promise<true> {
         let user = await this.usersService.findUserByEmail(email)
         if (user === null) return true
-            
-            const recoveryCode = uuidv4();
-            await userRepository.updateRecoveryCode(user._id, recoveryCode)
-            await emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode)
+
+        const recoveryCode = uuidv4();
+        await userRepository.updateRecoveryCode(user._id, recoveryCode)
+        await emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode)
         return true
     }
 
 
     async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
-        
+
         let result = await userRepository.findUserByRecoveryCode(recoveryCode)
-        if (result === null) {return false}
+        if (result === null) { return false }
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
         const resultUpdatePassword = await userRepository.updatePassword(result._id, passwordSalt, passwordHash)
-        if (resultUpdatePassword === false) {return false}
+        if (resultUpdatePassword === false) { return false }
         return true
     }
 }

@@ -1,6 +1,6 @@
-import express, {Request, Response} from 'express'
-import { postsRouter} from './routes/posts-router';
-import { blogsRouter} from './routes/blogs-router';
+import express, { Request, Response } from 'express'
+import { postsRouter } from './routes/posts-router';
+import { blogsRouter } from './routes/blogs-router';
 import { blogsRepository } from './repositories/blogs-db-repository';
 import { postRepository } from './repositories/post-db-repository';
 import { runDb } from './db/db-mongo';
@@ -40,8 +40,8 @@ app.delete('/testing/all-data', async (req: Request, res: Response) => {
 const startApp = async () => {
   await runDbMongoose()
   app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+    console.log(`Example app listening on port ${port}`)
+  })
 }
 
 startApp()
