@@ -8,7 +8,7 @@ import { log } from 'console';
 
 
 
-export const blogsRepository = {
+export class BlogsRepository  {
 
   async findBlogs(pagination: QueryPaginationType): Promise<paginatorBlog> {
     const blogs = await BlogsModelClass.
@@ -36,7 +36,7 @@ export const blogsRepository = {
       totalCount: totalCount,
       items: blogsOutput
     }
-  },
+  }
 
 
   async getBlogId(id: string): Promise<blogOutput | false> {
@@ -55,12 +55,12 @@ export const blogsRepository = {
     catch (e) {
       return false
     }
-  },
+  }
 
   async createBlog(newBlog: blogMongoDB) {
     return BlogsModelClass.insertMany({ ...newBlog })
 
-  },
+  }
 
   async updateBlog(name: string, description: string, websiteUrl: string, id: string): Promise<boolean> {
     try {
@@ -77,15 +77,12 @@ export const blogsRepository = {
         await blogsInstance.save()
         return true
       }
-
-      //const blog = await BlogsModelClass.updateOne({_id: new ObjectId(id)}, {$set: {name , description, websiteUrl}})
-      //return blog.matchedCount === 1
     }
     catch (e) {
 
       return false
     }
-  },
+  }
 
   async deleteBlogId(id: string): Promise<boolean> {
     try {
@@ -93,26 +90,16 @@ export const blogsRepository = {
       if (!blogsInstance) return false
       await blogsInstance.deleteOne()
       return true
-
-
-      //const deletResult = await BlogsModelClass.deleteOne({_id: new ObjectId(id)})
-      //return deletResult.deletedCount === 1
     }
     catch (e) { return false }
 
-  },
+  }
 
   async deleteBlogAll(): Promise<boolean> {
     try {
       const blogsInstance = await BlogsModelClass.deleteMany({})
       if (!blogsInstance) return false
-
       return true
-
-
-
-      //const deletResult = await blogsCollections.deleteMany({})
-      //return true
     }
     catch (e) { return false }
   }

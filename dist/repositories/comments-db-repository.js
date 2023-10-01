@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.commentsRepository = void 0;
+exports.CommentsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-exports.commentsRepository = {
+class CommentsRepository {
     createdCommentPostId(postId, content, userId, userLogin, createdAt) {
         return __awaiter(this, void 0, void 0, function* () {
             const newCommentId = new mongodb_1.ObjectId();
@@ -44,7 +44,7 @@ exports.commentsRepository = {
                 }
             };
         });
-    },
+    }
     findCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -78,7 +78,7 @@ exports.commentsRepository = {
                 return null;
             }
         });
-    },
+    }
     updateCommentId(commentsId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -94,7 +94,7 @@ exports.commentsRepository = {
                 return null;
             }
         });
-    },
+    }
     deletCommentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -110,7 +110,7 @@ exports.commentsRepository = {
                 return null;
             }
         });
-    },
+    }
     findCommentsByPostId(postId, userId, pagination) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -155,7 +155,7 @@ exports.commentsRepository = {
                 return null;
             }
         });
-    },
+    }
     updateLikeStatus(commentId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -170,7 +170,7 @@ exports.commentsRepository = {
                 return null;
             }
         });
-    },
+    }
     deleteCommentsAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongoos_1.CommentsModelClass.deleteMany({});
@@ -178,4 +178,5 @@ exports.commentsRepository = {
             return true;
         });
     }
-};
+}
+exports.CommentsRepository = CommentsRepository;

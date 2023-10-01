@@ -3,12 +3,15 @@ import { QueryPaginationType } from './../midlewares/pagination';
 import { ObjectId } from "mongodb";
 import { paginatorPost } from "../types/types_paginator";
 import { LikesPostsClass, PostsModelClass, UsersModelClass } from '../db/db-mongoos';
-import { blogsRepository } from './blogs-db-repository';
 import { PostMongoDb, postOutput } from '../types/types-posts';
 import { log } from 'console';
+import { BlogsRepository } from './blogs-db-repository';
 
-export const postRepository = {
-
+export class PostRepository {
+    private blogsRepository : BlogsRepository
+    constructor () {
+        this.blogsRepository = new BlogsRepository
+    }
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
         const posts = await PostsModelClass.find({}).
             sort([[paginationQuery.sortBy, paginationQuery.sortDirection]]).
@@ -56,7 +59,8 @@ export const postRepository = {
             totalCount: totalCount,
             items: postsOutput
         }
-    },
+    }
+
     async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string): Promise<paginatorPost | boolean> {
         try {
 
@@ -100,7 +104,7 @@ export const postRepository = {
             }
         } catch (e) { return false }
 
-    },
+    }
 
 
     async getPostId(id: string, userId: string | null): Promise<postOutput | false> {
@@ -140,7 +144,7 @@ export const postRepository = {
                 }
             }
         } catch (e) { return false }
-    },
+    }
 
     async deletePostId(id: string): Promise<boolean> {
         const postInstance = await PostsModelClass.findOne({ _id: new ObjectId(id) })
@@ -148,11 +152,11 @@ export const postRepository = {
 
         await postInstance.deleteOne()
         return true
-    },
+    }
 
 
     async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | false> {
-        const blog = await blogsRepository.getBlogId(blogId);
+        const blog = await this.blogsRepository.getBlogId(blogId);
         if (!blog) { return false }
 
         const newPostId = new ObjectId()
@@ -202,7 +206,7 @@ export const postRepository = {
             }
         }
 
-    },
+    }
 
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
@@ -214,7 +218,7 @@ export const postRepository = {
         postInstance.content = content
         postInstance.save()
         return true
-    },
+    }
 
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {
         try {
@@ -230,7 +234,8 @@ export const postRepository = {
             return true
         } catch (e) { return null }
 
-    },
+    }
+
     async deletePostAll(): Promise<boolean> {
         const postInstance = await PostsModelClass.deleteMany({})
         if (!postInstance) { return false }

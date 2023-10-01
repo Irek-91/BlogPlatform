@@ -4,7 +4,7 @@ import { DevicesModelClass } from "../db/db-mongoos"
 
 
 
-export const tokensRepository = {
+export class TokensRepository {
 
     async addRefreshToken(newDeviceAndRefreshToken: devicesMongo): Promise<boolean | null> {
         try {
@@ -12,10 +12,7 @@ export const tokensRepository = {
             return true
         }
         catch (e) { return null }
-    },
-
-
-
+    }
 
     async getUserIdByDeviceId(deviceId: string): Promise<ObjectId | null> {
 
@@ -25,7 +22,7 @@ export const tokensRepository = {
             return res.userId
         }
         catch (e) { return null }
-    },
+    }
 
     async findTokenAndDeviceByissuedAt(issuedAt: string): Promise<true | null> {
 
@@ -35,7 +32,7 @@ export const tokensRepository = {
             return true
         }
         catch (e) { return null }
-    },
+    }
 
     async deleteTokenAndDevice(issuedAt: string): Promise<true | null> {
         try {
@@ -44,12 +41,12 @@ export const tokensRepository = {
             return true
         }
         catch (e) { return null }
-    },
+    }
 
     async deleteTokensAll() {
         const deletResult = await DevicesModelClass.deleteMany({})
         return true
-    },
+    }
 
     async getTokenAndDevice(userId: ObjectId): Promise<devicesMongo[] | null> {
 
@@ -59,7 +56,7 @@ export const tokensRepository = {
             return res
         }
         catch (e) { return null }
-    },
+    }
 
     async deleteDeviceId(deviceId: string): Promise<null | boolean> {
         try {
@@ -68,7 +65,7 @@ export const tokensRepository = {
             return res.acknowledged
         }
         catch (e) { return null }
-    },
+    }
 
     async deleteAllDevicesExceptOne(deviceId: string, userId: ObjectId): Promise<Boolean | null> {
         //добавить фильтр по userId
@@ -81,7 +78,7 @@ export const tokensRepository = {
             return res.acknowledged
         }
         catch (e) { return null }
-    },
+    }
 
     async findOneDeviceId(deviceId: string): Promise<devicesMongo | null> {
         try {

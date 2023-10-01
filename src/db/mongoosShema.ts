@@ -16,9 +16,6 @@ export const likeInfoShema = new mongoose.Schema({
 })
 
 
-
-
-
 export const commentsShema = new mongoose.Schema<CommentMongoModel>({
     _id: {type: mongoose.Schema.Types.ObjectId, required: true},
     postId: {type: String, required: true},
@@ -51,41 +48,5 @@ export const IPAndURIShema = new mongoose.Schema({
     date:{type: String, required: true}
 })
 
-/*
-export const paginatorBlogShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [blogOutputShema]}
-})
-
-export const paginatorPostShema = new mongoose.Schema<paginatorPost>({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [postOutputShema]}
-})
-
-
-
-export const paginatorUserShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [userViewModelShema]}
-})
-
-export const paginatorCommentsShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [commentViewModelShema]}
-})
-
-*/
 
 

@@ -6,7 +6,7 @@ import { paginatorComments } from '../types/types_paginator';
 import { CommentsModelClass, LikesModelClass } from '../db/db-mongoos';
 import { log } from 'console';
 
-export const commentsRepository = {
+export class CommentsRepository {
   async createdCommentPostId(postId: string, content: string, userId: string, userLogin: string, createdAt: string): Promise<commentViewModel> {
     const newCommentId = new ObjectId()
 
@@ -41,7 +41,7 @@ export const commentsRepository = {
         myStatus: 'None'
       }
     }
-  },
+  }
 
   async findCommentById(commentId: string, userId: string | null): Promise<commentViewModel | null> {
     try {
@@ -76,7 +76,7 @@ export const commentsRepository = {
     catch (e) {
       return null
     }
-  },
+  }
 
 
   async updateCommentId(commentsId: string, content: string): Promise<true | null> {
@@ -90,7 +90,7 @@ export const commentsRepository = {
       }
     }
     catch (e) { return null }
-  },
+  }
 
   async deletCommentById(id: string): Promise<true | null> {
     try {
@@ -102,7 +102,7 @@ export const commentsRepository = {
         return null
       }
     } catch (e) { return null }
-  },
+  }
 
   async findCommentsByPostId(postId: string, userId: string | null, pagination: QueryPaginationType): Promise<paginatorComments | null> {
     try {
@@ -146,7 +146,7 @@ export const commentsRepository = {
         items: mappedComments
       }
     } catch (e) { return null }
-  },
+  }
 
   async updateLikeStatus(commentId: string, userId: string, likeStatus: string): Promise<boolean | null> {
     try {
@@ -160,7 +160,7 @@ export const commentsRepository = {
       return true
 
     } catch (e) { return null }
-  },
+  }
 
   async deleteCommentsAll(): Promise<boolean> {
     const deletResult = await CommentsModelClass.deleteMany({})

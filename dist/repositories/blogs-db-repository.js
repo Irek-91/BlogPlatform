@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsRepository = void 0;
+exports.BlogsRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-exports.blogsRepository = {
+class BlogsRepository {
     findBlogs(pagination) {
         return __awaiter(this, void 0, void 0, function* () {
             const blogs = yield db_mongoos_1.BlogsModelClass.
@@ -40,7 +40,7 @@ exports.blogsRepository = {
                 items: blogsOutput
             };
         });
-    },
+    }
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -60,12 +60,12 @@ exports.blogsRepository = {
                 return false;
             }
         });
-    },
+    }
     createBlog(newBlog) {
         return __awaiter(this, void 0, void 0, function* () {
             return db_mongoos_1.BlogsModelClass.insertMany(Object.assign({}, newBlog));
         });
-    },
+    }
     updateBlog(name, description, websiteUrl, id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -81,14 +81,12 @@ exports.blogsRepository = {
                     yield blogsInstance.save();
                     return true;
                 }
-                //const blog = await BlogsModelClass.updateOne({_id: new ObjectId(id)}, {$set: {name , description, websiteUrl}})
-                //return blog.matchedCount === 1
             }
             catch (e) {
                 return false;
             }
         });
-    },
+    }
     deleteBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -97,14 +95,12 @@ exports.blogsRepository = {
                     return false;
                 yield blogsInstance.deleteOne();
                 return true;
-                //const deletResult = await BlogsModelClass.deleteOne({_id: new ObjectId(id)})
-                //return deletResult.deletedCount === 1
             }
             catch (e) {
                 return false;
             }
         });
-    },
+    }
     deleteBlogAll() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -112,12 +108,11 @@ exports.blogsRepository = {
                 if (!blogsInstance)
                     return false;
                 return true;
-                //const deletResult = await blogsCollections.deleteMany({})
-                //return true
             }
             catch (e) {
                 return false;
             }
         });
     }
-};
+}
+exports.BlogsRepository = BlogsRepository;

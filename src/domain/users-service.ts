@@ -40,22 +40,7 @@ export class UsersService {
         isConfirmed,
         recoveryCode
       })
-    /*User = {
-      accountData : {
-        login: loginUser,
-        email: emailUser,
-        salt: passwordSalt,
-        hash: passwordHash,
-        passwordHash: createdAt
-    },
-      emailConfirmation : {
-        confirmationCode: confirmationCode,
-        expiritionDate: expiritionDate,
-        isConfirmed: isConfirmed,
-        recoveryCode: recoveryCode
-    }
-    }
-    */
+      
     return await userRepository.createUser(newUser)
   }
 

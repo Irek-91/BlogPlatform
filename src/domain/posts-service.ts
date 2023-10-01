@@ -1,48 +1,47 @@
 import { QueryPaginationType } from './../midlewares/pagination';
 import { postInput, postsCollectionsType, postOutput, PostMongoDb } from '../types/types-posts';
-import { blogsRepository } from './../repositories/blogs-db-repository';
-import { postRepository } from "../repositories/post-db-repository";
 import { paginatorPost } from '../types/types_paginator';
 import { ObjectId } from 'mongodb';
+import { PostRepository } from '../repositories/post-db-repository';
 
 
 export class PostsService {
+    private postRepository: PostRepository
 
+    constructor () {
+        this.postRepository = new PostRepository()
+    }
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
-        return postRepository.findPost(paginationQuery, userId)
+        return this.postRepository.findPost(paginationQuery, userId)
     }
 
     async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string): Promise<paginatorPost | boolean> {
-        return postRepository.findPostsBlogId(paginationQuery, blogId)
+        return this.postRepository.findPostsBlogId(paginationQuery, blogId)
     }
 
     async getPostId(id: string, userId: string | null): Promise<postOutput | false> {
-        return postRepository.getPostId(id, userId)
+        return this.postRepository.getPostId(id, userId)
     }
 
     async deletePostId(id: string): Promise<boolean> {
-        return await postRepository.deletePostId(id)
+        return await this.postRepository.deletePostId(id)
     }
-
-
 
     async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
 
-        const creatPost = await postRepository.createdPostId(title, shortDescription, content, blogId)
+        const creatPost = await this.postRepository.createdPostId(title, shortDescription, content, blogId)
         return creatPost
     }
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        return await postRepository.updatePostId(id, title, shortDescription, content, blogId)
+        return await this.postRepository.updatePostId(id, title, shortDescription, content, blogId)
     }
 
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {
-        return await postRepository.updateLikeStatusPostId(postId, userId, likeStatus)
+        return await this.postRepository.updateLikeStatusPostId(postId, userId, likeStatus)
     }
 
     async deletePostAll(): Promise<boolean> {
-        return await postRepository.deletePostAll()
+        return await this.postRepository.deletePostAll()
     }
 }
-
-//export const postsService = new PostsService()

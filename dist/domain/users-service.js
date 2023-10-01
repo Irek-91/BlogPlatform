@@ -49,22 +49,6 @@ class UsersService {
                 isConfirmed,
                 recoveryCode
             });
-            /*User = {
-              accountData : {
-                login: loginUser,
-                email: emailUser,
-                salt: passwordSalt,
-                hash: passwordHash,
-                passwordHash: createdAt
-            },
-              emailConfirmation : {
-                confirmationCode: confirmationCode,
-                expiritionDate: expiritionDate,
-                isConfirmed: isConfirmed,
-                recoveryCode: recoveryCode
-            }
-            }
-            */
             return yield users_db_repository_1.userRepository.createUser(newUser);
         });
     }

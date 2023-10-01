@@ -9,11 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postRepository = void 0;
+exports.PostRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
 const blogs_db_repository_1 = require("./blogs-db-repository");
-exports.postRepository = {
+class PostRepository {
+    constructor() {
+        this.blogsRepository = new blogs_db_repository_1.BlogsRepository;
+    }
     findPost(paginationQuery, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const posts = yield db_mongoos_1.PostsModelClass.find({}).
@@ -62,7 +65,7 @@ exports.postRepository = {
                 items: postsOutput
             };
         });
-    },
+    }
     findPostsBlogId(paginationQuery, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -108,7 +111,7 @@ exports.postRepository = {
                 return false;
             }
         });
-    },
+    }
     getPostId(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -153,7 +156,7 @@ exports.postRepository = {
                 return false;
             }
         });
-    },
+    }
     deletePostId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const postInstance = yield db_mongoos_1.PostsModelClass.findOne({ _id: new mongodb_1.ObjectId(id) });
@@ -163,10 +166,10 @@ exports.postRepository = {
             yield postInstance.deleteOne();
             return true;
         });
-    },
+    }
     createdPostId(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield blogs_db_repository_1.blogsRepository.getBlogId(blogId);
+            const blog = yield this.blogsRepository.getBlogId(blogId);
             if (!blog) {
                 return false;
             }
@@ -213,7 +216,7 @@ exports.postRepository = {
                 }
             };
         });
-    },
+    }
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
             //const postInstance = await PostsModelClass.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
@@ -226,7 +229,7 @@ exports.postRepository = {
             postInstance.save();
             return true;
         });
-    },
+    }
     updateLikeStatusPostId(postId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -245,7 +248,7 @@ exports.postRepository = {
                 return null;
             }
         });
-    },
+    }
     deletePostAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const postInstance = yield db_mongoos_1.PostsModelClass.deleteMany({});
@@ -255,4 +258,5 @@ exports.postRepository = {
             return true;
         });
     }
-};
+}
+exports.PostRepository = PostRepository;

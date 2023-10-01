@@ -43,39 +43,3 @@ exports.IPAndURIShema = new mongoose_1.default.Schema({
     URL: { type: String, required: true },
     date: { type: String, required: true }
 });
-/*
-export const paginatorBlogShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [blogOutputShema]}
-})
-
-export const paginatorPostShema = new mongoose.Schema<paginatorPost>({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [postOutputShema]}
-})
-
-
-
-export const paginatorUserShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [userViewModelShema]}
-})
-
-export const paginatorCommentsShema = new mongoose.Schema({
-    pagesCount: {type: Number},
-    page: {type: Number},
-    pageSize: {type: Number},
-    totalCount: {type: Number},
-    items: {type: [commentViewModelShema]}
-})
-
-*/

@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokensRepository = void 0;
+exports.TokensRepository = void 0;
 const db_mongoos_1 = require("../db/db-mongoos");
-exports.tokensRepository = {
+class TokensRepository {
     addRefreshToken(newDeviceAndRefreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -22,7 +22,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     getUserIdByDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -36,7 +36,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     findTokenAndDeviceByissuedAt(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -50,7 +50,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     deleteTokenAndDevice(issuedAt) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -64,13 +64,13 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     deleteTokensAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongoos_1.DevicesModelClass.deleteMany({});
             return true;
         });
-    },
+    }
     getTokenAndDevice(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -84,7 +84,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     deleteDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -98,7 +98,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     deleteAllDevicesExceptOne(deviceId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             //добавить фильтр по userId
@@ -117,7 +117,7 @@ exports.tokensRepository = {
                 return null;
             }
         });
-    },
+    }
     findOneDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -132,4 +132,5 @@ exports.tokensRepository = {
             }
         });
     }
-};
+}
+exports.TokensRepository = TokensRepository;
