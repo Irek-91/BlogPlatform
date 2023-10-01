@@ -61,6 +61,19 @@ class BlogsRepository {
             }
         });
     }
+    getBlogNameById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const blog = yield db_mongoos_1.BlogsModelClass.findOne({ _id: new mongodb_1.ObjectId(id) }).lean();
+                if (!blog)
+                    return false;
+                return blog.name;
+            }
+            catch (e) {
+                return false;
+            }
+        });
+    }
     createBlog(newBlog) {
         return __awaiter(this, void 0, void 0, function* () {
             return db_mongoos_1.BlogsModelClass.insertMany(Object.assign({}, newBlog));

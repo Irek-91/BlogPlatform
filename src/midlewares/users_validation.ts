@@ -1,6 +1,7 @@
 import { body, validationResult } from "express-validator";
-import { userRepository } from "../repositories/users-db-repository";
+import { UserRepository } from "../repositories/users-db-repository";
 import { Request, Response, NextFunction } from 'express';
+import { userRepository } from "../composition-root";
 
 export const loginValidation = body('login').trim().notEmpty().
                                             matches('^[a-zA-Z0-9_-]*$').

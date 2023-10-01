@@ -4,13 +4,9 @@ import { paginatorPost } from '../types/types_paginator';
 import { ObjectId } from 'mongodb';
 import { PostRepository } from '../repositories/post-db-repository';
 
-
 export class PostsService {
-    private postRepository: PostRepository
 
-    constructor () {
-        this.postRepository = new PostRepository()
-    }
+    constructor (protected postRepository: PostRepository) { }
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
         return this.postRepository.findPost(paginationQuery, userId)
     }
@@ -27,9 +23,9 @@ export class PostsService {
         return await this.postRepository.deletePostId(id)
     }
 
-    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | boolean> {
+    async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string, blogName: string | boolean): Promise<postOutput | boolean> {
 
-        const creatPost = await this.postRepository.createdPostId(title, shortDescription, content, blogId)
+        const creatPost = await this.postRepository.createdPostId(title, shortDescription, content, blogId, blogName)
         return creatPost
     }
 

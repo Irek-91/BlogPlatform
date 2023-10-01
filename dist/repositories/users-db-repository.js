@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userRepository = void 0;
+exports.UserRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-exports.userRepository = {
+class UserRepository {
     findUsers(paginatorUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const filter = {};
@@ -52,7 +52,7 @@ exports.userRepository = {
                 items: usersOutput
             };
         });
-    },
+    }
     createUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
             //const res = await UsersModelClass.insertMany({...newUser, _id: new ObjectId()})
@@ -67,7 +67,7 @@ exports.userRepository = {
             };
             return userViewVodel;
         });
-    },
+    }
     deleteUserId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let user = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(id) });
@@ -84,7 +84,7 @@ exports.userRepository = {
                 return false;
             }
         });
-    },
+    }
     findByLoginOrEmailL(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield db_mongoos_1.UsersModelClass.findOne({ $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }] }).lean();
@@ -95,13 +95,13 @@ exports.userRepository = {
                 return user;
             }
         });
-    },
+    }
     deleteUserAll() {
         return __awaiter(this, void 0, void 0, function* () {
             const deletResult = yield db_mongoos_1.UsersModelClass.deleteMany({});
             return true;
         });
-    },
+    }
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -117,7 +117,7 @@ exports.userRepository = {
                 return false;
             }
         });
-    },
+    }
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -128,13 +128,13 @@ exports.userRepository = {
                 return null;
             }
         });
-    },
+    }
     updateConfirmation(_id) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.isConfirmed": true } });
             return result.modifiedCount === 1;
         });
-    },
+    }
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -145,7 +145,7 @@ exports.userRepository = {
                 return null;
             }
         });
-    },
+    }
     findUserByLogin(login) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -156,25 +156,25 @@ exports.userRepository = {
                 return null;
             }
         });
-    },
+    }
     updateCode(_id, code, expiritionDate) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate": expiritionDate } });
             return result.modifiedCount === 2;
         });
-    },
+    }
     updatePassword(_id, salt, hash) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "accountData.salt": salt, "accountData.hash": hash } });
             return result.modifiedCount === 1;
         });
-    },
+    }
     updateRecoveryCode(_id, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = yield db_mongoos_1.UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.recoveryCode": recoveryCode } });
             return result.modifiedCount === 1;
         });
-    },
+    }
     findUserByRecoveryCode(recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -186,24 +186,6 @@ exports.userRepository = {
                 return null;
             }
         });
-    },
-    /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
-      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
-      return result.matchedCount === 1}
-      catch (e) {return null}
-    },
-    async addNewrefreshToken(userId: ObjectId, refreshToken: string): Promise<boolean | null>{
-      try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.refreshToken': refreshToken}})
-      return result.matchedCount === 1}
-      catch (e) {return null}
-    },
-  
-    async findAccesTokenByRefreshToken(refreshToken :string): Promise<userMongoModel | null>{
-      try {let user = await usersCollections.findOne({"tokens.refreshToken": refreshToken})
-          if (user) {return user}
-          else {return null}
-      }
-      catch (e) {return null}
     }
-    */
-};
+}
+exports.UserRepository = UserRepository;

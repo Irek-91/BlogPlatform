@@ -1,10 +1,8 @@
-import { CommentMongoModel, commentViewModel, likeInfoShema } from './../types/comments';
+import { CommentMongoModel, commentViewModel } from './../types/comments';
 import { ObjectId } from "mongodb"
-import { commentInputModel } from "../types/comments"
 import { QueryPaginationType } from '../midlewares/pagination';
 import { paginatorComments } from '../types/types_paginator';
 import { CommentsModelClass, LikesModelClass } from '../db/db-mongoos';
-import { log } from 'console';
 
 export class CommentsRepository {
   async createdCommentPostId(postId: string, content: string, userId: string, userLogin: string, createdAt: string): Promise<commentViewModel> {

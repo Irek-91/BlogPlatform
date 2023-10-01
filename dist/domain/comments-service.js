@@ -11,24 +11,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsService = void 0;
 const mongodb_1 = require("mongodb");
-const comments_db_repository_1 = require("../repositories/comments-db-repository");
-const users_db_repository_1 = require("../repositories/users-db-repository");
 class CommentsService {
+    constructor(userRepository, commentsRepository) {
+        this.userRepository = userRepository;
+        this.commentsRepository = commentsRepository;
+    }
     createdCommentPostId(postId, userId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             const createdAt = new Date().toISOString();
-            const user = yield users_db_repository_1.userRepository.findUserById(new mongodb_1.ObjectId(userId));
+            const user = yield this.userRepository.findUserById(new mongodb_1.ObjectId(userId));
             if (!user) {
                 return null;
             }
             const userLogin = user.accountData.login;
-            const creatComment = yield comments_db_repository_1.commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt);
+            const creatComment = yield this.commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt);
             return creatComment;
         });
     }
     findCommentById(commentId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentId, userId);
+            const comment = yield this.commentsRepository.findCommentById(commentId, userId);
             if (comment === null) {
                 return null;
             }
@@ -40,9 +42,9 @@ class CommentsService {
     updateContent(userId, commentsId, content) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const comment = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId, userId);
+                const comment = yield this.commentsRepository.findCommentById(commentsId, userId);
                 if (comment.commentatorInfo.userId === userId) {
-                    const result = yield comments_db_repository_1.commentsRepository.updateCommentId(commentsId, content);
+                    const result = yield this.commentsRepository.updateCommentId(commentsId, content);
                     return result;
                 }
                 else {
@@ -57,12 +59,12 @@ class CommentsService {
     deleteCommentById(commentsId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const commentById = yield comments_db_repository_1.commentsRepository.findCommentById(commentsId, userId);
+                const commentById = yield this.commentsRepository.findCommentById(commentsId, userId);
                 if (commentById === null) {
                     return null;
                 }
                 if (commentById.commentatorInfo.userId === userId) {
-                    const result = yield comments_db_repository_1.commentsRepository.deletCommentById(commentsId);
+                    const result = yield this.commentsRepository.deletCommentById(commentsId);
                     return result;
                 }
                 else {
@@ -76,12 +78,12 @@ class CommentsService {
     }
     findCommentsByPostId(postId, userId, pagination) {
         return __awaiter(this, void 0, void 0, function* () {
-            return comments_db_repository_1.commentsRepository.findCommentsByPostId(postId, userId, pagination);
+            return this.commentsRepository.findCommentsByPostId(postId, userId, pagination);
         });
     }
     updateLikeStatus(commentId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
-            return comments_db_repository_1.commentsRepository.updateLikeStatus(commentId, userId, likeStatus);
+            return this.commentsRepository.updateLikeStatus(commentId, userId, likeStatus);
         });
     }
 }

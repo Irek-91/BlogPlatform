@@ -56,6 +56,18 @@ export class BlogsRepository  {
       return false
     }
   }
+  async getBlogNameById(id: string): Promise<string | false> {
+    try {
+      const blog = await BlogsModelClass.findOne({ _id: new ObjectId(id) }).lean()
+      if (!blog) return false
+      return blog.name
+    }
+    catch (e) {
+      return false
+    }
+  }
+
+
 
   async createBlog(newBlog: blogMongoDB) {
     return BlogsModelClass.insertMany({ ...newBlog })

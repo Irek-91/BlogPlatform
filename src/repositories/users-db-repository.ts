@@ -6,7 +6,7 @@ import { UsersModelClass } from '../db/db-mongoos';
 
 
 
-export const userRepository = {
+export class UserRepository {
 
   async findUsers(paginatorUser: QueryPaginationTypeUser) {
     const filter: Filter<userMongoModel> = {};
@@ -50,7 +50,7 @@ export const userRepository = {
       totalCount: totalCount,
       items: usersOutput
     }
-  },
+  }
 
   async createUser(newUser: User): Promise<userViewModel> {
     //const res = await UsersModelClass.insertMany({...newUser, _id: new ObjectId()})
@@ -66,7 +66,7 @@ export const userRepository = {
       createdAt: userInstance.accountData!.createdAt
     }
     return userViewVodel
-  },
+  }
 
   async deleteUserId(id: string): Promise<boolean> {
     let user = await UsersModelClass.findOne({ _id: new ObjectId(id) })
@@ -81,7 +81,7 @@ export const userRepository = {
     } else {
       return false
     }
-  },
+  }
 
 
 
@@ -93,12 +93,12 @@ export const userRepository = {
     else {
       return user
     }
-  },
+  }
 
   async deleteUserAll(): Promise<boolean> {
     const deletResult = await UsersModelClass.deleteMany({})
     return true
-  },
+  }
 
   async findUserById(userId: ObjectId): Promise<userMongoModel | false> {
     try {
@@ -110,7 +110,7 @@ export const userRepository = {
         return user
       }
     } catch (e) { return false }
-  },
+  }
 
   async findUserByCode(code: string): Promise<userMongoModel | null> {
     try {
@@ -118,12 +118,12 @@ export const userRepository = {
       return user
     }
     catch (e) { return null }
-  },
+  }
 
   async updateConfirmation(_id: ObjectId): Promise<boolean> {
     let result = await UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.isConfirmed": true } })
     return result.modifiedCount === 1
-  },
+  }
 
   async findUserByEmail(email: string): Promise<userMongoModel | null> {
     try {
@@ -131,28 +131,31 @@ export const userRepository = {
       return user
     }
     catch (e) { return null }
-  },
+  }
+
   async findUserByLogin(login: string): Promise<userMongoModel | null> {
     try {
       let user = await UsersModelClass.findOne({ "accountData.login": login }).lean()
       return user
     }
     catch (e) { return null }
-  },
+  }
 
   async updateCode(_id: ObjectId, code: string, expiritionDate: Date): Promise<boolean> {
     let result = await UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.confirmationCode": code, "emailConfirmation.expiritionDate": expiritionDate } })
     return result.modifiedCount === 2
-  },
+  }
 
   async updatePassword(_id: ObjectId, salt: string, hash: string): Promise<boolean> {
     let result = await UsersModelClass.updateOne({ _id }, { $set: { "accountData.salt": salt, "accountData.hash": hash } })
     return result.modifiedCount === 1
-  },
+  }
+
   async updateRecoveryCode(_id: ObjectId, recoveryCode: string): Promise<boolean> {
     let result = await UsersModelClass.updateOne({ _id }, { $set: { "emailConfirmation.recoveryCode": recoveryCode } })
     return result.modifiedCount === 1
-  },
+  }
+
   async findUserByRecoveryCode(recoveryCode: string): Promise<userMongoModel | null> {
     try {
       let user = await UsersModelClass.findOne({ "emailConfirmation.recoveryCode": recoveryCode }).lean()
@@ -162,25 +165,5 @@ export const userRepository = {
       console.log('scDB')
       return null
     }
-  },
-  /*async addNewAccessToken(userId: ObjectId, accessToken: string): Promise<boolean | null>{
-    try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.accessToken': accessToken}})
-    return result.matchedCount === 1}
-    catch (e) {return null}
-  },
-  async addNewrefreshToken(userId: ObjectId, refreshToken: string): Promise<boolean | null>{
-    try {let result = await usersCollections.updateOne({_id: userId}, {$set: {'tokens.refreshToken': refreshToken}})
-    return result.matchedCount === 1}
-    catch (e) {return null}
-  },
-
-  async findAccesTokenByRefreshToken(refreshToken :string): Promise<userMongoModel | null>{
-    try {let user = await usersCollections.findOne({"tokens.refreshToken": refreshToken})
-        if (user) {return user}
-        else {return null}
-    }
-    catch (e) {return null}
   }
-  */
-
 }

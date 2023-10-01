@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { jwtService } from '../application/jwt-service';
 import { TokensService } from '../domain/token-service';
+import { tokensService } from '../composition-root';
 
-const tokensService = new TokensService()
 
 export const chekRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     const cookiesRefreshToken = req.cookies.refreshToken

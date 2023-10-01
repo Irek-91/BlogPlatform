@@ -3,14 +3,12 @@ import { Request, Response, Router } from "express";
 import { chekRefreshToken } from "../midlewares/chek-refreshToket";
 import { chekRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
 import { SecurityDeviceService } from '../domain/securityDevice_service';
+import { securityDeviceController } from '../composition-root';
 
 export const securityDeviceRouter = Router({});
 
-class SecurityDeviceController {
-    private securityDeviceService: SecurityDeviceService
-    constructor() {
-        this.securityDeviceService = new SecurityDeviceService()
-    }
+export class SecurityDeviceController {
+    constructor(protected securityDeviceService: SecurityDeviceService) {}
     async getDeviceByToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         const IP = req.ip
@@ -45,10 +43,9 @@ class SecurityDeviceController {
     }
 }
 
-const securityDeviceControllerInstance = new SecurityDeviceController()
 securityDeviceRouter.get('/devices', chekRefreshToken,
-    securityDeviceControllerInstance.getDeviceByToken.bind(securityDeviceControllerInstance))
+    securityDeviceController.getDeviceByToken.bind(securityDeviceController))
 securityDeviceRouter.delete('/devices', chekRefreshToken,
-    securityDeviceControllerInstance.deleteAllDevicesExceptOne.bind(securityDeviceControllerInstance))
+    securityDeviceController.deleteAllDevicesExceptOne.bind(securityDeviceController))
 securityDeviceRouter.delete('/devices/:deviceId', chekRefreshTokenDeleteDevice,
-    securityDeviceControllerInstance.deleteDeviceByUserId.bind(securityDeviceControllerInstance))
+    securityDeviceController.deleteDeviceByUserId.bind(securityDeviceController))

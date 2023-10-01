@@ -1,17 +1,18 @@
 import { paginatorUser } from './../types/types_paginator';
 import { QueryPaginationTypeUser } from "../midlewares/pagination-users"
-import { userRepository } from "../repositories/users-db-repository"
 import { UserMongoModel, userInputModel, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
 import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
+import { UserRepository } from '../repositories/users-db-repository';
 
 
 
 export class UsersService {
+  constructor (protected userRepository: UserRepository) { }
   async findUsers(paginationQuery: QueryPaginationTypeUser): Promise<paginatorUser> {
-    return await userRepository.findUsers(paginationQuery)
+    return await  this.userRepository.findUsers(paginationQuery)
   }
 
   async createUser(loginUser: string, passwordUser: string, emailUser: string): Promise<userViewModel> {
@@ -41,11 +42,11 @@ export class UsersService {
         recoveryCode
       })
       
-    return await userRepository.createUser(newUser)
+    return await  this.userRepository.createUser(newUser)
   }
 
   async deleteUserId(id: string) {
-    return await userRepository.deleteUserId(id)
+    return await  this.userRepository.deleteUserId(id)
   }
 
   async _generateHash(password: string, salt: string) {
@@ -54,7 +55,7 @@ export class UsersService {
   }
 
   async checkCredentials(loginOrEmail: string, passwordUser: string): Promise<userMongoModel | false> {
-    const user = await userRepository.findByLoginOrEmailL(loginOrEmail)
+    const user = await  this.userRepository.findByLoginOrEmailL(loginOrEmail)
     if (!user) {
       return false
     }
@@ -69,12 +70,12 @@ export class UsersService {
 
 
   async deleteUserAll(): Promise<boolean> {
-    return await userRepository.deleteUserAll()
+    return await  this.userRepository.deleteUserAll()
   }
 
   async findByUserId(userId: ObjectId): Promise<userMeViewModel | false> {
 
-    const result = await userRepository.findUserById(userId)
+    const result = await  this.userRepository.findUserById(userId)
     if (result) {
       const resultUserViewModel = {
         email: result.accountData.email,
@@ -87,16 +88,14 @@ export class UsersService {
   }
 
   async findUserByCode(code: string): Promise<userMongoModel | null> {
-    let user = await userRepository.findUserByCode(code)
+    let user = await  this.userRepository.findUserByCode(code)
     return user
   }
 
   async findUserByEmail(email: string): Promise<userMongoModel | null> {
-    let user = await userRepository.findUserByEmail(email)
+    let user = await  this.userRepository.findUserByEmail(email)
     return user
   }
-
-
 }
 
 //export const usersService = new UsersService()

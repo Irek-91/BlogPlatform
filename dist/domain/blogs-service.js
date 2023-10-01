@@ -10,13 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlogsService = void 0;
-const blogs_db_repository_1 = require("./../repositories/blogs-db-repository");
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
 const types_blogs_1 = require("../types/types-blogs");
 class BlogsService {
-    constructor() {
-        this.blogsRepository = new blogs_db_repository_1.BlogsRepository();
+    constructor(blogsRepository) {
+        this.blogsRepository = blogsRepository;
     }
     findBlogs(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,6 +25,11 @@ class BlogsService {
     getBlogId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.blogsRepository.getBlogId(id);
+        });
+    }
+    getBlogNameById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.blogsRepository.getBlogNameById(id);
         });
     }
     createBlog(name, description, websiteUrl) {

@@ -2,19 +2,12 @@ import { User, userMongoModel, userViewModel } from '../types/user';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add'
-import { userRepository } from '../repositories/users-db-repository';
 import { emailAdapter } from '../application/email-adapter';
 import { UsersService } from './users-service';
-
-
-
+import { UserRepository } from '../repositories/users-db-repository';
 
 export class AuthService {
-    private usersService: UsersService
-    
-    constructor() {
-        this.usersService = new UsersService()
-    }
+    constructor(protected userRepository: UserRepository) {}
 
     async creatUser(login: string, password: string, email: string): Promise<userViewModel | null> {
         const createdAt = new Date().toISOString();
@@ -40,7 +33,7 @@ export class AuthService {
             }
         }
 
-        const creatresult = await userRepository.createUser(newUser)
+        const creatresult = await this.userRepository.createUser(newUser)
         try {
             await emailAdapter.sendEmail(newUser.accountData.email, 'code', newUser.emailConfirmation.confirmationCode)
         } catch (e) {
@@ -58,18 +51,18 @@ export class AuthService {
     }
 
     async confirmationCode(code: string): Promise<boolean> {
-        let user = await this.usersService.findUserByCode(code)
+        let user = await this.userRepository.findUserByCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed === true) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expiritionDate < new Date()) return false
 
-        let result = await userRepository.updateConfirmation(user._id)
+        let result = await this.userRepository.updateConfirmation(user._id)
         return result
     }
 
     async resendingEmail(email: string): Promise<null | boolean> {
-        let user = await this.usersService.findUserByEmail(email)
+        let user = await this.userRepository.findUserByEmail(email)
         if (user === null) return false
         if (user.emailConfirmation.isConfirmed === true) return false
 
@@ -78,18 +71,18 @@ export class AuthService {
             hours: 1,
             minutes: 2
         })
-        await userRepository.updateCode(user._id, confirmationCode, expiritionDate)
+        await this.userRepository.updateCode(user._id, confirmationCode, expiritionDate)
         await emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode)
         return true
     }
 
 
     async passwordRecovery(email: string): Promise<true> {
-        let user = await this.usersService.findUserByEmail(email)
+        let user = await this.userRepository.findUserByEmail(email)
         if (user === null) return true
 
         const recoveryCode = uuidv4();
-        await userRepository.updateRecoveryCode(user._id, recoveryCode)
+        await this.userRepository.updateRecoveryCode(user._id, recoveryCode)
         await emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode)
         return true
     }
@@ -97,12 +90,12 @@ export class AuthService {
 
     async newPassword(newPassword: string, recoveryCode: string): Promise<boolean> {
 
-        let result = await userRepository.findUserByRecoveryCode(recoveryCode)
+        let result = await this.userRepository.findUserByRecoveryCode(recoveryCode)
         if (result === null) { return false }
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
-        const resultUpdatePassword = await userRepository.updatePassword(result._id, passwordSalt, passwordHash)
+        const resultUpdatePassword = await this.userRepository.updatePassword(result._id, passwordSalt, passwordHash)
         if (resultUpdatePassword === false) { return false }
         return true
     }

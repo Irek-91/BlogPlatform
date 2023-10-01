@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
-import { blogsRepository } from "../repositories/blogs-db-repository";
+import { blogsRepository } from "../composition-root";
 
 
 export const titleValidation = body('title').trim().notEmpty().isString().isLength({ max: 30 }).withMessage('error in string length');

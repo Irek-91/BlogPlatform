@@ -9,14 +9,12 @@ import { likeStatusValidation, likeStatusValidation1 } from '../midlewares/like_
 import { log } from 'console';
 import { ObjectId } from 'mongodb';
 import { getUserMiddleware } from '../midlewares/get-comments-middleware ';
+import { commentsController } from '../composition-root';
 
 export const commentsRouter = Router({})
 
-class CommentsController {
-    private commentsService: CommentsService
-    constructor() {
-        this.commentsService = new CommentsService()
-    }
+export class CommentsController {
+    constructor(protected commentsService: CommentsService) { }
     async findCommentById(req: Request, res: Response) {
         const { userId } = req
 
@@ -82,14 +80,13 @@ class CommentsController {
     }
 
 }
-const commentsControllerInstance = new CommentsController()
 
-commentsRouter.get('/:id', getUserMiddleware, commentsControllerInstance.findCommentById.bind(commentsControllerInstance))
+commentsRouter.get('/:id', getUserMiddleware, commentsController.findCommentById.bind(commentsController))
 commentsRouter.put('/:commentsId', authMiddleware, contentCommentValidation, inputValidationMiddleware,
-    commentsControllerInstance.updateCommentId.bind(commentsControllerInstance))
+    commentsController.updateCommentId.bind(commentsController))
 commentsRouter.put('/:commentsId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware,
-    commentsControllerInstance.updateStatusByCommentId.bind(commentsControllerInstance))
+    commentsController.updateStatusByCommentId.bind(commentsController))
 
 
-commentsRouter.delete('/:commentsId', authMiddleware, commentsControllerInstance.deleteCommentById.bind(commentsControllerInstance))
+commentsRouter.delete('/:commentsId', authMiddleware, commentsController.deleteCommentById.bind(commentsController))
 

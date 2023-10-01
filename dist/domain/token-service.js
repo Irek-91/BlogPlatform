@@ -11,14 +11,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TokensService = void 0;
 const token_types_1 = require("./../types/token-types");
-const tokens_db_repository_1 = require("../repositories/tokens-db-repository");
 const mongodb_1 = require("mongodb");
 const jwt_service_1 = require("../application/jwt-service");
 class TokensService {
+    constructor(tokensRepository) {
+        this.tokensRepository = tokensRepository;
+    }
     findTokenAndDevice(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(token);
-            const resultIssuedAt = yield tokens_db_repository_1.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt);
+            const resultIssuedAt = yield this.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt);
             if (resultIssuedAt) {
                 return true;
             }
@@ -33,7 +35,7 @@ class TokensService {
             const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(refreshToken);
             const expirationDate = yield jwt_service_1.jwtService.getExpiresAttByRefreshToken(refreshToken);
             const newDeviceAndRefreshToken = new token_types_1.DevicesMongo(new mongodb_1.ObjectId(), issuedAt, expirationDate, deviceId, IP, deviceName, userId);
-            const addTokenUser = yield tokens_db_repository_1.tokensRepository.addRefreshToken(newDeviceAndRefreshToken);
+            const addTokenUser = yield this.tokensRepository.addRefreshToken(newDeviceAndRefreshToken);
             if (addTokenUser !== true) {
                 return null;
             }
@@ -64,7 +66,7 @@ class TokensService {
             if (issuedAt === null) {
                 return null;
             }
-            const resultDelete = yield tokens_db_repository_1.tokensRepository.deleteTokenAndDevice(issuedAt);
+            const resultDelete = yield this.tokensRepository.deleteTokenAndDevice(issuedAt);
             if (resultDelete === null) {
                 return null;
             }
@@ -83,7 +85,7 @@ class TokensService {
             if (issuedAt === null) {
                 return null;
             }
-            const resultDelete = yield tokens_db_repository_1.tokensRepository.deleteTokenAndDevice(issuedAt);
+            const resultDelete = yield this.tokensRepository.deleteTokenAndDevice(issuedAt);
             if (resultDelete === null) {
                 return null;
             }

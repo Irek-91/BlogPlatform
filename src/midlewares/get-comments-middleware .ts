@@ -1,6 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { userRepository } from '../repositories/users-db-repository';
-import { jwtService } from '../application/jwt-service';
 import jwt from 'jsonwebtoken'
 
 

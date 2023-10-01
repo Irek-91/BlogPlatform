@@ -16,12 +16,10 @@ exports.AuthService = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const uuid_1 = require("uuid");
 const add_1 = __importDefault(require("date-fns/add"));
-const users_db_repository_1 = require("../repositories/users-db-repository");
 const email_adapter_1 = require("../application/email-adapter");
-const users_service_1 = require("./users-service");
 class AuthService {
-    constructor() {
-        this.usersService = new users_service_1.UsersService();
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
     creatUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -46,7 +44,7 @@ class AuthService {
                     recoveryCode: (0, uuid_1.v4)()
                 }
             };
-            const creatresult = yield users_db_repository_1.userRepository.createUser(newUser);
+            const creatresult = yield this.userRepository.createUser(newUser);
             try {
                 yield email_adapter_1.emailAdapter.sendEmail(newUser.accountData.email, 'code', newUser.emailConfirmation.confirmationCode);
             }
@@ -67,7 +65,7 @@ class AuthService {
     }
     confirmationCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield this.usersService.findUserByCode(code);
+            let user = yield this.userRepository.findUserByCode(code);
             if (!user)
                 return false;
             if (user.emailConfirmation.isConfirmed === true)
@@ -76,13 +74,13 @@ class AuthService {
                 return false;
             if (user.emailConfirmation.expiritionDate < new Date())
                 return false;
-            let result = yield users_db_repository_1.userRepository.updateConfirmation(user._id);
+            let result = yield this.userRepository.updateConfirmation(user._id);
             return result;
         });
     }
     resendingEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield this.usersService.findUserByEmail(email);
+            let user = yield this.userRepository.findUserByEmail(email);
             if (user === null)
                 return false;
             if (user.emailConfirmation.isConfirmed === true)
@@ -92,31 +90,31 @@ class AuthService {
                 hours: 1,
                 minutes: 2
             });
-            yield users_db_repository_1.userRepository.updateCode(user._id, confirmationCode, expiritionDate);
+            yield this.userRepository.updateCode(user._id, confirmationCode, expiritionDate);
             yield email_adapter_1.emailAdapter.sendEmail(user.accountData.email, 'code', confirmationCode);
             return true;
         });
     }
     passwordRecovery(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield this.usersService.findUserByEmail(email);
+            let user = yield this.userRepository.findUserByEmail(email);
             if (user === null)
                 return true;
             const recoveryCode = (0, uuid_1.v4)();
-            yield users_db_repository_1.userRepository.updateRecoveryCode(user._id, recoveryCode);
+            yield this.userRepository.updateRecoveryCode(user._id, recoveryCode);
             yield email_adapter_1.emailAdapter.passwordRecovery(user.accountData.email, 'code', recoveryCode);
             return true;
         });
     }
     newPassword(newPassword, recoveryCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = yield users_db_repository_1.userRepository.findUserByRecoveryCode(recoveryCode);
+            let result = yield this.userRepository.findUserByRecoveryCode(recoveryCode);
             if (result === null) {
                 return false;
             }
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
             const passwordHash = yield this._generateHash(newPassword, passwordSalt);
-            const resultUpdatePassword = yield users_db_repository_1.userRepository.updatePassword(result._id, passwordSalt, passwordHash);
+            const resultUpdatePassword = yield this.userRepository.updatePassword(result._id, passwordSalt, passwordHash);
             if (resultUpdatePassword === false) {
                 return false;
             }

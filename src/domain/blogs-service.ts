@@ -7,10 +7,7 @@ import { BlogMongoDB, blogOutput } from "../types/types-blogs";
 
 
 export class BlogsService {
-    private blogsRepository: BlogsRepository
-
-    constructor () {
-        this.blogsRepository = new BlogsRepository()
+    constructor (protected blogsRepository : BlogsRepository) {
     }
     
     async findBlogs(paginationQuery: QueryPaginationType) {
@@ -19,6 +16,10 @@ export class BlogsService {
 
     async getBlogId(id: string): Promise<blogOutput | boolean> {
         return await this.blogsRepository.getBlogId(id)
+    }
+
+    async getBlogNameById(id: string): Promise<string | boolean> {
+        return await this.blogsRepository.getBlogNameById(id)
     }
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<blogOutput> {

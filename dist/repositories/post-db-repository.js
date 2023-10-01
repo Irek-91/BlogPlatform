@@ -12,11 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostRepository = void 0;
 const mongodb_1 = require("mongodb");
 const db_mongoos_1 = require("../db/db-mongoos");
-const blogs_db_repository_1 = require("./blogs-db-repository");
 class PostRepository {
-    constructor() {
-        this.blogsRepository = new blogs_db_repository_1.BlogsRepository;
-    }
     findPost(paginationQuery, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const posts = yield db_mongoos_1.PostsModelClass.find({}).
@@ -167,10 +163,9 @@ class PostRepository {
             return true;
         });
     }
-    createdPostId(title, shortDescription, content, blogId) {
+    createdPostId(title, shortDescription, content, blogId, blogName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blog = yield this.blogsRepository.getBlogId(blogId);
-            if (!blog) {
+            if (blogName == false || blogName == true) {
                 return false;
             }
             const newPostId = new mongodb_1.ObjectId();
@@ -180,8 +175,8 @@ class PostRepository {
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
-                blogId: blog.id,
-                blogName: blog.name,
+                blogId: blogId,
+                blogName: blogName,
                 createdAt: createdAt,
                 extendedLikesInfo: {
                     likesCount: 0,

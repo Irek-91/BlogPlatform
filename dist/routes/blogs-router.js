@@ -9,20 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsRouter = void 0;
-const posts_service_1 = require("./../domain/posts-service");
-const blogs_service_1 = require("./../domain/blogs-service");
+exports.BlogsController = exports.blogsRouter = void 0;
 const express_1 = require("express");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
 const blogs_validation_1 = require("../midlewares/blogs-validation");
 const basicAuth_1 = require("../midlewares/basicAuth");
 const post_validation_1 = require("../midlewares/post-validation");
 const pagination_1 = require("../midlewares/pagination");
+const composition_root_1 = require("../composition-root");
 exports.blogsRouter = (0, express_1.Router)({});
 class BlogsController {
-    constructor() {
-        this.blogsService = new blogs_service_1.BlogsService();
-        this.postsService = new posts_service_1.PostsService();
+    constructor(blogsService, postsService) {
+        this.blogsService = blogsService;
+        this.postsService = postsService;
     }
     getBlogs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -99,7 +98,8 @@ class BlogsController {
             const shortDescription = req.body.shortDescription;
             const content = req.body.content;
             const blogId = req.params.blogId;
-            const newBlog = yield this.postsService.createdPostBlogId(title, shortDescription, content, blogId);
+            const blogName = yield this.blogsService.getBlogNameById(blogId);
+            const newBlog = yield this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
             if (newBlog != false) {
                 res.status(201).send(newBlog);
             }
@@ -109,11 +109,11 @@ class BlogsController {
         });
     }
 }
-const blogsControllerInstance = new BlogsController();
-exports.blogsRouter.get('/', blogsControllerInstance.getBlogs.bind(blogsControllerInstance));
-exports.blogsRouter.get('/:id', blogsControllerInstance.getBlogId.bind(blogsControllerInstance));
-exports.blogsRouter.get('/:blogId/posts', blogsControllerInstance.getPostsByBlogId.bind(blogsControllerInstance));
-exports.blogsRouter.delete('/:id', basicAuth_1.authMidleware, blogsControllerInstance.deletBlogId.bind(blogsControllerInstance));
-exports.blogsRouter.post('/', basicAuth_1.authMidleware, blogs_validation_1.nameValidation, blogs_validation_1.descriptionValidation, blogs_validation_1.websiteUrl, blogs_validation_1.websiteUrlLength, input_validation_middleware_1.inputValidationMiddleware, blogsControllerInstance.createBlog.bind(blogsControllerInstance));
-exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, input_validation_middleware_1.inputValidationMiddleware, blogsControllerInstance.createPostByBlog.bind(blogsControllerInstance));
-exports.blogsRouter.put('/:id', basicAuth_1.authMidleware, blogs_validation_1.nameValidation, blogs_validation_1.descriptionValidation, blogs_validation_1.websiteUrl, blogs_validation_1.websiteUrlLength, input_validation_middleware_1.inputValidationMiddleware, blogsControllerInstance.updateBlogId.bind(blogsControllerInstance));
+exports.BlogsController = BlogsController;
+exports.blogsRouter.get('/', composition_root_1.blogsController.getBlogs.bind(composition_root_1.blogsController));
+exports.blogsRouter.get('/:id', composition_root_1.blogsController.getBlogId.bind(composition_root_1.blogsController));
+exports.blogsRouter.get('/:blogId/posts', composition_root_1.blogsController.getPostsByBlogId.bind(composition_root_1.blogsController));
+exports.blogsRouter.delete('/:id', basicAuth_1.authMidleware, composition_root_1.blogsController.deletBlogId.bind(composition_root_1.blogsController));
+exports.blogsRouter.post('/', basicAuth_1.authMidleware, blogs_validation_1.nameValidation, blogs_validation_1.descriptionValidation, blogs_validation_1.websiteUrl, blogs_validation_1.websiteUrlLength, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.blogsController.createBlog.bind(composition_root_1.blogsController));
+exports.blogsRouter.post('/:blogId/posts', basicAuth_1.authMidleware, post_validation_1.titleValidation, post_validation_1.shortDescriptionValidation, post_validation_1.contentValidation, post_validation_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.blogsController.createPostByBlog.bind(composition_root_1.blogsController));
+exports.blogsRouter.put('/:id', basicAuth_1.authMidleware, blogs_validation_1.nameValidation, blogs_validation_1.descriptionValidation, blogs_validation_1.websiteUrl, blogs_validation_1.websiteUrlLength, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.blogsController.updateBlogId.bind(composition_root_1.blogsController));

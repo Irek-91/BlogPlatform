@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.securityDeviceRouter = void 0;
+exports.SecurityDeviceController = exports.securityDeviceRouter = void 0;
 const express_1 = require("express");
 const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 const chek_refreshToket_delete_1 = require("../midlewares/chek-refreshToket-delete");
-const securityDevice_service_1 = require("../domain/securityDevice_service");
+const composition_root_1 = require("../composition-root");
 exports.securityDeviceRouter = (0, express_1.Router)({});
 class SecurityDeviceController {
-    constructor() {
-        this.securityDeviceService = new securityDevice_service_1.SecurityDeviceService();
+    constructor(securityDeviceService) {
+        this.securityDeviceService = securityDeviceService;
     }
     getDeviceByToken(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -53,7 +53,7 @@ class SecurityDeviceController {
         });
     }
 }
-const securityDeviceControllerInstance = new SecurityDeviceController();
-exports.securityDeviceRouter.get('/devices', chek_refreshToket_1.chekRefreshToken, securityDeviceControllerInstance.getDeviceByToken.bind(securityDeviceControllerInstance));
-exports.securityDeviceRouter.delete('/devices', chek_refreshToket_1.chekRefreshToken, securityDeviceControllerInstance.deleteAllDevicesExceptOne.bind(securityDeviceControllerInstance));
-exports.securityDeviceRouter.delete('/devices/:deviceId', chek_refreshToket_delete_1.chekRefreshTokenDeleteDevice, securityDeviceControllerInstance.deleteDeviceByUserId.bind(securityDeviceControllerInstance));
+exports.SecurityDeviceController = SecurityDeviceController;
+exports.securityDeviceRouter.get('/devices', chek_refreshToket_1.chekRefreshToken, composition_root_1.securityDeviceController.getDeviceByToken.bind(composition_root_1.securityDeviceController));
+exports.securityDeviceRouter.delete('/devices', chek_refreshToket_1.chekRefreshToken, composition_root_1.securityDeviceController.deleteAllDevicesExceptOne.bind(composition_root_1.securityDeviceController));
+exports.securityDeviceRouter.delete('/devices/:deviceId', chek_refreshToket_delete_1.chekRefreshTokenDeleteDevice, composition_root_1.securityDeviceController.deleteDeviceByUserId.bind(composition_root_1.securityDeviceController));

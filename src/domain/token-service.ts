@@ -1,14 +1,14 @@
 import { DevicesMongo, refreshToken } from './../types/token-types';
-import { tokensRepository } from "../repositories/tokens-db-repository"
 import { ObjectId } from 'mongodb';
 import { jwtService } from '../application/jwt-service';
+import { TokensRepository } from '../repositories/tokens-db-repository';
 
 
 export class TokensService {
-
+    constructor(protected tokensRepository: TokensRepository) {}
     async findTokenAndDevice(token: string): Promise<boolean | null> {
         const issuedAt = await jwtService.getIssueAttByRefreshToken(token)
-        const resultIssuedAt = await tokensRepository.findTokenAndDeviceByissuedAt(issuedAt)
+        const resultIssuedAt = await this.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt)
         if (resultIssuedAt) { return true }
         else { return null }
     }
@@ -25,7 +25,7 @@ export class TokensService {
             deviceName,
             userId)
 
-        const addTokenUser = await tokensRepository.addRefreshToken(newDeviceAndRefreshToken)
+        const addTokenUser = await this.tokensRepository.addRefreshToken(newDeviceAndRefreshToken)
         if (addTokenUser !== true) { return null }
         return refreshToken
     }
@@ -46,7 +46,7 @@ export class TokensService {
         const issuedAt = await jwtService.getIssuedAttByRefreshToken(refreshToken)
         if (issuedAt === null) { return null }
 
-        const resultDelete = await tokensRepository.deleteTokenAndDevice(issuedAt)
+        const resultDelete = await this.tokensRepository.deleteTokenAndDevice(issuedAt)
         if (resultDelete === null) { return null }
 
         const result = await this.addDeviceIdRefreshToken(userId, deviceId, IP, deviceName)
@@ -62,7 +62,7 @@ export class TokensService {
         const issuedAt = await jwtService.getIssuedAttByRefreshToken(refreshToken)
         if (issuedAt === null) { return null }
 
-        const resultDelete = await tokensRepository.deleteTokenAndDevice(issuedAt)
+        const resultDelete = await this.tokensRepository.deleteTokenAndDevice(issuedAt)
         if (resultDelete === null) { return null }
         return true
     }

@@ -4,19 +4,16 @@ import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
 import { authMidleware } from "../midlewares/basicAuth";
-import { contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
+import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { getPaginationFromQuery } from "../midlewares/pagination";
+import { blogsController } from '../composition-root';
 
 
 export const blogsRouter = Router({})
 
-class BlogsController {
-  private blogsService: BlogsService
-  private postsService: PostsService
+export class BlogsController {
 
-  constructor() {
-    this.blogsService = new BlogsService();
-    this.postsService = new PostsService()
+  constructor(protected blogsService : BlogsService, protected postsService: PostsService) {
   }
 
   async getBlogs(req: Request, res: Response) {
@@ -87,7 +84,8 @@ class BlogsController {
     const shortDescription: string = req.body.shortDescription;
     const content: string = req.body.content;
     const blogId: string = req.params.blogId
-    const newBlog = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId);
+    const blogName = await this.blogsService.getBlogNameById(blogId)
+    const newBlog = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
     if (newBlog != false) {
       res.status(201).send(newBlog)
     } else {
@@ -96,22 +94,21 @@ class BlogsController {
   }
 }
 
-const blogsControllerInstance = new BlogsController()
 
-blogsRouter.get('/', blogsControllerInstance.getBlogs.bind(blogsControllerInstance))
-blogsRouter.get('/:id', blogsControllerInstance.getBlogId.bind(blogsControllerInstance))
-blogsRouter.get('/:blogId/posts', blogsControllerInstance.getPostsByBlogId.bind(blogsControllerInstance))
-blogsRouter.delete('/:id', authMidleware, blogsControllerInstance.deletBlogId.bind(blogsControllerInstance))
+blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
+blogsRouter.get('/:id', blogsController.getBlogId.bind(blogsController))
+blogsRouter.get('/:blogId/posts', blogsController.getPostsByBlogId.bind(blogsController))
+blogsRouter.delete('/:id', authMidleware, blogsController.deletBlogId.bind(blogsController))
 blogsRouter.post('/', authMidleware, nameValidation, descriptionValidation, websiteUrl, websiteUrlLength,
   inputValidationMiddleware,
-  blogsControllerInstance.createBlog.bind(blogsControllerInstance)
+  blogsController.createBlog.bind(blogsController)
 )
-blogsRouter.post('/:blogId/posts', authMidleware, titleValidation, shortDescriptionValidation, contentValidation,
+blogsRouter.post('/:blogId/posts', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
   inputValidationMiddleware,
-  blogsControllerInstance.createPostByBlog.bind(blogsControllerInstance)
+  blogsController.createPostByBlog.bind(blogsController)
 )
 
 blogsRouter.put('/:id', authMidleware, nameValidation, descriptionValidation, websiteUrl, websiteUrlLength,
   inputValidationMiddleware,
-  blogsControllerInstance.updateBlogId.bind(blogsControllerInstance)
+  blogsController.updateBlogId.bind(blogsController)
 )

@@ -10,10 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostsService = void 0;
-const post_db_repository_1 = require("../repositories/post-db-repository");
 class PostsService {
-    constructor() {
-        this.postRepository = new post_db_repository_1.PostRepository();
+    constructor(postRepository) {
+        this.postRepository = postRepository;
     }
     findPost(paginationQuery, userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,9 +34,9 @@ class PostsService {
             return yield this.postRepository.deletePostId(id);
         });
     }
-    createdPostBlogId(title, shortDescription, content, blogId) {
+    createdPostBlogId(title, shortDescription, content, blogId, blogName) {
         return __awaiter(this, void 0, void 0, function* () {
-            const creatPost = yield this.postRepository.createdPostId(title, shortDescription, content, blogId);
+            const creatPost = yield this.postRepository.createdPostId(title, shortDescription, content, blogId, blogName);
             return creatPost;
         });
     }

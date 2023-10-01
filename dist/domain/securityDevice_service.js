@@ -10,13 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SecurityDeviceService = void 0;
-const tokens_db_repository_1 = require("../repositories/tokens-db-repository");
 const jwt_service_1 = require("../application/jwt-service");
 class SecurityDeviceService {
+    constructor(tokensRepository) {
+        this.tokensRepository = tokensRepository;
+    }
     getDeviceByToken(token, IP) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(token);
-            const results = yield tokens_db_repository_1.tokensRepository.getTokenAndDevice(userId);
+            const results = yield this.tokensRepository.getTokenAndDevice(userId);
             if (results === null) {
                 return null;
             }
@@ -33,13 +35,13 @@ class SecurityDeviceService {
     }
     deleteDeviceId(deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
+            const result = yield this.tokensRepository.deleteDeviceId(deviceId);
             return result;
         });
     }
     deleteDeviceByUserId(refreshToken, deviceId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const resultDeviceId = yield tokens_db_repository_1.tokensRepository.findOneDeviceId(deviceId);
+            const resultDeviceId = yield this.tokensRepository.findOneDeviceId(deviceId);
             if (!resultDeviceId) {
                 return 404;
             }
@@ -48,7 +50,7 @@ class SecurityDeviceService {
                 return 403;
             }
             else {
-                const result = yield tokens_db_repository_1.tokensRepository.deleteDeviceId(deviceId);
+                const result = yield this.tokensRepository.deleteDeviceId(deviceId);
                 return 204;
             }
         });
@@ -57,7 +59,7 @@ class SecurityDeviceService {
         return __awaiter(this, void 0, void 0, function* () {
             const deviceId = yield jwt_service_1.jwtService.getDeviceIdByRefreshToken(refreshToken);
             const userId = yield jwt_service_1.jwtService.getUserIdByRefreshToken(refreshToken);
-            const res = yield tokens_db_repository_1.tokensRepository.deleteAllDevicesExceptOne(deviceId, userId);
+            const res = yield this.tokensRepository.deleteAllDevicesExceptOne(deviceId, userId);
             return res;
         });
     }

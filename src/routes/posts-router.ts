@@ -9,19 +9,13 @@ import { authMiddleware } from "../midlewares/auth-middleware";
 import { BlogsService } from "../domain/blogs-service";
 import { CommentsService } from "../domain/comments-service";
 import { likeStatusValidation1 } from '../midlewares/like_status_validation';
+import { postsController } from '../composition-root';
 
 
 export const postsRouter = Router({});
 
-class PostsController {
-  private postsService: PostsService
-  private blogsService: BlogsService
-  private commentsService: CommentsService
-  constructor() {
-    this.postsService = new PostsService()
-    this.blogsService = new BlogsService()
-    this.commentsService = new CommentsService()
-  }
+export class PostsController {
+  constructor(protected postsService: PostsService,  protected blogsService: BlogsService, protected commentsService: CommentsService) { }
 
   async getPosts(req: Request, res: Response) {
 
@@ -70,8 +64,8 @@ class PostsController {
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
     const blogId = req.body.blogId;
-
-    let post = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId)
+    const blogName = await this.blogsService.getBlogNameById(blogId)
+    let post = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName)
     if (!post) {
       res.sendStatus(404)
       return
@@ -138,30 +132,29 @@ class PostsController {
   }
 }
 
-const postsControllerInstance = new PostsController()
 
-postsRouter.get('/', getUserMiddleware, postsControllerInstance.getPosts.bind(postsControllerInstance))
-postsRouter.get('/:id', getUserMiddleware, postsControllerInstance.getPostId.bind(postsControllerInstance))
-postsRouter.get('/:postId/comments', getUserMiddleware, postsControllerInstance.getCommentsBuPostId.bind(postsControllerInstance))
+postsRouter.get('/', getUserMiddleware, postsController.getPosts.bind(postsController))
+postsRouter.get('/:id', getUserMiddleware, postsController.getPostId.bind(postsController))
+postsRouter.get('/:postId/comments', getUserMiddleware, postsController.getCommentsBuPostId.bind(postsController))
 postsRouter.post('/', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
   inputValidationMiddleware,
-  postsControllerInstance.createdPostId.bind(postsControllerInstance)
+  postsController.createdPostId.bind(postsController)
 )
 
 postsRouter.post('/:postId/comments', authMiddleware, contentCommentValidation, inputValidationMiddleware,
-  postsControllerInstance.createdCommentPostId.bind(postsControllerInstance)
+  postsController.createdCommentPostId.bind(postsController)
 )
 
 postsRouter.put('/:id', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
   inputValidationMiddleware,
-  postsControllerInstance.updatePostId.bind(postsControllerInstance)
+  postsController.updatePostId.bind(postsController)
 )
 
-postsRouter.put('/:postId/like-status', authMiddleware, likeStatusValidation1, postsControllerInstance.updateLikeStatusPostId.bind(postsControllerInstance))
+postsRouter.put('/:postId/like-status', authMiddleware, likeStatusValidation1, postsController.updateLikeStatusPostId.bind(postsController))
 
 postsRouter.delete('/:id',
   authMidleware,
-  postsControllerInstance.deletePostId.bind(postsControllerInstance)
+  postsController.deletePostId.bind(postsController)
 )
 
 

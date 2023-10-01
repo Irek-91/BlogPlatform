@@ -8,10 +8,6 @@ import { log } from 'console';
 import { BlogsRepository } from './blogs-db-repository';
 
 export class PostRepository {
-    private blogsRepository : BlogsRepository
-    constructor () {
-        this.blogsRepository = new BlogsRepository
-    }
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
         const posts = await PostsModelClass.find({}).
             sort([[paginationQuery.sortBy, paginationQuery.sortDirection]]).
@@ -155,9 +151,8 @@ export class PostRepository {
     }
 
 
-    async createdPostId(title: string, shortDescription: string, content: string, blogId: string): Promise<postOutput | false> {
-        const blog = await this.blogsRepository.getBlogId(blogId);
-        if (!blog) { return false }
+    async createdPostId(title: string, shortDescription: string, content: string, blogId: string, blogName: string | boolean): Promise<postOutput | false> {
+        if (blogName == false || blogName == true) { return false }
 
         const newPostId = new ObjectId()
         const createdAt = new Date().toISOString();
@@ -167,8 +162,8 @@ export class PostRepository {
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId: blog.id,
-            blogName: blog.name,
+            blogId: blogId,
+            blogName: blogName,
             createdAt: createdAt,
             extendedLikesInfo: {
                 likesCount: 0,

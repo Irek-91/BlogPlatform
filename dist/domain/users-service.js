@@ -13,16 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
-const users_db_repository_1 = require("../repositories/users-db-repository");
 const user_1 = require("../types/user");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const mongodb_1 = require("mongodb");
 const date_fns_1 = require("date-fns");
 const uuid_1 = require("uuid");
 class UsersService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
     findUsers(paginationQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield users_db_repository_1.userRepository.findUsers(paginationQuery);
+            return yield this.userRepository.findUsers(paginationQuery);
         });
     }
     createUser(loginUser, passwordUser, emailUser) {
@@ -49,12 +51,12 @@ class UsersService {
                 isConfirmed,
                 recoveryCode
             });
-            return yield users_db_repository_1.userRepository.createUser(newUser);
+            return yield this.userRepository.createUser(newUser);
         });
     }
     deleteUserId(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield users_db_repository_1.userRepository.deleteUserId(id);
+            return yield this.userRepository.deleteUserId(id);
         });
     }
     _generateHash(password, salt) {
@@ -65,7 +67,7 @@ class UsersService {
     }
     checkCredentials(loginOrEmail, passwordUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield users_db_repository_1.userRepository.findByLoginOrEmailL(loginOrEmail);
+            const user = yield this.userRepository.findByLoginOrEmailL(loginOrEmail);
             if (!user) {
                 return false;
             }
@@ -80,12 +82,12 @@ class UsersService {
     }
     deleteUserAll() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield users_db_repository_1.userRepository.deleteUserAll();
+            return yield this.userRepository.deleteUserAll();
         });
     }
     findByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield users_db_repository_1.userRepository.findUserById(userId);
+            const result = yield this.userRepository.findUserById(userId);
             if (result) {
                 const resultUserViewModel = {
                     email: result.accountData.email,
@@ -99,13 +101,13 @@ class UsersService {
     }
     findUserByCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield users_db_repository_1.userRepository.findUserByCode(code);
+            let user = yield this.userRepository.findUserByCode(code);
             return user;
         });
     }
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user = yield users_db_repository_1.userRepository.findUserByEmail(email);
+            let user = yield this.userRepository.findUserByEmail(email);
             return user;
         });
     }

@@ -1,15 +1,15 @@
 import { NextFunction } from "express"
-import { tokensRepository } from "../repositories/tokens-db-repository"
 import { DeviceViewModel } from "../types/token-types"
 import { jwtService } from "../application/jwt-service"
+import { TokensRepository } from "../repositories/tokens-db-repository"
 
 
 export class SecurityDeviceService {
-
+    constructor(protected tokensRepository: TokensRepository) {}
 
     async getDeviceByToken(token: string, IP: string): Promise<DeviceViewModel[] | null> {
         const userId = await jwtService.getUserIdByRefreshToken(token)
-        const results = await tokensRepository.getTokenAndDevice(userId)
+        const results = await this.tokensRepository.getTokenAndDevice(userId)
         if (results === null) { return null }
 
         const resultDeviceIdOutput = results.map((b) => {
@@ -26,18 +26,18 @@ export class SecurityDeviceService {
     }
 
     async deleteDeviceId(deviceId: string): Promise<boolean | null> {
-        const result = await tokensRepository.deleteDeviceId(deviceId)
+        const result = await this.tokensRepository.deleteDeviceId(deviceId)
         return result
     }
 
     async deleteDeviceByUserId(refreshToken: string, deviceId: string): Promise<number> {
 
-        const resultDeviceId = await tokensRepository.findOneDeviceId(deviceId)
+        const resultDeviceId = await this.tokensRepository.findOneDeviceId(deviceId)
         if (!resultDeviceId) { return 404 }
         const resultUserId = await jwtService.getUserIdByToken(refreshToken)
         if (resultDeviceId.userId.toString() !== resultUserId!.toString()) { return 403 }
         else {
-            const result = await tokensRepository.deleteDeviceId(deviceId)
+            const result = await this.tokensRepository.deleteDeviceId(deviceId)
             return 204
         }
     }
@@ -46,7 +46,7 @@ export class SecurityDeviceService {
         const deviceId = await jwtService.getDeviceIdByRefreshToken(refreshToken)
         const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
 
-        const res = await tokensRepository.deleteAllDevicesExceptOne(deviceId, userId)
+        const res = await this.tokensRepository.deleteAllDevicesExceptOne(deviceId, userId)
         return res
     }
 }

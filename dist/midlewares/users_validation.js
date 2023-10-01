@@ -11,12 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newPasswordValidation = exports.emailValidationCustom = exports.emailValidation = exports.passwordValidation = exports.loginValidationLength = exports.loginValidation = void 0;
 const express_validator_1 = require("express-validator");
-const users_db_repository_1 = require("../repositories/users-db-repository");
+const composition_root_1 = require("../composition-root");
 exports.loginValidation = (0, express_validator_1.body)('login').trim().notEmpty().
     matches('^[a-zA-Z0-9_-]*$').
     withMessage('error in login').
     custom((login) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_db_repository_1.userRepository.findUserByLogin(login);
+    const user = yield composition_root_1.userRepository.findUserByLogin(login);
     if (user) {
         throw new Error("User ");
     }
@@ -33,7 +33,7 @@ exports.emailValidation = (0, express_validator_1.body)('email').trim().notEmpty
     withMessage('error in email');
 exports.emailValidationCustom = (0, express_validator_1.body)('email').
     custom((email) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_db_repository_1.userRepository.findUserByEmail(email);
+    const user = yield composition_root_1.userRepository.findUserByEmail(email);
     if (user) {
         throw new Error("user with the given email already exists");
     }

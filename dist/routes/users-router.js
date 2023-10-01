@@ -9,17 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.usersRouter = void 0;
+exports.UsersController = exports.usersRouter = void 0;
 const express_1 = require("express");
 const basicAuth_1 = require("../midlewares/basicAuth");
 const pagination_users_1 = require("../midlewares/pagination-users");
-const users_service_1 = require("../domain/users-service");
 const users_validation_1 = require("../midlewares/users_validation");
 const input_validation_middleware_1 = require("../midlewares/input-validation-middleware");
+const composition_root_1 = require("../composition-root");
 exports.usersRouter = (0, express_1.Router)({});
 class UsersController {
-    constructor() {
-        this.usersService = new users_service_1.UsersService();
+    constructor(usersService) {
+        this.usersService = usersService;
     }
     findUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -49,7 +49,7 @@ class UsersController {
         });
     }
 }
-const usersControllerInstace = new UsersController();
-exports.usersRouter.get('/', basicAuth_1.authMidleware, usersControllerInstace.findUsers.bind(usersControllerInstace));
-exports.usersRouter.post('/', basicAuth_1.authMidleware, users_validation_1.loginValidation, users_validation_1.loginValidationLength, users_validation_1.passwordValidation, users_validation_1.emailValidation, input_validation_middleware_1.inputValidationMiddleware, usersControllerInstace.createUser.bind(usersControllerInstace));
-exports.usersRouter.delete('/:id', basicAuth_1.authMidleware, usersControllerInstace.deleteUserId.bind(usersControllerInstace));
+exports.UsersController = UsersController;
+exports.usersRouter.get('/', basicAuth_1.authMidleware, composition_root_1.usersController.findUsers.bind(composition_root_1.usersController));
+exports.usersRouter.post('/', basicAuth_1.authMidleware, users_validation_1.loginValidation, users_validation_1.loginValidationLength, users_validation_1.passwordValidation, users_validation_1.emailValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.usersController.createUser.bind(composition_root_1.usersController));
+exports.usersRouter.delete('/:id', basicAuth_1.authMidleware, composition_root_1.usersController.deleteUserId.bind(composition_root_1.usersController));

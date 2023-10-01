@@ -11,8 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.chekRefreshToken = void 0;
 const jwt_service_1 = require("../application/jwt-service");
-const token_service_1 = require("../domain/token-service");
-const tokensService = new token_service_1.TokensService();
+const composition_root_1 = require("../composition-root");
 const chekRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const cookiesRefreshToken = req.cookies.refreshToken;
     if (!cookiesRefreshToken)
@@ -20,7 +19,7 @@ const chekRefreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     const validationToken = yield jwt_service_1.jwtService.checkingTokenKey(cookiesRefreshToken);
     if (validationToken === null)
         return res.sendStatus(401);
-    const expiredToken = yield tokensService.findTokenAndDevice(cookiesRefreshToken);
+    const expiredToken = yield composition_root_1.tokensService.findTokenAndDevice(cookiesRefreshToken);
     if (expiredToken === null)
         return res.sendStatus(401);
     next();

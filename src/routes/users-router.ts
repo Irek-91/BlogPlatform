@@ -4,13 +4,12 @@ import { getPaginationFromQueryUser } from "../midlewares/pagination-users";
 import { UsersService } from "../domain/users-service";
 import { emailValidation, loginValidation, loginValidationLength, passwordValidation } from "../midlewares/users_validation";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
+import { usersController } from "../composition-root";
 
 export const usersRouter = Router({})
 
-class UsersController {
-    private usersService: UsersService
-    constructor() {
-        this.usersService = new UsersService()
+export class UsersController {
+    constructor(protected usersService: UsersService) {
     }
 
     async findUsers(req: Request, res: Response) {
@@ -40,16 +39,15 @@ class UsersController {
 
 }
 
-const usersControllerInstace = new UsersController()
 
-usersRouter.get('/', authMidleware, usersControllerInstace.findUsers.bind(usersControllerInstace))
+usersRouter.get('/', authMidleware, usersController.findUsers.bind(usersController))
 
 usersRouter.post('/', authMidleware, loginValidation, loginValidationLength, passwordValidation, emailValidation,
-    inputValidationMiddleware, usersControllerInstace.createUser.bind(usersControllerInstace)
+    inputValidationMiddleware, usersController.createUser.bind(usersController)
 )
 
 usersRouter.delete('/:id',
-    authMidleware, usersControllerInstace.deleteUserId.bind(usersControllerInstace))
+    authMidleware, usersController.deleteUserId.bind(usersController))
 
 
 

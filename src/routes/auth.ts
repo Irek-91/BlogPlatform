@@ -12,19 +12,13 @@ import { chekRefreshToken } from '../midlewares/chek-refreshToket';
 import { v4 as uuidv4 } from 'uuid';
 import { filterCountIPAndURL } from '../midlewares/count-IPAndURIFilter';
 import { UsersService } from '../domain/users-service';
+import { authController } from '../composition-root';
 
 
 export const authRouter = Router({});
 
-class AuthController {
-    private usersService: UsersService
-    private tokensService: TokensService
-    private authService: AuthService
-    constructor() {
-        this.usersService = new UsersService()
-        this.tokensService = new TokensService
-        this.authService = new AuthService
-    }
+export class AuthController {
+    constructor(protected usersService: UsersService, protected tokensService: TokensService, protected authService: AuthService) {}
     async loginUserToTheSystem(req: Request, res: Response) {
         const loginOrEmail = req.body.loginOrEmail;
         const passwordUser = req.body.password;
@@ -161,49 +155,48 @@ class AuthController {
     }
 
 }
-const authControllerInstance = new AuthController()
 
 authRouter.post('/login', filterCountIPAndURL, loginOrEmailValidationAuth, passwordValidationAuth, inputValidationMiddleware,
-    authControllerInstance.loginUserToTheSystem.bind(authControllerInstance)
+    authController.loginUserToTheSystem.bind(authController)
 )
 
 authRouter.post('/refresh-token', chekRefreshToken,
-    authControllerInstance.generateNewPairOfAccessAndRefreshTokens.bind(authControllerInstance)
+    authController.generateNewPairOfAccessAndRefreshTokens.bind(authController)
 )
 
 authRouter.post('/logout', chekRefreshToken,
-    authControllerInstance.sendCorrectRefreshTokenThatWillBeRevoked.bind(authControllerInstance)
+    authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(authController)
 )
 
 
 
 authRouter.get('/me', authMiddleware,
-    authControllerInstance.getInformationAboutCurrentUser.bind(authControllerInstance)
+    authController.getInformationAboutCurrentUser.bind(authController)
 )
 
 authRouter.post('/registration', filterCountIPAndURL, loginValidation, emailValidationCustom, loginValidationLength,
     passwordValidation, emailValidation, inputValidationMiddleware,
-    authControllerInstance.sendCorrectRefreshTokenThatWillBeRevoked.bind(authControllerInstance)
+    authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(authController)
 )
 
 
 authRouter.post('/registration-confirmation', filterCountIPAndURL,
-    authControllerInstance.confirmRegistrationCode.bind(authControllerInstance)
+    authController.confirmRegistrationCode.bind(authController)
 )
 
 
 authRouter.post('/registration-email-resending', filterCountIPAndURL, emailValidation, inputValidationMiddleware,
-    authControllerInstance.resendConfirmationRegistrationEmail.bind(authControllerInstance)
+    authController.resendConfirmationRegistrationEmail.bind(authController)
 )
 
 
 authRouter.post('/password-recovery', filterCountIPAndURL, emailValidation, inputValidationMiddleware,
-    authControllerInstance.passwordRecoveryViaEmail.bind(authControllerInstance)
+    authController.passwordRecoveryViaEmail.bind(authController)
 )
 
 
 authRouter.post('/new-password', filterCountIPAndURL, newPasswordValidation, inputValidationMiddleware,
-    authControllerInstance.confirmNewPasswordRecovery.bind(authControllerInstance)
+    authController.confirmNewPasswordRecovery.bind(authController)
 )
 
 

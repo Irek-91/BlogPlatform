@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authRouter = void 0;
+exports.AuthController = exports.authRouter = void 0;
 const users_validation_1 = require("./../midlewares/users_validation");
 const express_1 = require("express");
 const aurh_validation_1 = require("../midlewares/aurh-validation");
@@ -17,19 +17,17 @@ const input_validation_middleware_1 = require("../midlewares/input-validation-mi
 const jwt_service_1 = require("../application/jwt-service");
 const auth_middleware_1 = require("../midlewares/auth-middleware");
 const users_validation_2 = require("../midlewares/users_validation");
-const auth_service_1 = require("../domain/auth-service");
 const email_adapter_1 = require("../application/email-adapter");
-const token_service_1 = require("../domain/token-service");
 const chek_refreshToket_1 = require("../midlewares/chek-refreshToket");
 const uuid_1 = require("uuid");
 const count_IPAndURIFilter_1 = require("../midlewares/count-IPAndURIFilter");
-const users_service_1 = require("../domain/users-service");
+const composition_root_1 = require("../composition-root");
 exports.authRouter = (0, express_1.Router)({});
 class AuthController {
-    constructor() {
-        this.usersService = new users_service_1.UsersService();
-        this.tokensService = new token_service_1.TokensService;
-        this.authService = new auth_service_1.AuthService;
+    constructor(usersService, tokensService, authService) {
+        this.usersService = usersService;
+        this.tokensService = tokensService;
+        this.authService = authService;
     }
     loginUserToTheSystem(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -178,16 +176,16 @@ class AuthController {
         });
     }
 }
-const authControllerInstance = new AuthController();
-exports.authRouter.post('/login', count_IPAndURIFilter_1.filterCountIPAndURL, aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, authControllerInstance.loginUserToTheSystem.bind(authControllerInstance));
-exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, authControllerInstance.generateNewPairOfAccessAndRefreshTokens.bind(authControllerInstance));
-exports.authRouter.post('/logout', chek_refreshToket_1.chekRefreshToken, authControllerInstance.sendCorrectRefreshTokenThatWillBeRevoked.bind(authControllerInstance));
-exports.authRouter.get('/me', auth_middleware_1.authMiddleware, authControllerInstance.getInformationAboutCurrentUser.bind(authControllerInstance));
-exports.authRouter.post('/registration', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.loginValidation, users_validation_1.emailValidationCustom, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, authControllerInstance.sendCorrectRefreshTokenThatWillBeRevoked.bind(authControllerInstance));
-exports.authRouter.post('/registration-confirmation', count_IPAndURIFilter_1.filterCountIPAndURL, authControllerInstance.confirmRegistrationCode.bind(authControllerInstance));
-exports.authRouter.post('/registration-email-resending', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, authControllerInstance.resendConfirmationRegistrationEmail.bind(authControllerInstance));
-exports.authRouter.post('/password-recovery', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, authControllerInstance.passwordRecoveryViaEmail.bind(authControllerInstance));
-exports.authRouter.post('/new-password', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_1.newPasswordValidation, input_validation_middleware_1.inputValidationMiddleware, authControllerInstance.confirmNewPasswordRecovery.bind(authControllerInstance));
+exports.AuthController = AuthController;
+exports.authRouter.post('/login', count_IPAndURIFilter_1.filterCountIPAndURL, aurh_validation_1.loginOrEmailValidationAuth, aurh_validation_1.passwordValidationAuth, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.authController.loginUserToTheSystem.bind(composition_root_1.authController));
+exports.authRouter.post('/refresh-token', chek_refreshToket_1.chekRefreshToken, composition_root_1.authController.generateNewPairOfAccessAndRefreshTokens.bind(composition_root_1.authController));
+exports.authRouter.post('/logout', chek_refreshToket_1.chekRefreshToken, composition_root_1.authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(composition_root_1.authController));
+exports.authRouter.get('/me', auth_middleware_1.authMiddleware, composition_root_1.authController.getInformationAboutCurrentUser.bind(composition_root_1.authController));
+exports.authRouter.post('/registration', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.loginValidation, users_validation_1.emailValidationCustom, users_validation_2.loginValidationLength, users_validation_1.passwordValidation, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(composition_root_1.authController));
+exports.authRouter.post('/registration-confirmation', count_IPAndURIFilter_1.filterCountIPAndURL, composition_root_1.authController.confirmRegistrationCode.bind(composition_root_1.authController));
+exports.authRouter.post('/registration-email-resending', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.authController.resendConfirmationRegistrationEmail.bind(composition_root_1.authController));
+exports.authRouter.post('/password-recovery', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_2.emailValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.authController.passwordRecoveryViaEmail.bind(composition_root_1.authController));
+exports.authRouter.post('/new-password', count_IPAndURIFilter_1.filterCountIPAndURL, users_validation_1.newPasswordValidation, input_validation_middleware_1.inputValidationMiddleware, composition_root_1.authController.confirmNewPasswordRecovery.bind(composition_root_1.authController));
 exports.authRouter.post('/registration-email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const info = yield email_adapter_1.emailAdapter.sendEmail(req.body.email, req.body.subject, req.body.code);
     res.sendStatus(204);
