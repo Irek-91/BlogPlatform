@@ -1,9 +1,5 @@
 import { createUser } from './helpers/users-tests-helpers';
 import request from 'supertest'
-import { MongoClient } from 'mongodb';
-import { createBlog } from './helpers/blogs-tests-helpers';
-import { createPost } from './helpers/posts-tests-helpers';
-import { log } from 'console';
 import { app } from '../src';
 import { userInputModel } from '../src/types/user';
 
