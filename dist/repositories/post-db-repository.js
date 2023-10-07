@@ -108,10 +108,21 @@ class PostRepository {
             }
         });
     }
+    getPostById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //const post = await PostsModelClass.findOne({_id: id})
+            return db_mongoos_1.PostsModelClass.findOne({ _id: id });
+        });
+    }
+    savePost(post) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield post.save();
+        });
+    }
     getPostId(id, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let post = yield db_mongoos_1.PostsModelClass.findOne({ _id: new mongodb_1.ObjectId(id) });
+                let post = yield db_mongoos_1.PostsModelClass.findOne({ _id: new mongodb_1.ObjectId(id) }).lean();
                 if (!post) {
                     return false;
                 }
@@ -123,15 +134,15 @@ class PostRepository {
                         myStatus = userStatus.status;
                     }
                 }
-                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: id, status: 'Like' })
-                    .sort({ createdAt: -1 }).skip(3).lean();
-                const newestLikesMaped = newestLikes.map((like) => {
-                    return {
-                        addedAt: like.createdAt,
-                        userId: like.userId,
-                        login: like.login
-                    };
-                });
+                // const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' })
+                //     .sort({ createdAt: -1 }).skip(3).lean()
+                // const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
+                //     return {
+                //         addedAt: like.createdAt,
+                //         userId: like.userId,
+                //         login: like.login
+                //     }
+                // })
                 return {
                     id: post._id.toString(),
                     title: post.title,
@@ -141,10 +152,10 @@ class PostRepository {
                     blogName: post.blogName,
                     createdAt: post.createdAt,
                     extendedLikesInfo: {
-                        likesCount: post.extendedLikesInfo.likesCount,
-                        dislikesCount: post.extendedLikesInfo.dislikesCount,
+                        likesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: id, status: 'Like' }),
+                        dislikesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: id, status: 'Dislike' }),
                         myStatus: myStatus,
-                        newestLikes: newestLikesMaped
+                        newestLikes: post.extendedLikesInfo.newestLikes
                     }
                 };
             }
@@ -182,11 +193,13 @@ class PostRepository {
                     likesCount: 0,
                     dislikesCount: 0,
                     myStatus: 'None',
-                    newestLikes: [{
-                            addedAt: createdAt,
-                            userId: 'string',
-                            login: 'string'
-                        }]
+                    newestLikes: [
+                    // {
+                    // addedAt: createdAt,
+                    // userId: 'string',
+                    // login: 'string'
+                    // }
+                    ]
                 }
             };
             const postInstance = new db_mongoos_1.PostsModelClass(newPost);
@@ -203,11 +216,7 @@ class PostRepository {
                     likesCount: 0,
                     dislikesCount: 0,
                     myStatus: 'None',
-                    newestLikes: [{
-                            addedAt: createdAt,
-                            userId: 'string',
-                            login: 'string'
-                        }]
+                    newestLikes: []
                 }
             };
         });
@@ -228,15 +237,28 @@ class PostRepository {
     updateLikeStatusPostId(postId, userId, likeStatus) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const createdAt = (new Date()).toISOString();
                 const login = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(userId) });
                 const likeInstance = new db_mongoos_1.LikesPostsClass();
                 likeInstance._id = new mongodb_1.ObjectId();
                 likeInstance.userId = userId;
-                likeInstance.createdAt = (new Date()).toISOString();
+                likeInstance.createdAt = createdAt;
                 likeInstance.login = login.accountData.login;
                 likeInstance.postId = postId;
                 likeInstance.status = likeStatus;
                 likeInstance.save();
+                const post = yield db_mongoos_1.PostsModelClass.findOne({ _id: new mongodb_1.ObjectId(postId) });
+                const newLike = { addedAt: createdAt,
+                    userId: userId,
+                    login: login.accountData.login };
+                if (post.extendedLikesInfo.newestLikes.length < 3) {
+                    post.extendedLikesInfo.newestLikes.unshift(newLike);
+                }
+                else {
+                    post.extendedLikesInfo.newestLikes.pop();
+                    post.extendedLikesInfo.newestLikes.unshift(newLike);
+                }
+                post.save();
                 return true;
             }
             catch (e) {

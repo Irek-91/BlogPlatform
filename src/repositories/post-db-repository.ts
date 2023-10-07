@@ -3,9 +3,10 @@ import { QueryPaginationType } from './../midlewares/pagination';
 import { ObjectId } from "mongodb";
 import { paginatorPost } from "../types/types_paginator";
 import { LikesPostsClass, PostsModelClass, UsersModelClass } from '../db/db-mongoos';
-import { PostMongoDb, postOutput } from '../types/types-posts';
+import { PostEntity, postOutput } from '../types/types-posts';
 import { log } from 'console';
 import { BlogsRepository } from './blogs-db-repository';
+import {HydratedDocument} from 'mongoose'
 
 export class PostRepository {
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
@@ -15,6 +16,7 @@ export class PostRepository {
             limit(paginationQuery.pageSize)
         const totalCount = await PostsModelClass.countDocuments()
         const pagesCount = Math.ceil(totalCount / paginationQuery.pageSize)
+
         const postsOutput: postOutput[] = await Promise.all(posts.map(async (b) => {
             let myStatus = 'None'
             if (userId) {
@@ -102,10 +104,19 @@ export class PostRepository {
 
     }
 
+    async getPostById(id: string):Promise<HydratedDocument<PostEntity> | null> {
+        //const post = await PostsModelClass.findOne({_id: id})
+        return PostsModelClass.findOne({_id: id})
+    }
+
+    async savePost(post: HydratedDocument<PostEntity>) {
+        await post.save()
+     }
 
     async getPostId(id: string, userId: string | null): Promise<postOutput | false> {
         try {
-            let post = await PostsModelClass.findOne({ _id: new ObjectId(id) });
+            let post = await PostsModelClass.findOne({ _id: new ObjectId(id) }).lean();
+            
             if (!post) { return false }
             let myStatus = 'None'
             if (userId) {
@@ -113,16 +124,16 @@ export class PostRepository {
                 const userStatus = await LikesPostsClass.findOne({ _id: id, userId: userId })
                 if (userStatus) { myStatus = userStatus.status }
             }
-            const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' })
-                .sort({ createdAt: -1 }).skip(3).lean()
+            // const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' })
+            //     .sort({ createdAt: -1 }).skip(3).lean()
 
-            const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
-                return {
-                    addedAt: like.createdAt,
-                    userId: like.userId,
-                    login: like.login
-                }
-            })
+            // const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
+            //     return {
+            //         addedAt: like.createdAt,
+            //         userId: like.userId,
+            //         login: like.login
+            //     }
+            // })
 
             return {
                 id: post._id.toString(),
@@ -133,10 +144,10 @@ export class PostRepository {
                 blogName: post.blogName,
                 createdAt: post.createdAt,
                 extendedLikesInfo: {
-                    likesCount: post.extendedLikesInfo!.likesCount!,
-                    dislikesCount: post.extendedLikesInfo!.dislikesCount!,
+                    likesCount:  await LikesPostsClass.countDocuments({ postId: id, status: 'Like' }),
+                    dislikesCount: await LikesPostsClass.countDocuments({ postId: id, status: 'Dislike' }),
                     myStatus: myStatus,
-                    newestLikes: newestLikesMaped
+                    newestLikes: post.extendedLikesInfo.newestLikes
                 }
             }
         } catch (e) { return false }
@@ -157,7 +168,7 @@ export class PostRepository {
         const newPostId = new ObjectId()
         const createdAt = new Date().toISOString();
 
-        const newPost: PostMongoDb = {
+        const newPost: PostEntity = {
             _id: newPostId,
             title: title,
             shortDescription: shortDescription,
@@ -169,11 +180,13 @@ export class PostRepository {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: 'None',
-                newestLikes: [{
-                    addedAt: createdAt,
-                    userId: 'string',
-                    login: 'string'
-                }]
+                newestLikes: [
+                    // {
+                    // addedAt: createdAt,
+                    // userId: 'string',
+                    // login: 'string'
+                    // }
+                ]
             }
         }
 
@@ -193,11 +206,7 @@ export class PostRepository {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: 'None',
-                newestLikes: [{
-                    addedAt: createdAt,
-                    userId: 'string',
-                    login: 'string'
-                }]
+                newestLikes: []
             }
         }
 
@@ -217,18 +226,33 @@ export class PostRepository {
 
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {
         try {
+            const createdAt = (new Date()).toISOString()
             const login = await UsersModelClass.findOne({ _id: new ObjectId(userId) })
             const likeInstance = new LikesPostsClass()
             likeInstance._id = new ObjectId()
             likeInstance.userId = userId
-            likeInstance.createdAt = (new Date()).toISOString()
+            likeInstance.createdAt = createdAt
             likeInstance.login = login!.accountData.login
             likeInstance.postId = postId
             likeInstance.status = likeStatus
             likeInstance.save()
+            const post = await PostsModelClass.findOne({ _id: new ObjectId(postId) })
+            const newLike = {addedAt: createdAt,
+                userId: userId,
+                login: login!.accountData.login}
+                
+            if (post!.extendedLikesInfo.newestLikes.length < 3) {
+                post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            } else {
+                post!.extendedLikesInfo.newestLikes.pop()
+                post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            }
+            post!.save()
+            
             return true
-        } catch (e) { return null }
-
+        } catch (e) { 
+            return null
+         }
     }
 
     async deletePostAll(): Promise<boolean> {

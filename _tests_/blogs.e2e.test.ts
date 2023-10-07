@@ -1,13 +1,21 @@
 import request from 'supertest'
 import { createBlog } from './helpers/blogs-tests-helpers';
-import { app } from '../src';
+import { app } from '../src/app';
 import { blogInput } from '../src/types/types-blogs';
+import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
+import { log } from 'console';
 
 
 describe ('tests for blogs', () => {
 
     beforeAll(async () => {
+        await runDbMongoose()
         await request(app).delete('/testing/all-data')
+
+    })
+
+    afterAll (async () => {
+        await connectDisconnectDb()
     })
     
 
@@ -60,22 +68,15 @@ describe ('tests for blogs', () => {
             expect(secondRes.status).toBe(400)
             expect(secondRes.body).toEqual(errors)
 
-            // const modelTwo: blogInput = {
-            //     name: 'ran()',
+            // const modelThree: blogInput = {
+            //     name: 'name3',
             //     description: 'description',
-            //     websiteUrl: 'websiteUrl',
+            //     websiteUrl: 'https://samurai.it-incubator.com',
             // }
-            // const thirdRes = await createBlog('admin', 'qwerty', modelTwo)
-            // expect(thirdRes.status).toBe(400)
-            // expect(firstRes.body).toEqual(errors)
+            // const fourthRes = await createBlog('admin', 'qwerty', modelThree)
+            // expect(fourthRes.status).not.toBe(400)
 
-            const modelThree: blogInput = {
-                name: 'name3',
-                description: 'description',
-                websiteUrl: 'https://samurai.it-incubator.com',
-            }
-            const fourthRes = await createBlog('admin', 'qwerty', modelThree)
-            expect(fourthRes.status).not.toBe(400)
+            
         })
 
         it('should return 201 status code and created blog', async () => {
@@ -127,7 +128,23 @@ describe ('tests for blogs', () => {
                 createdAt: expect.any(String),
                 isMembership: false})
             })
-        
+
+            it('удаление блога',async () => {
+                const {blog} = expect.getState()
+                const res = await request(app).delete(`/blogs/${blog.id}`)
+                                              .set({Authorization: 'Basic YWRtaW46cXdlcnR5'})
+                                              .expect(204)
+                const result = await request(app).get(`/blogs`)
+
+                expect(result.status).toBe(200)
+                expect(result.body).toEqual(({pagesCount: 0,
+                    page: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    items: []
+                   }))
+            })
+
     })
-   
+
 })

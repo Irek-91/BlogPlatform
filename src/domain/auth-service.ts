@@ -6,6 +6,7 @@ import { emailAdapter } from '../application/email-adapter';
 import { UsersService } from './users-service';
 import { UserRepository } from '../repositories/users-db-repository';
 
+
 export class AuthService {
     constructor(protected userRepository: UserRepository) {}
 

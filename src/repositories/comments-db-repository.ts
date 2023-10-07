@@ -157,7 +157,10 @@ export class CommentsRepository {
       )
       return true
 
-    } catch (e) { return null }
+    } catch (e) {
+      console.log(e) 
+      return null
+     }
   }
 
   async deleteCommentsAll(): Promise<boolean> {

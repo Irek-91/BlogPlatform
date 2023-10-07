@@ -1,8 +1,11 @@
 import { QueryPaginationType } from './../midlewares/pagination';
-import { postInput, postsCollectionsType, postOutput, PostMongoDb } from '../types/types-posts';
+import { postInput, postsCollectionsType, postOutput, PostEntity } from '../types/types-posts';
 import { paginatorPost } from '../types/types_paginator';
 import { ObjectId } from 'mongodb';
 import { PostRepository } from '../repositories/post-db-repository';
+import { HydratedDocument } from 'mongoose';
+
+
 
 export class PostsService {
 
@@ -10,6 +13,7 @@ export class PostsService {
     async findPost(paginationQuery: QueryPaginationType, userId: string | null): Promise<paginatorPost> {
         return this.postRepository.findPost(paginationQuery, userId)
     }
+
 
     async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string): Promise<paginatorPost | boolean> {
         return this.postRepository.findPostsBlogId(paginationQuery, blogId)
@@ -30,7 +34,23 @@ export class PostsService {
     }
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
-        return await this.postRepository.updatePostId(id, title, shortDescription, content, blogId)
+        //100
+        const post = await this.postRepository.getPostById(id)
+        if(!post) {
+            throw new Error('not found')
+        }
+
+        if (!post) return false
+        post.title = title
+        post.shortDescription = shortDescription
+        post.content = content
+        //post.addLike()
+
+        await this.postRepository.savePost(post)
+        //0
+
+        return true
+        //return await this.postRepository.updatePostId(id, title, shortDescription, content, blogId)
     }
 
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {

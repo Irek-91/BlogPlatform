@@ -32,6 +32,11 @@ export const runDbMongoose = async () => {
     } catch (e) {
         console.log('Don\'t connected');
         //await client.close()
-        await mongoose.disconnect()
+        await connectDisconnectDb()
     }
-};
+}
+
+export const connectDisconnectDb = async () => {
+    console.log('Don\'t connected');
+    await mongoose.connection.close()
+}

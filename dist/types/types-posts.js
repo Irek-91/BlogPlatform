@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostMongoDb = exports.likePostInfoShema = exports.postsShema = exports.newestLikesShema = void 0;
+exports.PostEntity = exports.likePostInfoShema = exports.postsShema = exports.newestLikesShema = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 exports.newestLikesShema = new mongoose_1.default.Schema({
     addedAt: { type: String, required: true },
@@ -33,7 +33,7 @@ exports.likePostInfoShema = new mongoose_1.default.Schema({
     status: { type: String, required: true },
     createdAt: { type: String, required: true }
 });
-class PostMongoDb {
+class PostEntity {
     constructor(_id, title, shortDescription, content, blogId, blogName, createdAt, extendedLikesInfo) {
         this._id = _id;
         this.title = title;
@@ -45,4 +45,4 @@ class PostMongoDb {
         this.extendedLikesInfo = extendedLikesInfo;
     }
 }
-exports.PostMongoDb = PostMongoDb;
+exports.PostEntity = PostEntity;

@@ -1,14 +1,19 @@
 import { createUser } from './helpers/users-tests-helpers';
 import request from 'supertest'
-import { app } from '../src';
+import { app } from '../src/app';
 import { userInputModel } from '../src/types/user';
-
+import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 
 
 describe('create user in the system ', () => {
-        beforeAll(async () => {
-            await request(app).delete('/testing/all-data')
-        })
+    beforeAll(async () => {
+        await runDbMongoose()
+        await request(app).delete('/testing/all-data')
+
+    })
+    afterAll (async () => {
+        await connectDisconnectDb()
+    })
 
         it ('return user ', async () => {
             const creatResponse = await request(app)
@@ -39,15 +44,15 @@ describe('create user in the system ', () => {
                 email: 'panda@mail.com',
             }
             const firstRes = await createUser('', '', model)
-            expect(firstRes.status).toBe(401)
+            expect(firstRes.response.status).toBe(401)
 
             const secondRes = await createUser('any', 'any', model)
-            expect(secondRes.status).toBe(401)
+            expect(secondRes.response.status).toBe(401)
 
             const thirdRes = await createUser('admin', 'qwerty', model)
-            const getUser = thirdRes.body
+            const getUser = thirdRes.createdUser
 
-            expect(thirdRes.status).not.toBe(401)
+            expect(thirdRes.response.status).not.toBe(401)
             
             expect.setState({user: getUser})
         })
@@ -75,8 +80,8 @@ describe('create user in the system ', () => {
                 email: '',
             }
             const firstRes = await createUser('admin', 'qwerty', modelOne)
-            expect(firstRes.status).toBe(400)
-            expect(firstRes.body).toEqual(errorsUsers)
+            expect(firstRes.response.status).toBe(400)
+            expect(firstRes.createdUser).toEqual(errorsUsers)
             
             const modelTwo: userInputModel = {
                 login: '12',
@@ -92,8 +97,8 @@ describe('create user in the system ', () => {
                 ])
             }
             const twoRes = await createUser('admin', 'qwerty', modelTwo)
-            expect(twoRes.status).toBe(400)
-            expect(twoRes.body).toEqual(errorsUsersTwo)
+            expect(twoRes.response.status).toBe(400)
+            expect(twoRes.createdUser).toEqual(errorsUsersTwo)
 
             const modelFree: userInputModel = {
                 login: '123456',
@@ -109,8 +114,8 @@ describe('create user in the system ', () => {
                 ])
             }
             const freeRes = await createUser('admin', 'qwerty', modelFree)
-            expect(freeRes.status).toBe(400)
-            expect(freeRes.body).toEqual(errorsUsersFree)
+            expect(freeRes.response.status).toBe(400)
+            expect(freeRes.createdUser).toEqual(errorsUsersFree)
 
 
         })
@@ -127,7 +132,7 @@ describe('create user in the system ', () => {
                                       pageSize: expect.any(Number),
                                       totalCount: expect.any(Number),
                                       items: [user]
-               })
+            })
         })
         
         it ('delete userId ', async () => {

@@ -29,7 +29,7 @@ export const newestLikesShema = new mongoose.Schema({
 }, { _id: false })
 
 
-export const postsShema = new mongoose.Schema({
+export const postsShema = new mongoose.Schema<PostEntity>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   title: { type: String, required: true },
   shortDescription: { type: String, required: true },
@@ -56,7 +56,7 @@ export const likePostInfoShema = new mongoose.Schema({
 
 
 
-export class PostMongoDb {
+export class PostEntity {
   constructor(public _id: ObjectId,
     public title: string,
     public shortDescription: string,

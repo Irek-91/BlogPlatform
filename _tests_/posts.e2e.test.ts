@@ -1,11 +1,17 @@
+import { Result } from 'express-validator';
 import request from 'supertest'
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { createBlog } from './helpers/blogs-tests-helpers';
 import { createPost } from './helpers/posts-tests-helpers';
 import { log } from 'console';
-import { app } from '../src';
+import { app } from '../src/app';
 import { blogInput } from '../src/types/types-blogs';
-import { postInput } from '../src/types/types-posts';
+import { postInput, postInputModel } from '../src/types/types-posts';
+import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
+import { createUser } from './helpers/users-tests-helpers';
+import { userInputModel } from '../src/types/user';
+import { createComment } from './helpers/comment_created';
+import { jwtService } from '../src/application/jwt-service';
 
 // const mongoUri = process.env.MONGO_URL;
 // if (!mongoUri) {
@@ -16,9 +22,15 @@ import { postInput } from '../src/types/types-posts';
 describe ('tests for posts', () => {
 
     beforeAll(async () => {
+        await runDbMongoose()
         await request(app).delete('/testing/all-data')
+
     })
-    describe('create post tests', () => {
+
+    afterAll (async () => {
+        await connectDisconnectDb()
+    })
+    describe('return post tests', () => {
 
     it ('return posts ', async () => {
         const creatResponse = await request(app)
@@ -40,6 +52,7 @@ describe ('tests for posts', () => {
                 .expect(404)
     })
     })
+
     describe('create post tests', () => {
     
         
@@ -47,7 +60,7 @@ describe ('tests for posts', () => {
         
         const model: blogInput = {
             name: 'namePost',
-            description: 'description',
+            description: 'create post tests',
             websiteUrl: 'https://samurai.it-incubator.com',
         }
         const res = await createBlog('admin', 'qwerty', model)
@@ -76,11 +89,7 @@ describe ('tests for posts', () => {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: 'None',
-                newestLikes: [{
-                    addedAt: getPosts.createdAt,
-                    userId: 'string',
-                    login: 'string'
-                }]
+                newestLikes: []
               }
           })
         
@@ -108,11 +117,151 @@ describe ('tests for posts', () => {
               }
             })
     })
+
+    it('обновление поста', async () => {
+        const {post} = expect.getState()
+        const {blog} = expect.getState()
+
+        const updatePostData: postInputModel = {
+            title: "string",
+            shortDescription: "string",
+            content: "string",
+            blogId: blog.id
+          }
+        const result = await request(app).put(`/posts/${post.id}`)
+                                      .set({Authorization: 'Basic YWRtaW46cXdlcnR5'})
+                                      .send(updatePostData)
+                                      .expect(204)
+        const updateResult = await request(app).get(`/posts/${post.id}`)
+
+        expect(result.status).toBe(204)
+        expect(updateResult.body).toEqual({
+            id: expect.any(String),
+            title: updatePostData.title,
+            shortDescription: updatePostData.shortDescription,
+            content: updatePostData.content,
+            blogId: expect.any(String),
+            blogName: expect.any(String),
+            createdAt: post.createdAt,
+            extendedLikesInfo: { 
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None',
+                newestLikes: expect.any(Array)
+              }
+            }
+        )
     })
-    describe('creating a comment for a post', () => {
+
+    it('создание коментария для поста', async () => {
         const {blog} = expect.getState()
         const {post} = expect.getState()
-        
+        const userModel: userInputModel = {
+            login: 'panda',
+            password: 'panda2023',
+            email: 'panda@mail.com',
+        }
+        const user = await createUser('admin', 'qwerty', userModel)
+        const userOne = user.createdUser
+        expect.setState({userOne: userOne})
+        const newCommentData = {
+                content: "coments of post!!!!!!!!!!!!!!!"    
+        }
+    
+        const createCommment = await createComment(post.id, newCommentData, 201, new ObjectId(userOne.id))
+        const result = await request(app).get(`/posts/${post.id}/comments`)
+        expect(result.status).toBe(200)
+        expect(result.body).toEqual({
+                pagesCount: expect.any(Number),
+                page: expect.any(Number),
+                pageSize: expect.any(Number),
+                totalCount: 1,
+                items: [
+                  {
+                    id: expect.any(String),
+                    content: newCommentData.content,
+                    commentatorInfo: {
+                      userId: userOne!.id,
+                      userLogin: userOne!.login
+                    },
+                    createdAt: expect.any(String),
+                    likesInfo: {
+                      likesCount: 0,
+                      dislikesCount: 0,
+                      myStatus: "None"
+                    }
+                  }
+                ]
+            })
+        const dataIncorect = {
+            content: "comentlength min 20"    
+        }
 
-    })
+        const commentIncorect = await createComment(post.id, dataIncorect, 400, new ObjectId(userOne.id))
+        expect(commentIncorect.response.status).toBe(400)
+        expect(commentIncorect.response.body).toEqual(
+                {
+                    "errorsMessages": [
+                      {
+                        "message": expect.any(String),
+                        "field": "content"
+                      }
+                    ]
+                  }
+            )
+        })
+    it('лайк поста', async () => {
+      const {blog} = expect.getState()
+      const {post} = expect.getState()
+      const {userOne} = expect.getState()
+
+      const userModelTwo: userInputModel = {
+        login: 'nosorog',
+        password: 'nosorog2023',
+        email: 'panda@mail.com',
+      }
+      const userResponse = await createUser('admin', 'qwerty', userModelTwo)
+      const userTwo = userResponse.createdUser
+      const AccessTokenOne = await jwtService.createdJWTAccessToken(userOne.id)
+      const headersJWTOne = {Authorization: `Bearer ${AccessTokenOne}`}
+      const AccessTokeTwo = await jwtService.createdJWTAccessToken(new ObjectId(userTwo.id))
+      const headersJWTTwo = {Authorization: `Bearer ${AccessTokeTwo}`}
+      const likeStatusDataOne = {
+        "likeStatus": "Like"
+      }
+
+      const getResultUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(headersJWTOne)
+                    .send(likeStatusDataOne)
+                    .expect(204)
+
+
+      const res = await request(app).get(`/posts/${post.id}`)      
+      expect(res.body).toEqual({
+          id: post.id,
+          title: expect.any(String),
+          shortDescription: expect.any(String),
+          content: expect.any(String),
+          blogId: blog.id,
+          blogName: expect.any(String),
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 1,
+            dislikesCount: 0,
+            myStatus: "None",
+            newestLikes: [{
+              addedAt: expect.any(String),
+              userId: userOne.id,
+              login: userOne.login
+            }]
+          }
+      })
+
+   })
+
+
+  })
+
+
+    
 })

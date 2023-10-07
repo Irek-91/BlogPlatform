@@ -42,7 +42,21 @@ class PostsService {
     }
     updatePostId(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.postRepository.updatePostId(id, title, shortDescription, content, blogId);
+            //100
+            const post = yield this.postRepository.getPostById(id);
+            if (!post) {
+                throw new Error('not found');
+            }
+            if (!post)
+                return false;
+            post.title = title;
+            post.shortDescription = shortDescription;
+            post.content = content;
+            //post.addLike()
+            yield this.postRepository.savePost(post);
+            //0
+            return true;
+            //return await this.postRepository.updatePostId(id, title, shortDescription, content, blogId)
         });
     }
     updateLikeStatusPostId(postId, userId, likeStatus) {

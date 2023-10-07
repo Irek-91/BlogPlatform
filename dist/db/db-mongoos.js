@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDbMongoose = exports.IPAndURIModelClass = exports.DevicesModelClass = exports.LikesPostsClass = exports.LikesModelClass = exports.CommentsModelClass = exports.UsersModelClass = exports.PostsModelClass = exports.BlogsModelClass = void 0;
+exports.connectDisconnectDb = exports.runDbMongoose = exports.IPAndURIModelClass = exports.DevicesModelClass = exports.LikesPostsClass = exports.LikesModelClass = exports.CommentsModelClass = exports.UsersModelClass = exports.PostsModelClass = exports.BlogsModelClass = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const types_blogs_1 = require("../types/types-blogs");
@@ -42,7 +42,12 @@ const runDbMongoose = () => __awaiter(void 0, void 0, void 0, function* () {
     catch (e) {
         console.log('Don\'t connected');
         //await client.close()
-        yield mongoose_1.default.disconnect();
+        yield (0, exports.connectDisconnectDb)();
     }
 });
 exports.runDbMongoose = runDbMongoose;
+const connectDisconnectDb = () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Don\'t connected');
+    yield mongoose_1.default.connection.close();
+});
+exports.connectDisconnectDb = connectDisconnectDb;
