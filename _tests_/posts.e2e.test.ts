@@ -99,6 +99,8 @@ describe ('tests for posts', () => {
     
     it('should return 200 status code and created post', async () => {
         const {post} = expect.getState()
+        const {blog} = expect.getState()
+
         const res = await request(app).get(`/posts/${post.id}`)
         expect(res.status).toBe(200)
         expect(res.body).toEqual({
@@ -106,8 +108,8 @@ describe ('tests for posts', () => {
             title: post.title,
             shortDescription: post.shortDescription,
             content: post.content,
-            blogId: expect.any(String),
-            blogName: expect.any(String),
+            blogId: blog.id,
+            blogName: blog.name,
             createdAt: post.createdAt,
             extendedLikesInfo: { 
                 likesCount: 0,
@@ -226,8 +228,25 @@ describe ('tests for posts', () => {
       const headersJWTOne = {Authorization: `Bearer ${AccessTokenOne}`}
       const AccessTokeTwo = await jwtService.createdJWTAccessToken(new ObjectId(userTwo.id))
       const headersJWTTwo = {Authorization: `Bearer ${AccessTokeTwo}`}
+      const likeStatusDataIncorect = {
+        "likeStatus": ""
+      }
+
+      const getResultUpdateLikeIncorect = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(headersJWTOne)
+                    .send(likeStatusDataIncorect)
+                    .expect(400)
+      expect(getResultUpdateLikeIncorect.body).toEqual({
+        "errorsMessages": [
+          {
+            "message": expect.any(String),
+            "field": "likeStatus"
+          }
+        ]
+      })       
+      
       const likeStatusDataOne = {
-        "likeStatus": "Like"
+        "likeStatus": "Dislike"
       }
 
       const getResultUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)

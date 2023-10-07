@@ -31,7 +31,7 @@ postsRouter.put('/:id', authMidleware, titleValidation, shortDescriptionValidati
   postsController.updatePostId.bind(postsController)
 )
 
-postsRouter.put('/:postId/like-status', authMiddleware, likeStatusValidation1, postsController.updateLikeStatusPostId.bind(postsController))
+postsRouter.put('/:postId/like-status', authMiddleware, likeStatusValidation1, inputValidationMiddleware, postsController.updateLikeStatusPostId.bind(postsController))
 
 postsRouter.delete('/:id',
   authMidleware,

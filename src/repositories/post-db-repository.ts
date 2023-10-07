@@ -181,11 +181,6 @@ export class PostRepository {
                 dislikesCount: 0,
                 myStatus: 'None',
                 newestLikes: [
-                    // {
-                    // addedAt: createdAt,
-                    // userId: 'string',
-                    // login: 'string'
-                    // }
                 ]
             }
         }
@@ -236,16 +231,19 @@ export class PostRepository {
             likeInstance.postId = postId
             likeInstance.status = likeStatus
             likeInstance.save()
+
             const post = await PostsModelClass.findOne({ _id: new ObjectId(postId) })
-            const newLike = {addedAt: createdAt,
-                userId: userId,
-                login: login!.accountData.login}
-                
-            if (post!.extendedLikesInfo.newestLikes.length < 3) {
-                post!.extendedLikesInfo.newestLikes.unshift(newLike)
-            } else {
-                post!.extendedLikesInfo.newestLikes.pop()
-                post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            if (likeStatus === 'Like') {
+                const newLike = {addedAt: createdAt,
+                    userId: userId,
+                    login: login!.accountData.login}
+             
+                if (post!.extendedLikesInfo.newestLikes.length < 3) {
+                    post!.extendedLikesInfo.newestLikes.unshift(newLike)
+                } else {
+                    post!.extendedLikesInfo.newestLikes.pop()
+                    post!.extendedLikesInfo.newestLikes.unshift(newLike)
+                }
             }
             post!.save()
             

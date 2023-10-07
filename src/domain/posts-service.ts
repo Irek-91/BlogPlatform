@@ -56,7 +56,6 @@ export class PostsService {
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {
         return await this.postRepository.updateLikeStatusPostId(postId, userId, likeStatus)
     }
-
     async deletePostAll(): Promise<boolean> {
         return await this.postRepository.deletePostAll()
     }
