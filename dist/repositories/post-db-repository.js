@@ -29,7 +29,7 @@ class PostRepository {
                         myStatus = status.status;
                     }
                 }
-                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean();
+                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean();
                 const newestLikesMaped = newestLikes.map((like) => {
                     return {
                         addedAt: like.createdAt,
@@ -82,7 +82,7 @@ class PostRepository {
                             myStatus = status.status;
                         }
                     }
-                    const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean();
+                    const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean();
                     const newestLikesMaped = newestLikes.map((like) => {
                         return {
                             addedAt: like.createdAt,
@@ -145,6 +145,14 @@ class PostRepository {
                         myStatus = userStatus.status;
                     }
                 }
+                const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: id, status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean();
+                const newestLikesMaped = newestLikes.map((like) => {
+                    return {
+                        addedAt: like.createdAt,
+                        userId: like.userId,
+                        login: like.login
+                    };
+                });
                 return {
                     id: post._id.toString(),
                     title: post.title,
@@ -157,7 +165,7 @@ class PostRepository {
                         likesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: id, status: 'Like' }),
                         dislikesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: id, status: 'Dislike' }),
                         myStatus: myStatus,
-                        newestLikes: post.extendedLikesInfo.newestLikes
+                        newestLikes: newestLikesMaped
                     }
                 };
             }

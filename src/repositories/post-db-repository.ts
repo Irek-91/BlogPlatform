@@ -25,7 +25,7 @@ export class PostRepository {
                     myStatus = status.status
                 }
             }
-            const newestLikes = await LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean()
+            const newestLikes = await LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean()
             const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
                 return {
                     addedAt: like.createdAt,
@@ -80,7 +80,7 @@ export class PostRepository {
                     myStatus = status.status
                 }
             }
-            const newestLikes = await LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean()
+            const newestLikes = await LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean()
             const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
                 return {
                     addedAt: like.createdAt,
@@ -136,6 +136,14 @@ export class PostRepository {
                 const userStatus = await LikesPostsClass.findOne({ postId: id, userId: userId })
                 if (userStatus) { myStatus = userStatus.status }
             }
+            const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' }).sort({ createdAt: -1 }).limit(3).lean()
+            const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
+                return {
+                    addedAt: like.createdAt,
+                    userId: like.userId,
+                    login: like.login
+                }
+            })
 
             return {
                 id: post._id.toString(),
@@ -149,7 +157,7 @@ export class PostRepository {
                     likesCount:  await LikesPostsClass.countDocuments({ postId: id, status: 'Like' }),
                     dislikesCount: await LikesPostsClass.countDocuments({ postId: id, status: 'Dislike' }),
                     myStatus: myStatus,
-                    newestLikes: post.extendedLikesInfo.newestLikes
+                    newestLikes: newestLikesMaped
                 }
             }
         } catch (e) { return false }
