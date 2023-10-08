@@ -37,7 +37,6 @@ export class AuthController {
             res.sendStatus(401)
         }
     }
-
     async generateNewPairOfAccessAndRefreshTokens(req: Request, res: Response) {
         const cookiesRefreshToken = req.cookies.refreshToken
         const IP = req.ip

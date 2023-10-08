@@ -50,7 +50,7 @@ describe('create user in the system ', () => {
             expect(secondRes.response.status).toBe(401)
 
             const thirdRes = await createUser('admin', 'qwerty', model)
-            const getUser = thirdRes.createdUser
+            const getUser = thirdRes.user
 
             expect(thirdRes.response.status).not.toBe(401)
             
@@ -81,7 +81,7 @@ describe('create user in the system ', () => {
             }
             const firstRes = await createUser('admin', 'qwerty', modelOne)
             expect(firstRes.response.status).toBe(400)
-            expect(firstRes.createdUser).toEqual(errorsUsers)
+            expect(firstRes.user).toEqual(errorsUsers)
             
             const modelTwo: userInputModel = {
                 login: '12',
@@ -98,7 +98,7 @@ describe('create user in the system ', () => {
             }
             const twoRes = await createUser('admin', 'qwerty', modelTwo)
             expect(twoRes.response.status).toBe(400)
-            expect(twoRes.createdUser).toEqual(errorsUsersTwo)
+            expect(twoRes.user).toEqual(errorsUsersTwo)
 
             const modelFree: userInputModel = {
                 login: '123456',
@@ -115,7 +115,7 @@ describe('create user in the system ', () => {
             }
             const freeRes = await createUser('admin', 'qwerty', modelFree)
             expect(freeRes.response.status).toBe(400)
-            expect(freeRes.createdUser).toEqual(errorsUsersFree)
+            expect(freeRes.user).toEqual(errorsUsersFree)
 
 
         })

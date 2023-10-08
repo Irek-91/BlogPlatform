@@ -121,7 +121,7 @@ export class PostRepository {
             let myStatus = 'None'
             if (userId) {
                 const user = await UsersModelClass.findOne({ _id: new ObjectId(userId) })
-                const userStatus = await LikesPostsClass.findOne({ _id: id, userId: userId })
+                const userStatus = await LikesPostsClass.findOne({ postId: id, userId: userId })
                 if (userStatus) { myStatus = userStatus.status }
             }
             // const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' })

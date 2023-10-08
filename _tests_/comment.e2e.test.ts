@@ -30,7 +30,7 @@ describe ('tests for comments', () => {
                 email: 'panda@mail.com',
             }
             const user = await createUser('admin', 'qwerty', userModel)
-            const userOne = user.createdUser
+            const userOne = user.user
             expect.setState({userOne: userOne})
 
             const model: blogInput = {
@@ -105,7 +105,7 @@ describe ('tests for comments', () => {
                 email: 'panda@mail.com',
             }
             const user = await createUser('admin', 'qwerty', userModelTwo)
-            const userTwo = user.createdUser
+            const userTwo = user.user
             expect.setState({userTwo: userTwo})
 
             expect.setState({userTwo: userTwo})
@@ -149,9 +149,10 @@ describe ('tests for comments', () => {
                     .send(likeStatusDataTwo)
                     .expect(204)
                     
-            const resultUpdateLike = await request(app).get(`/comments/${comment.id}`)
+            const resultUpdateLikeForUserOne = await request(app).get(`/comments/${comment.id}`)
+            .set(headersJWTOne)
 
-            expect(resultUpdateLike.body).toEqual({
+            expect(resultUpdateLikeForUserOne.body).toEqual({
                 id: expect.any(String),
                 content: expect.any(String),
                 commentatorInfo: {
@@ -162,9 +163,30 @@ describe ('tests for comments', () => {
                 likesInfo: {
                   likesCount: 1,
                   dislikesCount: 1,
-                  myStatus: "None"
+                  myStatus: "Like"
                 }
             })
+
+            const resultUpdateLikeForUserTwo = await request(app).get(`/comments/${comment.id}`)
+            .set(headersJWTTwo)
+            
+            expect(resultUpdateLikeForUserTwo.body).toEqual({
+                id: expect.any(String),
+                content: expect.any(String),
+                commentatorInfo: {
+                  userId: userOne.id,
+                  userLogin: userOne.login
+                },
+                createdAt: expect.any(String),
+                likesInfo: {
+                  likesCount: 1,
+                  dislikesCount: 1,
+                  myStatus: "Dislike"
+                }
+            })
+
+
+
         })
     })
 })

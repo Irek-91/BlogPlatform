@@ -129,7 +129,7 @@ class PostRepository {
                 let myStatus = 'None';
                 if (userId) {
                     const user = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(userId) });
-                    const userStatus = yield db_mongoos_1.LikesPostsClass.findOne({ _id: id, userId: userId });
+                    const userStatus = yield db_mongoos_1.LikesPostsClass.findOne({ postId: id, userId: userId });
                     if (userStatus) {
                         myStatus = userStatus.status;
                     }
