@@ -233,6 +233,10 @@ class PostRepository {
             try {
                 const createdAt = (new Date()).toISOString();
                 const login = yield db_mongoos_1.UsersModelClass.findOne({ _id: new mongodb_1.ObjectId(userId) });
+                const resultLikeStatus = yield db_mongoos_1.LikesPostsClass.findOne({ userId: userId, postId: postId });
+                if (resultLikeStatus) {
+                    return true;
+                }
                 const likeInstance = new db_mongoos_1.LikesPostsClass();
                 likeInstance._id = new mongodb_1.ObjectId();
                 likeInstance.userId = userId;

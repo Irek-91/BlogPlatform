@@ -223,6 +223,9 @@ export class PostRepository {
         try {
             const createdAt = (new Date()).toISOString()
             const login = await UsersModelClass.findOne({ _id: new ObjectId(userId) })
+            const resultLikeStatus = await LikesPostsClass.findOne({userId: userId, postId: postId})
+            if (resultLikeStatus) {return true}
+            
             const likeInstance = new LikesPostsClass()
             likeInstance._id = new ObjectId()
             likeInstance.userId = userId

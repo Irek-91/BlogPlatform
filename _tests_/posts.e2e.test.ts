@@ -274,10 +274,15 @@ describe ('tests for posts', () => {
       const like = {
         "likeStatus": "Like"
       }
-      const resUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
+      const updateLike = await request(app).put(`/posts/${post.id}/like-status`)
                       .set(userOne.headers)
                       .send(like)
                       .expect(204)
+      const againUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
+                      .set(userOne.headers)
+                      .send(like)
+                      .expect(204)
+
       const resUpdateLikeForUserOne = await request(app).get(`/posts/${post.id}`)
                     .set(userOne.headers)
 
