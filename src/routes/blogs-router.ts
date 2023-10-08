@@ -4,13 +4,14 @@ import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } f
 import { authMidleware } from "../midlewares/basicAuth";
 import { blogIdParamsExists, blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { blogsController } from '../composition-root';
+import { getUserMiddleware } from "../midlewares/get-comments-middleware ";
 
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
 blogsRouter.get('/:id', blogsController.getBlogId.bind(blogsController))
-blogsRouter.get('/:blogId/posts', blogsController.getPostsByBlogId.bind(blogsController))
+blogsRouter.get('/:blogId/posts', getUserMiddleware, blogsController.getPostsByBlogId.bind(blogsController))
 blogsRouter.delete('/:id', authMidleware, blogsController.deletBlogId.bind(blogsController))
 blogsRouter.post('/', authMidleware, nameValidation, descriptionValidation, websiteUrl, websiteUrlLength,
   inputValidationMiddleware,

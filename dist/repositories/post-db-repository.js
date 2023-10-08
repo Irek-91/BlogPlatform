@@ -46,8 +46,8 @@ class PostRepository {
                     blogName: b.blogName,
                     createdAt: b.createdAt,
                     extendedLikesInfo: {
-                        likesCount: 0,
-                        dislikesCount: 0,
+                        likesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
+                        dislikesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
                         myStatus: myStatus,
                         newestLikes: newestLikesMaped
                     }
@@ -62,7 +62,7 @@ class PostRepository {
             };
         });
     }
-    findPostsBlogId(paginationQuery, blogId) {
+    findPostsBlogId(paginationQuery, blogId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const filter = { blogId: blogId };
@@ -74,7 +74,14 @@ class PostRepository {
                     .lean();
                 const totalCount = yield db_mongoos_1.PostsModelClass.countDocuments(filter);
                 const pagesCount = Math.ceil(totalCount / (paginationQuery.pageSize));
-                const postsOutput = posts.map((b) => {
+                const postsOutput = yield Promise.all(posts.map((b) => __awaiter(this, void 0, void 0, function* () {
+                    let myStatus = 'None';
+                    if (userId) {
+                        const status = yield db_mongoos_1.LikesPostsClass.findOne({ userId, postId: b._id.toString() });
+                        if (status) {
+                            myStatus = status.status;
+                        }
+                    }
                     return {
                         id: b._id.toString(),
                         title: b.title,
@@ -84,13 +91,13 @@ class PostRepository {
                         blogName: b.blogName,
                         createdAt: b.createdAt,
                         extendedLikesInfo: {
-                            likesCount: 0,
-                            dislikesCount: 0,
-                            myStatus: 'None',
+                            likesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
+                            dislikesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
+                            myStatus: myStatus,
                             newestLikes: b.extendedLikesInfo.newestLikes
                         }
                     };
-                });
+                })));
                 return {
                     pagesCount: pagesCount,
                     page: paginationQuery.pageNumber,

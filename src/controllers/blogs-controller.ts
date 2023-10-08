@@ -31,13 +31,15 @@ export class BlogsController {
   }
 
   async getPostsByBlogId(req: Request, res: Response) {
+    const { userId } = req
+
     const blogId = req.params.blogId
     const pagination = getPaginationFromQuery(req.query)
 
     const blog = await this.blogsService.getBlogId(blogId)
     if (!blog) return res.sendStatus(404)
 
-    const foundBlogs = await this.postsService.findPostsBlogId(pagination, blogId);
+    const foundBlogs = await this.postsService.findPostsBlogId(pagination, blogId, userId);
 
     if (foundBlogs) {
       res.send(foundBlogs)

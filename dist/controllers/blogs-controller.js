@@ -36,12 +36,13 @@ class BlogsController {
     }
     getPostsByBlogId(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const { userId } = req;
             const blogId = req.params.blogId;
             const pagination = (0, pagination_1.getPaginationFromQuery)(req.query);
             const blog = yield this.blogsService.getBlogId(blogId);
             if (!blog)
                 return res.sendStatus(404);
-            const foundBlogs = yield this.postsService.findPostsBlogId(pagination, blogId);
+            const foundBlogs = yield this.postsService.findPostsBlogId(pagination, blogId, userId);
             if (foundBlogs) {
                 res.send(foundBlogs);
             }

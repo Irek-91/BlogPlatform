@@ -19,9 +19,9 @@ class PostsService {
             return this.postRepository.findPost(paginationQuery, userId);
         });
     }
-    findPostsBlogId(paginationQuery, blogId) {
+    findPostsBlogId(paginationQuery, blogId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.postRepository.findPostsBlogId(paginationQuery, blogId);
+            return this.postRepository.findPostsBlogId(paginationQuery, blogId, userId);
         });
     }
     getPostId(id, userId) {

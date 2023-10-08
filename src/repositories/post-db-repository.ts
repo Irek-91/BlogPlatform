@@ -42,8 +42,8 @@ export class PostRepository {
                 blogName: b.blogName,
                 createdAt: b.createdAt,
                 extendedLikesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
+                    likesCount:  await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
+                    dislikesCount: await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
                     myStatus: myStatus,
                     newestLikes: newestLikesMaped
                 }
@@ -59,7 +59,7 @@ export class PostRepository {
         }
     }
 
-    async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string): Promise<paginatorPost | boolean> {
+    async findPostsBlogId(paginationQuery: QueryPaginationType, blogId: string, userId: string| null): Promise<paginatorPost | boolean> {
         try {
 
             const filter = { blogId: blogId }
@@ -72,7 +72,14 @@ export class PostRepository {
 
             const totalCount = await PostsModelClass.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / (paginationQuery.pageSize))
-            const postsOutput: postOutput[] = posts.map((b) => {
+            const postsOutput: postOutput[] = await Promise.all(posts.map(async(b) => {
+            let myStatus = 'None'
+            if (userId) {
+                const status = await LikesPostsClass.findOne({ userId, postId: b._id.toString() })
+                if (status) {
+                    myStatus = status.status
+                }
+            }
                 return {
                     id: b._id.toString(),
                     title: b.title,
@@ -82,13 +89,14 @@ export class PostRepository {
                     blogName: b.blogName,
                     createdAt: b.createdAt,
                     extendedLikesInfo: {
-                        likesCount: 0,
-                        dislikesCount: 0,
-                        myStatus: 'None',
+                        likesCount:  await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
+                        dislikesCount: await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
+                        myStatus: myStatus,
                         newestLikes: b.extendedLikesInfo.newestLikes
                     }
                 }
-            })
+            }))
+
             return {
                 pagesCount: pagesCount,
                 page: paginationQuery.pageNumber,
