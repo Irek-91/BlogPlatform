@@ -80,6 +80,14 @@ export class PostRepository {
                     myStatus = status.status
                 }
             }
+            const newestLikes = await LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean()
+            const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
+                return {
+                    addedAt: like.createdAt,
+                    userId: like.userId,
+                    login: like.login
+                }
+            })
                 return {
                     id: b._id.toString(),
                     title: b.title,
@@ -92,7 +100,7 @@ export class PostRepository {
                         likesCount:  await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
                         dislikesCount: await LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
                         myStatus: myStatus,
-                        newestLikes: b.extendedLikesInfo.newestLikes
+                        newestLikes: newestLikesMaped
                     }
                 }
             }))

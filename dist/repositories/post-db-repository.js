@@ -82,6 +82,14 @@ class PostRepository {
                             myStatus = status.status;
                         }
                     }
+                    const newestLikes = yield db_mongoos_1.LikesPostsClass.find({ postId: b._id.toString(), status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean();
+                    const newestLikesMaped = newestLikes.map((like) => {
+                        return {
+                            addedAt: like.createdAt,
+                            userId: like.userId,
+                            login: like.login
+                        };
+                    });
                     return {
                         id: b._id.toString(),
                         title: b.title,
@@ -94,7 +102,7 @@ class PostRepository {
                             likesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Like' }),
                             dislikesCount: yield db_mongoos_1.LikesPostsClass.countDocuments({ postId: b._id.toString(), status: 'Dislike' }),
                             myStatus: myStatus,
-                            newestLikes: b.extendedLikesInfo.newestLikes
+                            newestLikes: newestLikesMaped
                         }
                     };
                 })));

@@ -377,111 +377,111 @@ describe ('tests for posts', () => {
   })
 
 
-  //   it('лайк поста', async () => {
-  //     const {blog} = expect.getState()
-  //     const {post} = expect.getState()
-  //     const {userOne} = expect.getState()
-  //     const userModelTwo: userInputModel = {
-  //       login: 'userModel2',
-  //       password: 'nosorog2023',
-  //       email: 'panda@mail.com',
-  //     }
-  //     const userResponse = await createUser('admin', 'qwerty', userModelTwo)
-  //     const userTwo = userResponse
-  //     expect.setState({userTwo: userResponse})
+    it('лайк поста', async () => {
+      const {blog} = expect.getState()
+      const {post} = expect.getState()
+      const {userOne} = expect.getState()
+      const userModelTwo: userInputModel = {
+        login: 'userModel2',
+        password: 'nosorog2023',
+        email: 'panda@mail.com',
+      }
+      const userResponse = await createUser('admin', 'qwerty', userModelTwo)
+      const userTwo = userResponse
+      expect.setState({userTwo: userResponse})
       
-  //     const userModelThree: userInputModel = {
-  //       login: 'userModel3',
-  //       password: 'userFree2023',
-  //       email: 'panda@mail.com',
-  //     }
-  //     const userResponseThree = await createUser('admin', 'qwerty', userModelThree)
-  //     const userThree = userResponseThree
-  //     expect.setState({userThree: userResponse})
+      const userModelThree: userInputModel = {
+        login: 'userModel3',
+        password: 'userFree2023',
+        email: 'panda@mail.com',
+      }
+      const userResponseThree = await createUser('admin', 'qwerty', userModelThree)
+      const userThree = userResponseThree
+      expect.setState({userThree: userResponse})
       
-  //     const userModelFour: userInputModel = {
-  //       login: 'userModel4',
-  //       password: 'userFree2023',
-  //       email: 'panda@mail.com',
-  //     }
-  //     const userResponseFour = await createUser('admin', 'qwerty', userModelFour)
-  //     const userFour = userResponseFour
-  //     expect.setState({userFour: userResponse})
+      const userModelFour: userInputModel = {
+        login: 'userModel4',
+        password: 'userFree2023',
+        email: 'panda@mail.com',
+      }
+      const userResponseFour = await createUser('admin', 'qwerty', userModelFour)
+      const userFour = userResponseFour
+      expect.setState({userFour: userResponse})
 
-  //     const userModelFive: userInputModel = {
-  //       login: 'userModel5',
-  //       password: 'userFree2023',
-  //       email: 'panda@mail.com',
-  //     }
-  //     const userResponseFive = await createUser('admin', 'qwerty', userModelFive)
-  //     const userFive = userResponseFive
-  //     expect.setState({userFive: userResponse})
+      const userModelFive: userInputModel = {
+        login: 'userModel5',
+        password: 'userFree2023',
+        email: 'panda@mail.com',
+      }
+      const userResponseFive = await createUser('admin', 'qwerty', userModelFive)
+      const userFive = userResponseFive
+      expect.setState({userFive: userResponse})
 
-  //     const dislike = {
-  //       "likeStatus": "Dislike"
-  //     }
-  //     const like = {
-  //       "likeStatus": "Like"
-  //     }
-
-
-  //     const getResultUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
-  //                   .set(userOne.headers)
-  //                   .send(like)
-  //                   .expect(204)
-  //     const getResultUpdateLikeTwo = await request(app).put(`/posts/${post.id}/like-status`)
-  //                   .set(userTwo.headers)
-  //                   .send(dislike)
-  //                   .expect(204)
-  //     const getResultUpdateFree = await request(app).put(`/posts/${post.id}/like-status`)
-  //                   .set(userThree.headers)
-  //                   .send(like)
-  //                   .expect(204)
-  //     const getResultUpdateFour = await request(app).put(`/posts/${post.id}/like-status`)
-  //                   .set(userFour.headers)
-  //                   .send(like)
-  //                   .expect(204)
-  //     const getResultUpdateFive = await request(app).put(`/posts/${post.id}/like-status`)
-  //                   .set(userFive.headers)
-  //                   .send(like)
-  //                   .expect(204)
+      const dislike = {
+        "likeStatus": "Dislike"
+      }
+      const like = {
+        "likeStatus": "Like"
+      }
 
 
-  //     const res = await request(app).get(`/posts/${post.id}`)
-  //                   //.set(userOne.headers)
+      const getResultUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userOne.headers)
+                    .send(like)
+                    .expect(204)
+      const getResultUpdateLikeTwo = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userTwo.headers)
+                    .send(dislike)
+                    .expect(204)
+      const getResultUpdateFree = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userThree.headers)
+                    .send(like)
+                    .expect(204)
+      const getResultUpdateFour = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userFour.headers)
+                    .send(like)
+                    .expect(204)
+      const getResultUpdateFive = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userFive.headers)
+                    .send(like)
+                    .expect(204)
 
-  //     expect(res.body).toEqual({
-  //         id: post.id,
-  //         title: expect.any(String),
-  //         shortDescription: expect.any(String),
-  //         content: expect.any(String),
-  //         blogId: blog.id,
-  //         blogName: expect.any(String),
-  //         createdAt: expect.any(String),
-  //         extendedLikesInfo: {
-  //           likesCount: 4,
-  //           dislikesCount: 1,
-  //           myStatus: "Like",
-  //           newestLikes: [{
-  //             addedAt: expect.any(String),
-  //             userId: userFive.user.id,
-  //             login: userFive.user.login
-  //           },
-  //           {
-  //             addedAt: expect.any(String),
-  //             userId: userFour.user.id,
-  //             login: userFour.user.login
-  //           },
-  //           {
-  //             addedAt: expect.any(String),
-  //             userId: userThree.user.id,
-  //             login: userThree.user.login
-  //           }
-  //         ]
-  //         }
-  //     })
 
-  //  })
+      const res = await request(app).get(`/posts/${post.id}`)
+                    .set(userOne.headers)
+
+      expect(res.body).toEqual({
+          id: post.id,
+          title: expect.any(String),
+          shortDescription: expect.any(String),
+          content: expect.any(String),
+          blogId: blog.id,
+          blogName: expect.any(String),
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 4,
+            dislikesCount: 1,
+            myStatus: "Like",
+            newestLikes: [{
+              addedAt: expect.any(String),
+              userId: userFive.user.id,
+              login: userFive.user.login
+            },
+            {
+              addedAt: expect.any(String),
+              userId: userFour.user.id,
+              login: userFour.user.login
+            },
+            {
+              addedAt: expect.any(String),
+              userId: userThree.user.id,
+              login: userThree.user.login
+            }
+          ]
+          }
+      })
+
+   })
 
 
   })
