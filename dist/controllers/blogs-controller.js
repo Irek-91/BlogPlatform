@@ -92,9 +92,9 @@ class BlogsController {
             const content = req.body.content;
             const blogId = req.params.blogId;
             const blogName = yield this.blogsService.getBlogNameById(blogId);
-            const newBlog = yield this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
-            if (newBlog != false) {
-                res.status(201).send(newBlog);
+            const newPost = yield this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
+            if (newPost != false) {
+                res.status(201).send(newPost);
             }
             else {
                 res.sendStatus(404);

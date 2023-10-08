@@ -84,9 +84,9 @@ export class BlogsController {
     const content: string = req.body.content;
     const blogId: string = req.params.blogId
     const blogName = await this.blogsService.getBlogNameById(blogId)
-    const newBlog = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
-    if (newBlog != false) {
-      res.status(201).send(newBlog)
+    const newPost = await this.postsService.createdPostBlogId(title, shortDescription, content, blogId, blogName);
+    if (newPost != false) {
+      res.status(201).send(newPost)
     } else {
       res.sendStatus(404)
     }

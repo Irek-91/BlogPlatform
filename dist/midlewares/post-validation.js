@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.contentCommentValidation = exports.blogIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = void 0;
+exports.blogIdParamsExists = exports.contentCommentValidation = exports.blogIdValidation = exports.contentValidation = exports.shortDescriptionValidation = exports.titleValidation = void 0;
 const express_validator_1 = require("express-validator");
 const composition_root_1 = require("../composition-root");
 exports.titleValidation = (0, express_validator_1.body)('title').trim().notEmpty().isString().isLength({ max: 30 }).withMessage('error in string length');
@@ -23,3 +23,14 @@ exports.blogIdValidation = (0, express_validator_1.body)('blogId').trim().notEmp
     return true;
 }));
 exports.contentCommentValidation = (0, express_validator_1.body)('content').trim().notEmpty().isString().isLength({ min: 20, max: 300 }).withMessage('error in string length');
+const blogIdParamsExists = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogId = req.params.blogId;
+    const blog = yield composition_root_1.blogsRepository.getBlogId(blogId);
+    if (!blog) {
+        res.status(404);
+    }
+    else {
+        next();
+    }
+});
+exports.blogIdParamsExists = blogIdParamsExists;

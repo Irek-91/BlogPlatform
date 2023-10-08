@@ -2,11 +2,11 @@ import { Result } from 'express-validator';
 import request from 'supertest'
 import { MongoClient, ObjectId } from 'mongodb';
 import { createBlog } from './helpers/blogs-tests-helpers';
-import { createPost } from './helpers/posts-tests-helpers';
+import { createPost, createPostSpecific } from './helpers/posts-tests-helpers';
 import { log } from 'console';
 import { app } from '../src/app';
 import { blogInput } from '../src/types/types-blogs';
-import { postInput, postInputModel } from '../src/types/types-posts';
+import { postInput, postInputModel, postInputModelSpecific } from '../src/types/types-posts';
 import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 import { createUser } from './helpers/users-tests-helpers';
 import { userInputModel } from '../src/types/user';
@@ -67,13 +67,11 @@ describe ('tests for posts', () => {
         expect.setState({blog: res.body})
         const {blog} = expect.getState()
 
-        const data: postInput = {
+        const data: postInputModel = {
             title: "string",
             shortDescription: "string",
             content: "string",
             blogId: blog.id,
-            blogName: blog.name,
-            createdAt: new Date().toISOString()
         }
         const creatResponse = await createPost('admin', 'qwerty', data)
         const getPosts = creatResponse.body
@@ -95,6 +93,37 @@ describe ('tests for posts', () => {
         
         expect.setState({post: getPosts})
     })
+
+    it ('создаем пост специальный', async () => {
+       
+      const {blog} = expect.getState()
+
+      const data: postInputModelSpecific = {
+          title: "string",
+          shortDescription: "string",
+          content: "string",
+      }
+      const creatResponse = await createPostSpecific('admin', 'qwerty', blog.id, data)
+      const getPostsTwo = creatResponse.body
+      expect(creatResponse.status).toBe(201)
+      expect(getPostsTwo).toEqual({
+          id: expect.any(String),
+          title: data.title,
+          shortDescription: data.shortDescription,
+          content: data.content,
+          blogId: blog.id,
+          blogName: blog.name,
+          createdAt: getPostsTwo.createdAt,
+          extendedLikesInfo: { 
+              likesCount: 0,
+              dislikesCount: 0,
+              myStatus: 'None',
+              newestLikes: []
+            }
+        })
+      
+      expect.setState({postSpecific: getPostsTwo})
+  })
 
     
     it('should return 200 status code and created post', async () => {

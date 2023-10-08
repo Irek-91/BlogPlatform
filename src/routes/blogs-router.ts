@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { descriptionValidation, nameValidation, websiteUrl, websiteUrlLength } from "../midlewares/blogs-validation";
 import { authMidleware } from "../midlewares/basicAuth";
-import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
+import { blogIdParamsExists, blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
 import { blogsController } from '../composition-root';
 
 
@@ -16,7 +16,7 @@ blogsRouter.post('/', authMidleware, nameValidation, descriptionValidation, webs
   inputValidationMiddleware,
   blogsController.createBlog.bind(blogsController)
 )
-blogsRouter.post('/:blogId/posts', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation,
+blogsRouter.post('/:blogId/posts', authMidleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdParamsExists,
   inputValidationMiddleware,
   blogsController.createPostByBlog.bind(blogsController)
 )

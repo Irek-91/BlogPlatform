@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { blogsRepository } from "../composition-root";
 
@@ -17,3 +17,17 @@ export const blogIdValidation = body('blogId').trim().notEmpty().isString().with
   return true
 })
 export const contentCommentValidation = body('content').trim().notEmpty().isString().isLength({ min: 20, max: 300 }).withMessage('error in string length')
+
+
+
+export const blogIdParamsExists = async (req: Request, res: Response, next: NextFunction) => {
+  const blogId = req.params.blogId
+  const blog = await blogsRepository.getBlogId(blogId);
+
+  if (!blog) {
+    res.status(404) 
+  }
+  else {
+    next()
+  }
+}

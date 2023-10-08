@@ -16,6 +16,11 @@ export type postInputModel = {
   content: string,
   blogId: string,
 }
+export type postInputModelSpecific = {
+  title: string,
+  shortDescription: string,
+  content: string,
+}
 
 export type newestLikes = {
   addedAt: string,
