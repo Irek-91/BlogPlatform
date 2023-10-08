@@ -241,6 +241,7 @@ describe ('tests for posts', () => {
                   }
             )
         })
+        
     it('лайк поста не корректным body likeStatus', async () => {
       const {blog} = expect.getState()
       const {post} = expect.getState()
@@ -278,10 +279,6 @@ describe ('tests for posts', () => {
                       .set(userOne.headers)
                       .send(like)
                       .expect(204)
-      const againUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
-                      .set(userOne.headers)
-                      .send(like)
-                      .expect(204)
 
       const resUpdateLikeForUserOne = await request(app).get(`/posts/${post.id}`)
                     .set(userOne.headers)
@@ -306,10 +303,27 @@ describe ('tests for posts', () => {
           ]
           }
       })
-      const resUpdateLikeForUsers = await request(app).get(`/posts/${post.id}`)
-                    
+    })
 
-      expect(resUpdateLikeForUsers.body).toEqual({
+    it('лайк поста повторно одним пользователем like of like, ', async () => {
+        const {blog} = expect.getState()
+        const {post} = expect.getState()
+        const {userOne} = expect.getState()
+  
+        const dislike = {
+          "likeStatus": "Dislike"
+        }
+        const like = {
+          "likeStatus": "Like"
+        }
+      const againUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userOne.headers)
+                    .send(like)
+                    .expect(204)
+
+      const resUpdateLikeOfLike = await request(app).get(`/posts/${post.id}`)
+                                .set(userOne.headers)
+      expect(resUpdateLikeOfLike.body).toEqual({
           id: post.id,
           title: expect.any(String),
           shortDescription: expect.any(String),
@@ -320,7 +334,7 @@ describe ('tests for posts', () => {
           extendedLikesInfo: {
             likesCount: 1,
             dislikesCount: 0,
-            myStatus: "None",
+            myStatus: "Like",
             newestLikes: [{
               addedAt: expect.any(String),
               userId: userOne.user.id,
@@ -330,8 +344,37 @@ describe ('tests for posts', () => {
           }
       })
 
+      const updateLikeOfDislike = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(userOne.headers)
+                    .send(dislike)
+                    .expect(204)
+      const resUpdateLikeOfDislike = await request(app).get(`/posts/${post.id}`)
+                                .set(userOne.headers)              
+
+      expect(resUpdateLikeOfDislike.body).toEqual({
+          id: post.id,
+          title: expect.any(String),
+          shortDescription: expect.any(String),
+          content: expect.any(String),
+          blogId: blog.id,
+          blogName: expect.any(String),
+          createdAt: expect.any(String),
+          extendedLikesInfo: {
+            likesCount: 0,
+            dislikesCount: 1,
+            myStatus: "Dislike",
+            newestLikes: [
+          ]
+          }
+      })
+
 
     })
+
+
+
+
+  })
 
 
   //   it('лайк поста', async () => {
@@ -442,7 +485,3 @@ describe ('tests for posts', () => {
 
 
   })
-
-
-    
-})

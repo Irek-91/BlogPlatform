@@ -25,7 +25,7 @@ export class PostRepository {
                     myStatus = status.status
                 }
             }
-            const newestLikes = await LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: 1 }).skip(3).lean()
+            const newestLikes = await LikesPostsClass.find({ postId: b.id, status: 'Like' }).sort({ createdAt: 1 }).limit(3).lean()
             const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
                 return {
                     addedAt: like.createdAt,
@@ -85,11 +85,7 @@ export class PostRepository {
                         likesCount: 0,
                         dislikesCount: 0,
                         myStatus: 'None',
-                        newestLikes: [{
-                            addedAt: b.createdAt,
-                            userId: 'string',
-                            login: 'string'
-                        }]
+                        newestLikes: b.extendedLikesInfo.newestLikes
                     }
                 }
             })
@@ -124,16 +120,6 @@ export class PostRepository {
                 const userStatus = await LikesPostsClass.findOne({ postId: id, userId: userId })
                 if (userStatus) { myStatus = userStatus.status }
             }
-            // const newestLikes = await LikesPostsClass.find({ postId: id, status: 'Like' })
-            //     .sort({ createdAt: -1 }).skip(3).lean()
-
-            // const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
-            //     return {
-            //         addedAt: like.createdAt,
-            //         userId: like.userId,
-            //         login: like.login
-            //     }
-            // })
 
             return {
                 id: post._id.toString(),
@@ -207,7 +193,6 @@ export class PostRepository {
 
     }
 
-
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         //const postInstance = await PostsModelClass.updateOne({_id: new ObjectId(id)}, {$set: {title , shortDescription, content, blogId}})    
         const postInstance = await PostsModelClass.findOne({ _id: new ObjectId(id) })
@@ -222,32 +207,56 @@ export class PostRepository {
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {
         try {
             const createdAt = (new Date()).toISOString()
-            const login = await UsersModelClass.findOne({ _id: new ObjectId(userId) })
-            const resultLikeStatus = await LikesPostsClass.findOne({userId: userId, postId: postId})
+            const loginResult = await UsersModelClass.findOne({ _id: new ObjectId(userId) })
+            const login = loginResult!.accountData.login
+            const resultLikeStatus = await LikesPostsClass.findOne({userId: userId, postId: postId, status: likeStatus})
             if (resultLikeStatus) {return true}
             
-            const likeInstance = new LikesPostsClass()
-            likeInstance._id = new ObjectId()
-            likeInstance.userId = userId
-            likeInstance.createdAt = createdAt
-            likeInstance.login = login!.accountData.login
-            likeInstance.postId = postId
-            likeInstance.status = likeStatus
-            likeInstance.save()
+            await LikesPostsClass.updateOne(
+                { userId: userId, postId: postId},
+                { $set: { login: login, status: likeStatus, createdAt: new Date().toISOString() } },
+                { upsert: true }
+            )
+
+
+            // const likeInstance = new LikesPostsClass()
+            // likeInstance._id = new ObjectId()
+            // likeInstance.userId = userId
+            // likeInstance.createdAt = createdAt
+            // likeInstance.login = login!.accountData.login
+            // likeInstance.postId = postId
+            // likeInstance.status = likeStatus
+            // likeInstance.save()
 
             const post = await PostsModelClass.findOne({ _id: new ObjectId(postId) })
-            if (likeStatus === 'Like') {
-                const newLike = {addedAt: createdAt,
-                    userId: userId,
-                    login: login!.accountData.login}
-             
-                if (post!.extendedLikesInfo.newestLikes.length < 3) {
-                    post!.extendedLikesInfo.newestLikes.unshift(newLike)
-                } else {
-                    post!.extendedLikesInfo.newestLikes.pop()
-                    post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            
+            const newestLikes = await LikesPostsClass.find({ postId: postId, status: 'Like' })
+                .sort({ createdAt: -1 })
+                .limit(3)
+                .lean()
+            const newestLikesMaped: newestLikes[] = newestLikes.map((like) => {
+                return {
+                    addedAt: like.createdAt,
+                    userId: like.userId,
+                    login: like.login
                 }
-            }
+            })
+            
+
+            post!.extendedLikesInfo.newestLikes = newestLikesMaped
+            
+            // if (likeStatus === 'Like') {
+            //     const newLike = {addedAt: createdAt,
+            //         userId: userId,
+            //         login: login!.accountData.login}
+             
+            //     if (post!.extendedLikesInfo.newestLikes.length < 3) {
+            //         post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            //     } else {
+            //         post!.extendedLikesInfo.newestLikes.pop()
+            //         post!.extendedLikesInfo.newestLikes.unshift(newLike)
+            //     }
+            // }
             post!.save()
             
             return true
