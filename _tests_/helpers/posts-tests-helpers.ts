@@ -9,3 +9,4 @@ export const createPost = async ( saLogin: string, saPwd: string, model: postInp
     const result = await request(app).post('/posts').auth(saLogin, saPwd).send(model)
     return result
 }
+

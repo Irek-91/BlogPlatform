@@ -33,12 +33,11 @@ var LikeStatusEnum;
     LikeStatusEnum["None"] = "None";
 })(LikeStatusEnum || (exports.LikeStatusEnum = LikeStatusEnum = {}));
 exports.LikeStatusValues = Object.values(LikeStatusEnum);
-exports.likeStatusValidation1 = (0, express_validator_1.body)('likeStatus').isString().trim().notEmpty().
+exports.likeStatusValidation1 = (0, express_validator_1.body)('likeStatus').isString().trim().notEmpty().withMessage('error in likeStatus').
     // matches(/'Like'|'None'|'Dislike'/).
     custom((val) => {
     if (!exports.LikeStatusValues.includes(val)) {
         throw new Error('invalid input data');
     }
     return true;
-}).
-    withMessage('error in likeStatus');
+});

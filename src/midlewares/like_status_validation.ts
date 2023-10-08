@@ -26,12 +26,12 @@ export enum LikeStatusEnum {
 
 export const LikeStatusValues = Object.values(LikeStatusEnum)
 
-export const likeStatusValidation1 = body('likeStatus').isString().trim().notEmpty().
+export const likeStatusValidation1 = body('likeStatus').isString().trim().notEmpty().withMessage('error in likeStatus').
   // matches(/'Like'|'None'|'Dislike'/).
   custom((val) => {
     if (!LikeStatusValues.includes(val)) {
       throw new Error('invalid input data')
     }
     return true
-  }).
-  withMessage('error in likeStatus')
+  })
+  

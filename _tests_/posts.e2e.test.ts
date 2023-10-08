@@ -228,6 +228,7 @@ describe ('tests for posts', () => {
       const headersJWTOne = {Authorization: `Bearer ${AccessTokenOne}`}
       const AccessTokeTwo = await jwtService.createdJWTAccessToken(new ObjectId(userTwo.id))
       const headersJWTTwo = {Authorization: `Bearer ${AccessTokeTwo}`}
+      
       const likeStatusDataIncorect = {
         "likeStatus": ""
       }
@@ -248,11 +249,19 @@ describe ('tests for posts', () => {
       const likeStatusDataOne = {
         "likeStatus": "Dislike"
       }
+      const likeStatusDataTwo = {
+        "likeStatus": "Like"
+      }
+
 
       const getResultUpdateLike = await request(app).put(`/posts/${post.id}/like-status`)
                     .set(headersJWTOne)
                     .send(likeStatusDataOne)
                     .expect(204)
+      const getResultUpdateLikeTwo = await request(app).put(`/posts/${post.id}/like-status`)
+                    .set(headersJWTTwo)
+                    .send(likeStatusDataOne)
+                    .expect(204)          
 
 
       const res = await request(app).get(`/posts/${post.id}`)      
@@ -266,12 +275,12 @@ describe ('tests for posts', () => {
           createdAt: expect.any(String),
           extendedLikesInfo: {
             likesCount: 1,
-            dislikesCount: 0,
+            dislikesCount: 1,
             myStatus: "None",
             newestLikes: [{
               addedAt: expect.any(String),
-              userId: userOne.id,
-              login: userOne.login
+              userId: userTwo.id,
+              login: userTwo.login
             }]
           }
       })
