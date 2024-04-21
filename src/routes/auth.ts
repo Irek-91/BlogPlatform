@@ -29,7 +29,7 @@ authRouter.get('/me', authMiddleware,
 
 authRouter.post('/registration', filterCountIPAndURL, loginValidation, emailValidationCustom, loginValidationLength,
     passwordValidation, emailValidation, inputValidationMiddleware,
-    authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(authController)
+    authController.codeWillBeSendToPassedEmailAddress.bind(authController)
 )
 
 
