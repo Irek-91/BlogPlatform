@@ -6,7 +6,6 @@ import { createdAccessToken } from './helpers/auth-tests-helpers';
 import { jwtService } from '../src/application/jwt-service';
 import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 
-
 describe ('tests for auth', () => {
 
     beforeAll(async () => {

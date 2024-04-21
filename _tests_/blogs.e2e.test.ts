@@ -5,7 +5,6 @@ import { blogInput } from '../src/types/types-blogs';
 import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 import { log } from 'console';
 
-
 describe ('tests for blogs', () => {
 
     beforeAll(async () => {

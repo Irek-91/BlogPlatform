@@ -4,7 +4,6 @@ import { app } from '../src/app';
 import { userInputModel } from '../src/types/user';
 import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 
-
 describe('create user in the system ', () => {
     beforeAll(async () => {
         await runDbMongoose()
@@ -27,7 +26,6 @@ describe('create user in the system ', () => {
                                   totalCount: 0,
                                   items: []
                                  })
-
         })
 
         it ('error 404 is returned, there is no such user', async () => {

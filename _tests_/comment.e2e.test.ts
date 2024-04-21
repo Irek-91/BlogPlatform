@@ -10,7 +10,6 @@ import { postInput } from '../src/types/types-posts'
 import { createPost } from './helpers/posts-tests-helpers'
 import { createComment } from './helpers/comment_created'
 import { jwtService } from '../src/application/jwt-service'
-import { log } from 'console'
 
 describe ('tests for comments', () => {
 
@@ -120,7 +119,6 @@ describe ('tests for comments', () => {
                                       .expect(403)
             expect(result.status).toBe(403)
 
-
         })
         it ('лайк коментария', async () => {
             const {blog} = expect.getState()
@@ -184,9 +182,6 @@ describe ('tests for comments', () => {
                   myStatus: "Dislike"
                 }
             })
-
-
-
         })
     })
 })
