@@ -24,7 +24,7 @@ export class TokensRepository {
         catch (e) { return null }
     }
 
-    async findTokenAndDeviceByissuedAt(issuedAt: string): Promise<true | null> {
+    async findTokenAndDeviceByIssuedAt(issuedAt: string): Promise<true | null> {
 
         try {
             const res = await DevicesModelClass.findOne({ issuedAt: issuedAt })
@@ -44,7 +44,7 @@ export class TokensRepository {
     }
 
     async deleteTokensAll() {
-        const deletResult = await DevicesModelClass.deleteMany({})
+        await DevicesModelClass.deleteMany({});
         return true
     }
 

@@ -64,7 +64,7 @@ class CommentsService {
                     return null;
                 }
                 if (commentById.commentatorInfo.userId === userId) {
-                    const result = yield this.commentsRepository.deletCommentById(commentsId);
+                    const result = yield this.commentsRepository.deletedCommentById(commentsId);
                     return result;
                 }
                 else {

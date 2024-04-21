@@ -1,11 +1,9 @@
-import { ObjectId } from 'mongodb';
-import { QueryPaginationType } from "../midlewares/pagination";
-import { commentViewModel } from "../types/comments";
-import { paginatorComments } from "../types/types_paginator";
-import { jwtService } from '../application/jwt-service';
-import { log } from 'console';
-import { UserRepository } from '../repositories/users-db-repository';
-import { CommentsRepository } from '../repositories/comments-db-repository';
+import {ObjectId} from 'mongodb';
+import {QueryPaginationType} from "../midlewares/pagination";
+import {commentViewModel} from "../types/comments";
+import {paginatorComments} from "../types/types_paginator";
+import {UserRepository} from '../repositories/users-db-repository';
+import {CommentsRepository} from '../repositories/comments-db-repository';
 
 export class CommentsService {
     constructor(protected userRepository: UserRepository, protected commentsRepository: CommentsRepository) {}
@@ -18,8 +16,7 @@ export class CommentsService {
             return null
         }
         const userLogin = user.accountData.login
-        const creatComment = await this.commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt)
-        return creatComment
+        return await this.commentsRepository.createdCommentPostId(postId, content, userId, userLogin, createdAt)
     }
 
     async findCommentById(commentId: string, userId: string | null): Promise<commentViewModel | null> {
@@ -36,8 +33,7 @@ export class CommentsService {
         try {
             const comment = await this.commentsRepository.findCommentById(commentsId, userId)
             if (comment!.commentatorInfo.userId === userId) {
-                const result = await this.commentsRepository.updateCommentId(commentsId, content)
-                return result
+                return await this.commentsRepository.updateCommentId(commentsId, content)
             }
             else {
                 return false
@@ -54,8 +50,7 @@ export class CommentsService {
                 return null
             }
             if (commentById.commentatorInfo.userId === userId) {
-                const result = await this.commentsRepository.deletCommentById(commentsId)
-                return result
+                return await this.commentsRepository.deletedCommentById(commentsId)
             }
             else {
                 return false
@@ -71,5 +66,3 @@ export class CommentsService {
         return this.commentsRepository.updateLikeStatus(commentId, userId, likeStatus)
     }
 }
-
-//export const commentsService = new CommentsService()

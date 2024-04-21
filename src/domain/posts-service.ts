@@ -1,10 +1,7 @@
-import { QueryPaginationType } from './../midlewares/pagination';
-import { postInput, postsCollectionsType, postOutput, PostEntity } from '../types/types-posts';
-import { paginatorPost } from '../types/types_paginator';
-import { ObjectId } from 'mongodb';
-import { PostRepository } from '../repositories/post-db-repository';
-import { HydratedDocument } from 'mongoose';
-
+import {QueryPaginationType} from '../midlewares/pagination';
+import {postOutput} from '../types/types-posts';
+import {paginatorPost} from '../types/types_paginator';
+import {PostRepository} from '../repositories/post-db-repository';
 
 
 export class PostsService {
@@ -29,8 +26,7 @@ export class PostsService {
 
     async createdPostBlogId(title: string, shortDescription: string, content: string, blogId: string, blogName: string | boolean): Promise<postOutput | boolean> {
 
-        const creatPost = await this.postRepository.createdPostId(title, shortDescription, content, blogId, blogName)
-        return creatPost
+        return await this.postRepository.createdPostId(title, shortDescription, content, blogId, blogName)
     }
 
     async updatePostId(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
@@ -47,10 +43,7 @@ export class PostsService {
         //post.addLike()
 
         await this.postRepository.savePost(post)
-        //0
-
         return true
-        //return await this.postRepository.updatePostId(id, title, shortDescription, content, blogId)
     }
 
     async updateLikeStatusPostId(postId: string, userId: string, likeStatus: string): Promise<boolean | null> {

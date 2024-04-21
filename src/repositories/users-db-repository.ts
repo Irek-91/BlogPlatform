@@ -1,21 +1,13 @@
-import { log } from 'console';
-import { QueryPaginationTypeUser } from '../midlewares/pagination-users';
-import { User, userMongoModel, userViewModel, } from '../types/user';
-import { Filter, ObjectId } from "mongodb";
-import { UsersModelClass } from '../db/db-mongoos';
-
+import {QueryPaginationTypeUser} from '../midlewares/pagination-users';
+import {User, userMongoModel, userViewModel,} from '../types/user';
+import {Filter, ObjectId} from "mongodb";
+import {UsersModelClass} from '../db/db-mongoos';
 
 
 export class UserRepository {
 
   async findUsers(paginatorUser: QueryPaginationTypeUser) {
     const filter: Filter<userMongoModel> = {};
-    // const filter = {
-    //   $or: [{login: { $regex: paginatorUser.searchLoginTerm, $options: 'i' }
-
-    //   ]
-    // }
-
     if (paginatorUser.searchLoginTerm || paginatorUser.searchEmailTerm) {
       filter.$or = []
       if (paginatorUser.searchLoginTerm) {
@@ -53,19 +45,17 @@ export class UserRepository {
   }
 
   async createUser(newUser: User): Promise<userViewModel> {
-    //const res = await UsersModelClass.insertMany({...newUser, _id: new ObjectId()})
     const userInstance = new UsersModelClass(newUser)
     userInstance._id = new ObjectId()
 
     await userInstance.save()
 
-    const userViewVodel = {
+    return {
       id: userInstance._id.toString(),
       login: userInstance.accountData!.login,
       email: userInstance.accountData!.email,
       createdAt: userInstance.accountData!.createdAt
     }
-    return userViewVodel
   }
 
   async deleteUserId(id: string): Promise<boolean> {
@@ -96,7 +86,7 @@ export class UserRepository {
   }
 
   async deleteUserAll(): Promise<boolean> {
-    const deletResult = await UsersModelClass.deleteMany({})
+    await UsersModelClass.deleteMany({});
     return true
   }
 
@@ -114,8 +104,7 @@ export class UserRepository {
 
   async findUserByCode(code: string): Promise<userMongoModel | null> {
     try {
-      let user = await UsersModelClass.findOne({ "emailConfirmation.confirmationCode": code }).lean()
-      return user
+      return await UsersModelClass.findOne({"emailConfirmation.confirmationCode": code}).lean()
     }
     catch (e) { return null }
   }
@@ -127,16 +116,14 @@ export class UserRepository {
 
   async findUserByEmail(email: string): Promise<userMongoModel | null> {
     try {
-      let user = await UsersModelClass.findOne({ "accountData.email": email }).lean()
-      return user
+      return await UsersModelClass.findOne({"accountData.email": email}).lean()
     }
     catch (e) { return null }
   }
 
   async findUserByLogin(login: string): Promise<userMongoModel | null> {
     try {
-      let user = await UsersModelClass.findOne({ "accountData.login": login }).lean()
-      return user
+      return await UsersModelClass.findOne({"accountData.login": login}).lean()
     }
     catch (e) { return null }
   }
@@ -158,11 +145,9 @@ export class UserRepository {
 
   async findUserByRecoveryCode(recoveryCode: string): Promise<userMongoModel | null> {
     try {
-      let user = await UsersModelClass.findOne({ "emailConfirmation.recoveryCode": recoveryCode }).lean()
-      return user
+      return await UsersModelClass.findOne({"emailConfirmation.recoveryCode": recoveryCode}).lean()
     }
     catch (e) {
-      console.log('scDB')
       return null
     }
   }

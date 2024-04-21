@@ -1,14 +1,14 @@
-import { DevicesMongo, refreshToken } from './../types/token-types';
-import { ObjectId } from 'mongodb';
-import { jwtService } from '../application/jwt-service';
-import { TokensRepository } from '../repositories/tokens-db-repository';
+import {DevicesMongo} from '../types/token-types';
+import {ObjectId} from 'mongodb';
+import {jwtService} from '../application/jwt-service';
+import {TokensRepository} from '../repositories/tokens-db-repository';
 
 
 export class TokensService {
     constructor(protected tokensRepository: TokensRepository) {}
     async findTokenAndDevice(token: string): Promise<boolean | null> {
         const issuedAt = await jwtService.getIssueAttByRefreshToken(token)
-        const resultIssuedAt = await this.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt)
+        const resultIssuedAt = await this.tokensRepository.findTokenAndDeviceByIssuedAt(issuedAt)
         if (resultIssuedAt) { return true }
         else { return null }
     }
@@ -33,8 +33,7 @@ export class TokensService {
     async updateAccessToken(refreshToken: string): Promise<string | null> {
         const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
         if (userId === null) { return null }
-        const newAccessToken = await jwtService.createdJWTAccessToken(userId)
-        return newAccessToken
+        return await jwtService.createdJWTAccessToken(userId)
     }
 
     async updateDevicesModelClass(refreshToken: string, IP: string, deviceName: string): Promise<string | null> {

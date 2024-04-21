@@ -1,17 +1,8 @@
-import { getUserMiddleware } from '../midlewares/get-comments-middleware ';
 import { Request, Response, Router } from "express";
-import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
-import { blogIdValidation, contentCommentValidation, contentValidation, shortDescriptionValidation, titleValidation } from "../midlewares/post-validation";
-import { authMidleware } from "../midlewares/basicAuth";
 import { PostsService } from "../domain/posts-service";
 import { getPaginationFromQuery } from "../midlewares/pagination";
-import { authMiddleware } from "../midlewares/auth-middleware";
 import { BlogsService } from "../domain/blogs-service";
 import { CommentsService } from "../domain/comments-service";
-import { likeStatusValidation1 } from '../midlewares/like_status_validation';
-import { postsController } from '../composition-root';
-
-
 
 export class PostsController {
   constructor(protected postsService: PostsService,  protected blogsService: BlogsService, protected commentsService: CommentsService) { }
@@ -100,7 +91,7 @@ export class PostsController {
 
 
     let postResult = await this.postsService.updatePostId(id, title, shortDescription, content, blogId)
-    if (postResult === true) {
+    if (postResult) {
       res.sendStatus(204);
     } else {
       res.sendStatus(404);

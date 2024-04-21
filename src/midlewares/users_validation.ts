@@ -7,9 +7,7 @@ export const loginValidation = body('login').trim().notEmpty().
                                             matches('^[a-zA-Z0-9_-]*$').
                                             withMessage('error in login').
                                             custom(async (login) => {
-
                                                 const user = await userRepository.findUserByLogin(login);
-                                              
                                                 if(user){
                                                   throw new Error("User ")
                                                 }
@@ -29,9 +27,7 @@ export const emailValidation = body('email').trim().notEmpty().
                                                                           
 export const emailValidationCustom = body('email').
                                             custom(async (email) => {
-
                                                 const user = await userRepository.findUserByEmail(email);
-                                              
                                                 if(user){
                                                   throw new Error("user with the given email already exists")
                                                 }

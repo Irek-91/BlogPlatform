@@ -1,12 +1,11 @@
-import { paginatorUser } from './../types/types_paginator';
-import { QueryPaginationTypeUser } from "../midlewares/pagination-users"
-import { UserMongoModel, userInputModel, userMeViewModel, userMongoModel, userViewModel, } from "../types/user"
+import {paginatorUser} from '../types/types_paginator';
+import {QueryPaginationTypeUser} from "../midlewares/pagination-users"
+import {userMeViewModel, UserMongoModel, userMongoModel, userViewModel,} from "../types/user"
 import bcrypt from 'bcrypt'
-import { ObjectId } from 'mongodb';
-import { add } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
-import { UserRepository } from '../repositories/users-db-repository';
-
+import {ObjectId} from 'mongodb';
+import {add} from 'date-fns';
+import {v4 as uuidv4} from 'uuid';
+import {UserRepository} from '../repositories/users-db-repository';
 
 
 export class UsersService {
@@ -77,25 +76,20 @@ export class UsersService {
 
     const result = await  this.userRepository.findUserById(userId)
     if (result) {
-      const resultUserViewModel = {
+      return {
         email: result.accountData.email,
         login: result.accountData.login,
         userId: result._id
       }
-      return resultUserViewModel
     }
     return false
   }
 
   async findUserByCode(code: string): Promise<userMongoModel | null> {
-    let user = await  this.userRepository.findUserByCode(code)
-    return user
+    return await this.userRepository.findUserByCode(code)
   }
 
   async findUserByEmail(email: string): Promise<userMongoModel | null> {
-    let user = await  this.userRepository.findUserByEmail(email)
-    return user
+    return await this.userRepository.findUserByEmail(email)
   }
 }
-
-//export const usersService = new UsersService()

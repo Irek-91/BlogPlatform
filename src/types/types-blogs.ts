@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 export type blogsCollectionsType = blogOutput[];
 
 
-export const blogsShema = new mongoose.Schema({
+export const blogsSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   name: { type: String, required: true },
   description: { type: String, required: true },

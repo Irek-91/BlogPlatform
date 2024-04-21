@@ -1,15 +1,13 @@
-import { refreshToken } from './../types/token-types';
 import { Request, Response, Router } from "express";
-import { chekRefreshToken } from "../midlewares/chek-refreshToket";
-import { chekRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
-import { SecurityDeviceService } from '../domain/securityDevice_service';
+import { checkRefreshToken } from "../midlewares/chek-refreshToket";
+import { checkRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
 import { securityDeviceController } from '../composition-root';
 
 export const securityDeviceRouter = Router({});
 
-securityDeviceRouter.get('/devices', chekRefreshToken,
+securityDeviceRouter.get('/devices', checkRefreshToken,
     securityDeviceController.getDeviceByToken.bind(securityDeviceController))
-securityDeviceRouter.delete('/devices', chekRefreshToken,
+securityDeviceRouter.delete('/devices', checkRefreshToken,
     securityDeviceController.deleteAllDevicesExceptOne.bind(securityDeviceController))
-securityDeviceRouter.delete('/devices/:deviceId', chekRefreshTokenDeleteDevice,
+securityDeviceRouter.delete('/devices/:deviceId', checkRefreshTokenDeleteDevice,
     securityDeviceController.deleteDeviceByUserId.bind(securityDeviceController))

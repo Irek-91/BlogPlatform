@@ -20,7 +20,7 @@ class TokensService {
     findTokenAndDevice(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const issuedAt = yield jwt_service_1.jwtService.getIssueAttByRefreshToken(token);
-            const resultIssuedAt = yield this.tokensRepository.findTokenAndDeviceByissuedAt(issuedAt);
+            const resultIssuedAt = yield this.tokensRepository.findTokenAndDeviceByIssuedAt(issuedAt);
             if (resultIssuedAt) {
                 return true;
             }

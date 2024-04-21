@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export const likeStatusValidation = async (req: Request, res: Response, next: NextFunction) => {
   const likeStatus = req.body.likeStatus
-  if (typeof likeStatus !== 'string' || likeStatus !== ('Dislike' || 'None' || 'Like')) {
+  if (typeof likeStatus !== 'string' || likeStatus !== (LikeStatusEnum.Dislike || LikeStatusEnum.None || LikeStatusEnum.Like)) {
     res.status(400).send(
       {
         errorsMessages: [{

@@ -1,12 +1,8 @@
-import { blogMongoDB } from './../types/types-blogs';
-import { ObjectId } from "mongodb";
-import { paginatorBlog } from '../types/types_paginator';
-import { QueryPaginationType } from '../midlewares/pagination';
-import { BlogsModelClass } from '../db/db-mongoos';
-import { blogOutput } from "../types/types-blogs";
-import { log } from 'console';
-
-
+import {blogMongoDB, blogOutput} from '../types/types-blogs';
+import {ObjectId} from "mongodb";
+import {paginatorBlog} from '../types/types_paginator';
+import {QueryPaginationType} from '../midlewares/pagination';
+import {BlogsModelClass} from '../db/db-mongoos';
 
 export class BlogsRepository  {
 
@@ -17,7 +13,7 @@ export class BlogsRepository  {
       skip(pagination.skip).
       limit(pagination.pageSize).
       lean()
-    const totalCount = await BlogsModelClass.countDocuments({ name: { $regex: pagination.searchNameTerm, $options: 'i' } })
+    const totalCount: number = await BlogsModelClass.countDocuments({ name: { $regex: pagination.searchNameTerm, $options: 'i' } })
     const blogsOutput: blogOutput[] = blogs.map((b) => {
       return {
         id: b._id.toString(),
@@ -67,8 +63,6 @@ export class BlogsRepository  {
     }
   }
 
-
-
   async createBlog(newBlog: blogMongoDB) {
     return BlogsModelClass.insertMany({ ...newBlog })
 
@@ -76,7 +70,6 @@ export class BlogsRepository  {
 
   async updateBlog(name: string, description: string, websiteUrl: string, id: string): Promise<boolean> {
     try {
-      // const query = BlogsModelClass.where({_id: new ObjectId(id)})
       const blogsInstance = await BlogsModelClass.findOne({ _id: new ObjectId(id) })
       if (!blogsInstance) {
         return false
@@ -104,14 +97,11 @@ export class BlogsRepository  {
       return true
     }
     catch (e) { return false }
-
   }
 
   async deleteBlogAll(): Promise<boolean> {
     try {
-      const blogsInstance = await BlogsModelClass.deleteMany({})
-      if (!blogsInstance) return false
-      return true
+      return (await BlogsModelClass.deleteMany({})).acknowledged;
     }
     catch (e) { return false }
   }

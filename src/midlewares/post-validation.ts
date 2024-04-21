@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { body, validationResult } from "express-validator";
+import { NextFunction, Request, Response } from "express";
+import { body } from "express-validator";
 import { blogsRepository } from "../composition-root";
-
 
 export const titleValidation = body('title').trim().notEmpty().isString().isLength({ max: 30 }).withMessage('error in string length');
 export const shortDescriptionValidation = body('shortDescription').trim().notEmpty().isLength({ max: 100 }).withMessage('error in shortDescription length');

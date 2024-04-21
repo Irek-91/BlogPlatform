@@ -1,7 +1,5 @@
 import { Request, Response, Router } from "express";
 import { authMidleware } from "../midlewares/basicAuth";
-import { getPaginationFromQueryUser } from "../midlewares/pagination-users";
-import { UsersService } from "../domain/users-service";
 import { emailValidation, loginValidation, loginValidationLength, passwordValidation } from "../midlewares/users_validation";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
 import { usersController } from "../composition-root";

@@ -5,14 +5,14 @@ export const emailAdapter = {
         let transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-            user: 'shamilov.irek.back@gmail.com',
-            pass: 'pxaubouunpscxztw'
+            user: process.env.EMAIL,
+            pass:process.env.EMAIL_PASS
             }
         });
 
 
         await transporter.sendMail({
-            from: '"Irek " <shamilov.irek.back@gmail.com>', // sender address
+            from: `"Sir Alex" <${process.env.EMAIL}>`,
             to: email, // list of receivers
             subject: subject, // Subject line
             // text: message, // plain text body
@@ -25,14 +25,14 @@ export const emailAdapter = {
         let transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-            user: 'shamilov.irek.back@gmail.com',
-            pass: 'pxaubouunpscxztw'
+                user: process.env.EMAIL,
+                pass:process.env.EMAIL_PASS
             }
         });
 
 
         await transporter.sendMail({
-            from: '"Irek " <shamilov.irek.back@gmail.com>', // sender address
+            from: `"Sir Alex" <${process.env.EMAIL}>`,
             to: email, // list of receivers
             subject: subject, // Subject line
             // text: message, // plain text body

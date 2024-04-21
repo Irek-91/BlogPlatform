@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { blogsShema } from '../types/types-blogs';
+import { blogsSchema } from '../types/types-blogs';
 import { likePostInfoShema, postsShema } from '../types/types-posts';
 import { usersShema } from '../types/user';
 import { DevicesModelClassShema, IPAndURIShema, commentsShema, likeInfoShema } from './mongoosShema';
@@ -13,9 +13,7 @@ if (!mongoUri) {
     throw new Error ('URL doesn\'t found')
 }
 
-
-
-export const BlogsModelClass = mongoose.model('blogs', blogsShema)
+export const BlogsModelClass = mongoose.model('blogs', blogsSchema)
 export const PostsModelClass = mongoose.model('posts', postsShema)
 export const UsersModelClass = mongoose.model('users', usersShema)
 export const CommentsModelClass = mongoose.model('comments', commentsShema)

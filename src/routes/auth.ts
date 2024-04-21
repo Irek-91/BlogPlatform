@@ -1,19 +1,13 @@
-import { emailValidationCustom, newPasswordValidation, passwordValidation } from './../midlewares/users_validation';
-import { Request, Response, Router } from "express";
+import { emailValidationCustom, newPasswordValidation, passwordValidation } from '../midlewares/users_validation';
+import {  Request, Response, Router } from "express";
 import { loginOrEmailValidationAuth, passwordValidationAuth } from "../midlewares/aurh-validation";
 import { inputValidationMiddleware } from "../midlewares/input-validation-middleware";
-import { jwtService } from "../application/jwt-service";
 import { authMiddleware } from "../midlewares/auth-middleware";
 import { emailValidation, loginValidation, loginValidationLength } from "../midlewares/users_validation";
-import { AuthService } from "../domain/auth-service";
 import { emailAdapter } from "../application/email-adapter";
-import { TokensService } from '../domain/token-service';
-import { chekRefreshToken } from '../midlewares/chek-refreshToket';
-import { v4 as uuidv4 } from 'uuid';
+import { checkRefreshToken } from '../midlewares/chek-refreshToket';
 import { filterCountIPAndURL } from '../midlewares/count-IPAndURIFilter';
-import { UsersService } from '../domain/users-service';
 import { authController } from '../composition-root';
-
 
 export const authRouter = Router({});
 
@@ -21,15 +15,13 @@ authRouter.post('/login', filterCountIPAndURL, loginOrEmailValidationAuth, passw
     authController.loginUserToTheSystem.bind(authController)
 )
 
-authRouter.post('/refresh-token', chekRefreshToken,
+authRouter.post('/refresh-token', checkRefreshToken,
     authController.generateNewPairOfAccessAndRefreshTokens.bind(authController)
 )
 
-authRouter.post('/logout', chekRefreshToken,
+authRouter.post('/logout', checkRefreshToken,
     authController.sendCorrectRefreshTokenThatWillBeRevoked.bind(authController)
 )
-
-
 
 authRouter.get('/me', authMiddleware,
     authController.getInformationAboutCurrentUser.bind(authController)
@@ -49,7 +41,6 @@ authRouter.post('/registration-confirmation', filterCountIPAndURL,
 authRouter.post('/registration-email-resending', filterCountIPAndURL, emailValidation, inputValidationMiddleware,
     authController.resendConfirmationRegistrationEmail.bind(authController)
 )
-
 
 authRouter.post('/password-recovery', filterCountIPAndURL, emailValidation, inputValidationMiddleware,
     authController.passwordRecoveryViaEmail.bind(authController)

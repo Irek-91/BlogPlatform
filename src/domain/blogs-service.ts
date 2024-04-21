@@ -1,4 +1,4 @@
-import { BlogsRepository } from './../repositories/blogs-db-repository';
+import { BlogsRepository } from '../repositories/blogs-db-repository';
 import { QueryPaginationType } from '../midlewares/pagination';
 import { ObjectId } from "mongodb";
 import { BlogsModelClass } from "../db/db-mongoos";

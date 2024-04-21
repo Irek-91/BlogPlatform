@@ -1,10 +1,5 @@
-import { refreshToken } from '../types/token-types';
 import { Request, Response, Router } from "express";
-import { chekRefreshToken } from "../midlewares/chek-refreshToket";
-import { chekRefreshTokenDeleteDevice } from '../midlewares/chek-refreshToket-delete';
 import { SecurityDeviceService } from '../domain/securityDevice_service';
-import { securityDeviceController } from '../composition-root';
-
 
 export class SecurityDeviceController {
     constructor(protected securityDeviceService: SecurityDeviceService) {}

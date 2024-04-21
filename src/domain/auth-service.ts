@@ -1,10 +1,9 @@
-import { User, userMongoModel, userViewModel } from '../types/user';
+import {User, userViewModel} from '../types/user';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import add from 'date-fns/add'
-import { emailAdapter } from '../application/email-adapter';
-import { UsersService } from './users-service';
-import { UserRepository } from '../repositories/users-db-repository';
+import {emailAdapter} from '../application/email-adapter';
+import {UserRepository} from '../repositories/users-db-repository';
 
 
 export class AuthService {
@@ -54,18 +53,17 @@ export class AuthService {
     async confirmationCode(code: string): Promise<boolean> {
         let user = await this.userRepository.findUserByCode(code)
         if (!user) return false
-        if (user.emailConfirmation.isConfirmed === true) return false
+        if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.expiritionDate < new Date()) return false
 
-        let result = await this.userRepository.updateConfirmation(user._id)
-        return result
+        return await this.userRepository.updateConfirmation(user._id)
     }
 
     async resendingEmail(email: string): Promise<null | boolean> {
         let user = await this.userRepository.findUserByEmail(email)
         if (user === null) return false
-        if (user.emailConfirmation.isConfirmed === true) return false
+        if (user.emailConfirmation.isConfirmed) return false
 
         const confirmationCode = uuidv4();
         const expiritionDate = add(new Date(), {
@@ -97,7 +95,7 @@ export class AuthService {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
         const resultUpdatePassword = await this.userRepository.updatePassword(result._id, passwordSalt, passwordHash)
-        if (resultUpdatePassword === false) { return false }
+        if (!resultUpdatePassword) { return false }
         return true
     }
 }

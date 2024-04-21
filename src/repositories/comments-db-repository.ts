@@ -1,8 +1,9 @@
-import { CommentMongoModel, commentViewModel } from './../types/comments';
-import { ObjectId } from "mongodb"
-import { QueryPaginationType } from '../midlewares/pagination';
-import { paginatorComments } from '../types/types_paginator';
-import { CommentsModelClass, LikesModelClass } from '../db/db-mongoos';
+import {CommentMongoModel, commentViewModel} from '../types/comments';
+import {ObjectId} from "mongodb"
+import {QueryPaginationType} from '../midlewares/pagination';
+import {paginatorComments} from '../types/types_paginator';
+import {CommentsModelClass, LikesModelClass} from '../db/db-mongoos';
+import {LikeStatusEnum} from "../midlewares/like_status_validation";
 
 export class CommentsRepository {
   async createdCommentPostId(postId: string, content: string, userId: string, userLogin: string, createdAt: string): Promise<commentViewModel> {
@@ -56,9 +57,9 @@ export class CommentsRepository {
           myStatus = status.status
         }
       }
-      const likeCount = await LikesModelClass.countDocuments({ commentsId: commentId, status: 'Like' })
-      const dislikesCount = await LikesModelClass.countDocuments({ commentsId: commentId, status: 'Dislike' })
-      const commentViewModel: commentViewModel = {
+      const likeCount = await LikesModelClass.countDocuments({ commentsId: commentId, status: LikeStatusEnum.Like })
+      const dislikesCount = await LikesModelClass.countDocuments({ commentsId: commentId, status: LikeStatusEnum.Dislike })
+      return {
         id: comment._id.toString(),
         content: comment.content,
         commentatorInfo: comment.commentatorInfo,
@@ -69,7 +70,6 @@ export class CommentsRepository {
           myStatus
         }
       }
-      return commentViewModel
     }
     catch (e) {
       return null
@@ -89,7 +89,7 @@ export class CommentsRepository {
     catch (e) { return null }
   }
 
-  async deletCommentById(id: string): Promise<true | null> {
+  async deletedCommentById(id: string): Promise<true | null> {
     try {
       const result = await CommentsModelClass.deleteOne({ _id: new ObjectId(id) })
       if (result.deletedCount) {
@@ -109,8 +109,8 @@ export class CommentsRepository {
         skip(pagination.skip).
         limit(pagination.pageSize).
         lean()
-      const totalCOunt = await CommentsModelClass.countDocuments(filter)
-      const pagesCount = Math.ceil(totalCOunt / pagination.pageSize)
+      const totalCount = await CommentsModelClass.countDocuments(filter)
+      const pagesCount = Math.ceil(totalCount / pagination.pageSize)
 
       const mappedComments: commentViewModel[] = await Promise.all(comments.map(async c => {
         let myStatus = 'None'
@@ -128,8 +128,8 @@ export class CommentsRepository {
           commentatorInfo: c.commentatorInfo,
           createdAt: c.createdAt,
           likesInfo: {
-            likesCount: await LikesModelClass.countDocuments({ commentsId, status: 'Like' }),
-            dislikesCount: await LikesModelClass.countDocuments({ commentsId, status: 'Dislike' }),
+            likesCount: await LikesModelClass.countDocuments({ commentsId, status: LikeStatusEnum.Like }),
+            dislikesCount: await LikesModelClass.countDocuments({ commentsId, status: LikeStatusEnum.Dislike }),
             myStatus: myStatus
           }
         }
@@ -139,7 +139,7 @@ export class CommentsRepository {
         pagesCount: pagesCount,
         page: pagination.pageNumber,
         pageSize: pagination.pageSize,
-        totalCount: totalCOunt,
+        totalCount: totalCount,
         items: mappedComments
       }
     } catch (e) { return null }
@@ -163,8 +163,8 @@ export class CommentsRepository {
   }
 
   async deleteCommentsAll(): Promise<boolean> {
-    const deletResult = await CommentsModelClass.deleteMany({})
-    const deletResult1 = await LikesModelClass.deleteMany({})
+    await CommentsModelClass.deleteMany({});
+    await LikesModelClass.deleteMany({});
     return true
   }
 }
