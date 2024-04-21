@@ -1,4 +1,4 @@
-import { Result } from 'express-validator';
+// @ts-ignore
 import request from 'supertest'
 import { MongoClient, ObjectId } from 'mongodb';
 import { createBlog } from './helpers/blogs-tests-helpers';
@@ -11,13 +11,6 @@ import { connectDisconnectDb, runDbMongoose } from '../src/db/db-mongoos';
 import { createUser } from './helpers/users-tests-helpers';
 import { userInputModel } from '../src/types/user';
 import { createComment } from './helpers/comment_created';
-import { jwtService } from '../src/application/jwt-service';
-
-// const mongoUri = process.env.MONGO_URL;
-// if (!mongoUri) {
-//     throw new Error ('URL doesn\'t found')
-// }
-// const client = new MongoClient(mongoUri)
 
 describe ('tests for posts', () => {
 

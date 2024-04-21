@@ -1,4 +1,5 @@
 import { createUser } from './helpers/users-tests-helpers';
+// @ts-ignore
 import request from 'supertest'
 import { app } from '../src/app';
 import { userInputModel } from '../src/types/user';

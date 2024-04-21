@@ -1,5 +1,6 @@
 import { blogInput } from '../../src/types/types-blogs';
 import { app } from './../../src/app';
+// @ts-ignore
 import  request  from "supertest";
 
 export const createBlog = async ( saLogin: string, saPwd: string, model: blogInput,) => {

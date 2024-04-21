@@ -1,3 +1,4 @@
+// @ts-ignore
 import  request  from "supertest";
 import { app } from "../../src/app"
 import { jwtService } from "../../src/application/jwt-service";

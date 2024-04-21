@@ -1,3 +1,4 @@
+// @ts-ignore
 import request from 'supertest'
 import { createBlog } from './helpers/blogs-tests-helpers';
 import { app } from '../src/app';

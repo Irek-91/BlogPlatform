@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+// @ts-ignore
 import request from 'supertest'
 import { app } from "../src/app"
 import { connectDisconnectDb, runDbMongoose } from "../src/db/db-mongoos"
